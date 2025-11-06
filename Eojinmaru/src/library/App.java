@@ -1,10 +1,8 @@
 package library;
 
 public class App {
-
 	public static void main(String[] args) {
-		new Main().main();
+		MainUI ui = new MainUI();
+		ui.menu();
 	}
-
 }
-

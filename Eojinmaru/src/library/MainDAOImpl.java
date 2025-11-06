@@ -1,48 +1,83 @@
 package library;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet; 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
-
 import DBUtil.DBConn;
 
-
-
-/**
- * user_info 테이블에 접근하는 클래스 (Data Access Object)
- * 회원가입 등 유저 관련 DB 작업을 전담합니다.
- */
 public class MainDAOImpl implements MainDAO {
 	
 	private Connection conn = DBConn.getConnection();
+    
     /**
-     * 회원가입 정보를 DB에 저장합니다.
-     * @param user : 회원가입 정보가 담긴 UserDTO 객체
-     * @return : 성공 시 true, 실패 시 false
+     * 로그인 정보를 확인합니다.
+     * @param id : 사용자가 입력한 아이디
+     * @param pw : 사용자가 입력한 비밀번호
+     * @return : 로그인 성공 시 해당 유저의 MainDTO, 실패 시 null
      */
-    public boolean signUpUser(MainDTO user) {
+    @Override 
+    public MainDTO login(String id, String pw) {
+        String sql = "SELECT user_id, user_name, user_tel, user_email, user_address " +
+                     "FROM user_info WHERE user_id = ? AND user_pwd = ?";
         
-        // 1. user_code는 user_seq.NEXTVAL (시퀀스) 사용
-        // 2. loan_renewaldate는 NOT NULL이므로 기본값 SYSDATE (현재 날짜) 사용
+        PreparedStatement pstmt = null;
+        ResultSet rs = null; // 쿼리 결과를 받을 ResultSet
+        MainDTO user = null; // 로그인 성공 시 채워질 객체
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(2, pw);
+            
+            rs = pstmt.executeQuery(); // SELECT 쿼리는 executeQuery() 사용
+
+            // 쿼리 결과가 있다면 (로그인 성공)
+            if (rs.next()) {
+                user = new MainDTO(); // 빈 DTO 객체 생성
+                
+                // ResultSet에서 DTO로 정보 옮겨 담기
+                user.setUser_Id(rs.getString("user_id"));
+                user.setUser_name(rs.getString("user_name"));
+                user.setUser_tel(rs.getString("user_tel"));
+                user.setUser_email(rs.getString("user_email"));
+                user.setUser_address(rs.getString("user_address"));
+                // (비밀번호는 DTO에 담지 않습니다 - 보안)
+            }
+
+        } catch (SQLException e) {
+            System.err.println(">> 로그인 쿼리 실행 중 오류: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                // conn은 DBConn에서 관리하므로 닫지 않음
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return user; // 성공 시 DTO, 실패 시 null 반환
+    }
+	
+    // (기존 signUpUser 메서드는 그대로 둠)
+	@Override
+	public boolean signUpUser(MainDTO user) {
+        
         String sql = "INSERT INTO user_info (user_code, user_id, user_pwd, user_name, user_birth, " +
                      "user_tel, user_email, user_address, loan_renewaldate) " +
                      "VALUES (user_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
         
-        Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
-          
-            
             pstmt = conn.prepareStatement(sql);
-            
             
             pstmt.setString(1, user.getUser_Id());
             pstmt.setString(2, user.getUser_pwd());
             pstmt.setString(3, user.getUser_name());
             
-            // DTO의 String 날짜(YYYY-MM-DD)를 java.sql.Date로 변환
             pstmt.setDate(4, Date.valueOf(user.getUser_birth())); 
             
             pstmt.setString(5, user.getUser_tel());
@@ -51,31 +86,20 @@ public class MainDAOImpl implements MainDAO {
 
             int resultRows = pstmt.executeUpdate(); 
             
-            // 결과 반환 (1줄 이상 삽입되었으면 성공)
             return (resultRows > 0); 
 
         } catch (SQLException e) {
             System.err.println(">> DB 연결 또는 SQL 실행 중 오류 발생: " + e.getMessage());
-            // 예: ID 중복, 날짜 형식 오류(YYYY-MM-DD가 아님) 등
         } catch (IllegalArgumentException e) {
             System.err.println(">> 날짜 형식이 잘못되었습니다. (YYYY-MM-DD 형식으로 입력하세요)");
         } finally {
-            // 자원 해제 (연결 순서의 역순)
             try {
                 if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         
-        return false; // 실패 시
+        return false; 
     }
-    
-    
-    
-    
-    
-    
-    
 }
