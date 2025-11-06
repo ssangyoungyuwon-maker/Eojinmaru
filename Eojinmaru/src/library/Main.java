@@ -17,7 +17,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         
         // AdminMenu 클래스의 인스턴스(객체)를 생성합니다.
-        Admin admin = new Admin();
+        AdminUI admin = new AdminUI();
 
         // [메인 루프] isMainRunning 플래그가 true인 동안 메인 화면 반복
         boolean isMainRunning = true; 

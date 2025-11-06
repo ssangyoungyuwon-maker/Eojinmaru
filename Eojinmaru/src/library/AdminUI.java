@@ -7,7 +7,7 @@ import java.util.Scanner;
  * 관리자 로그인 성공 시 호출되는 클래스입니다.
  */
 
-public class Admin {
+public class AdminUI {
 
     /**
      * [관리자 화면]을 표시하는 메서드
