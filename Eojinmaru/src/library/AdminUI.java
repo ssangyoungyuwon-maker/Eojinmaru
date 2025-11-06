@@ -58,17 +58,24 @@ public class AdminUI {
                     isAdminRunning = false; // 관리자 루프 종료 -> 메인 화면으로 돌아감
                     break;
                 case "7":
-                	System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");
-                	Scanner sc = new Scanner(System.in);
-                	String s = sc.nextLine();
                 	
-                	if (s.equalsIgnoreCase("y")) {
-                		System.out.println("🤖 시스템을 종료하겠습니다 ... ");
-                		System.exit(0);                		
-                	} else {
-                		System.out.println("메인화면으로 돌아갑니다.");
-                		return;
-                	}
+                	System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");                	
+                	Scanner sc = new Scanner(System.in);
+                	
+                	while (true) {
+                		String s = sc.nextLine();
+	
+                		if (s.equalsIgnoreCase("y")) {
+                			System.out.println("🤖 시스템을 종료하겠습니다 ... ");
+                			System.exit(0);                		
+                		}  else if (s.equalsIgnoreCase("n")){ 
+                			System.out.println("메인화면으로 돌아갑니다.");
+                			break;
+                		} else {  
+                			System.out.println(" 🚨 [Y 또는 N 만 입력해주세요] -> ");
+                		}
+                		
+                	} break;
                 default:
                     System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
                     break;
