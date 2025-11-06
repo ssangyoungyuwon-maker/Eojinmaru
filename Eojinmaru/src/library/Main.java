@@ -12,7 +12,7 @@ public class Main {
     private static final String ADMIN_ID = "admin";
     private static final String ADMIN_PW = "admin";
     
-    public static void main(String[] args) {
+    public void main() {
         
         Scanner scanner = new Scanner(System.in);
         
@@ -29,7 +29,6 @@ public class Main {
             System.out.println("3. 도서 검색");
             System.out.println("4. 도서 신청");
             System.out.println("5. 공지사항");
-            System.out.println("6. 프로그램 종료");
             System.out.println("=========================");
             System.out.print("메뉴를 선택하세요: ");
 
@@ -82,16 +81,10 @@ public class Main {
                     System.out.println(">> (구현예정) 공지사항 목록을 조회합니다.");
                     // TODO: 공지사항 조회 기능 구현
                     break;
-                case "6":
-                    isMainRunning = false; // 메인 루프 종료 (프로그램 종료)
-                    break;
                 default:
-                    System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
+                    System.out.println(">> 잘못된 입력입니다. 1~5 사이의 숫자를 입력해주세요.");
                     break;
             }
         }
-        
-        System.out.println("도서관 키오스크 프로그램을 종료합니다.");
-        scanner.close(); // 프로그램이 완전히 종료될 때 Scanner를 닫습니다.
     }
 }

@@ -15,7 +15,7 @@ public class Admin {
      */
     public void showMenu(Scanner scanner) {
         
-        // [관리자 루프] isAdminRunning 플래그가 true인 동안 관리자 메뉴 반복
+        // [관리자 루프] isAdminRunning 플래그가 true 인 동안 관리자 메뉴 반복
         boolean isAdminRunning = true; 
 
         while (isAdminRunning) {
@@ -27,6 +27,7 @@ public class Admin {
             System.out.println("4. 신청 도서");
             System.out.println("5. 공지사항 등록");
             System.out.println("6. 로그아웃"); // 메인 화면으로 돌아가기
+            System.out.println("7. 프로그램 종료"); // 프로그램 종료하기 - only 관리자
             System.out.println("=========================");
             System.out.print("메뉴를 선택하세요: ");
 
@@ -43,7 +44,8 @@ public class Admin {
                     this.showBookMenu(scanner); // 도서관리 메뉴 메서드 호출
                     break;
 
-                case "3": 
+                case "3" :   
+                	
                     System.out.println(">> (구현예정) 대출/반납 관리 페이지로 이동합니다."); 
                     break;
                 case "4": 
@@ -55,6 +57,18 @@ public class Admin {
                 case "6":
                     isAdminRunning = false; // 관리자 루프 종료 -> 메인 화면으로 돌아감
                     break;
+                case "7":
+                	System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");
+                	Scanner sc = new Scanner(System.in);
+                	String s = sc.nextLine();
+                	
+                	if (s.equalsIgnoreCase("y")) {
+                		System.out.println("🤖 시스템을 종료하겠습니다 ... ");
+                		System.exit(0);                		
+                	} else {
+                		System.out.println("메인화면으로 돌아갑니다.");
+                		return;
+                	}
                 default:
                     System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
                     break;
