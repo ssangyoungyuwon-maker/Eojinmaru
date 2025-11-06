@@ -33,6 +33,7 @@ public class MypageUI {
 	public void chkmyinfo() {
 		System.out.println("\n[내정보확인]");
 		
+	}
 
 	public void update() {
 		System.out.println("\n[내정보수정]");

@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 import DBUtil.DBConn;
 
-public class UserDAO2 {
+public class UserDAO {
 	private Connection conn = DBConn.getConnection();
 	
 }
