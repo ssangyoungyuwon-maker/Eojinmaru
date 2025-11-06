@@ -13,7 +13,7 @@ import DBUtil.DBConn;
  * user_info 테이블에 접근하는 클래스 (Data Access Object)
  * 회원가입 등 유저 관련 DB 작업을 전담합니다.
  */
-public class UserDAO {
+public class UserDAOImpl implements UserDAO {
 	
 	private Connection conn = DBConn.getConnection();
     /**
@@ -71,4 +71,11 @@ public class UserDAO {
         
         return false; // 실패 시
     }
+    
+    
+    
+    
+    
+    
+    
 }
