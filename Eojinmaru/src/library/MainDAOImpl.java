@@ -13,7 +13,7 @@ import DBUtil.DBConn;
  * user_info 테이블에 접근하는 클래스 (Data Access Object)
  * 회원가입 등 유저 관련 DB 작업을 전담합니다.
  */
-public class UserDAOImpl implements UserDAO {
+public class MainDAOImpl implements MainDAO {
 	
 	private Connection conn = DBConn.getConnection();
     /**
@@ -21,7 +21,7 @@ public class UserDAOImpl implements UserDAO {
      * @param user : 회원가입 정보가 담긴 UserDTO 객체
      * @return : 성공 시 true, 실패 시 false
      */
-    public boolean signUpUser(UserDTO user) {
+    public boolean signUpUser(MainDTO user) {
         
         // 1. user_code는 user_seq.NEXTVAL (시퀀스) 사용
         // 2. loan_renewaldate는 NOT NULL이므로 기본값 SYSDATE (현재 날짜) 사용
