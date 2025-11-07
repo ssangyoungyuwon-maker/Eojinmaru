@@ -51,8 +51,8 @@ public class AdminDTO2 {
 	public int getSincheongcode() {
 		return sincheongcode;
 	}
-	public void setSincheongcode(int sincheongcode) {
-		this.sincheongcode = sincheongcode;
+	public void setSincheongcode(int string) {
+		this.sincheongcode = string;
 	}
 	public int getNotice() {
 		return notice;

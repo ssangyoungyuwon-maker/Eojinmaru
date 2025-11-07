@@ -1,15 +1,17 @@
 package library;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
-public class AdminDAOImpl2  implements AdminDAO2 {	// 도서 신청 목록(번호, 내용, 상태=대기) 가져오기
+public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호, 내용, 상태=대기) 가져오기
 	private Connection conn = DBConn.getConnection();
 	
 	@Override
@@ -54,12 +56,31 @@ public class AdminDAOImpl2  implements AdminDAO2 {	// 도서 신청 목록(번�
     }
 
 	@Override
-	public int sujeongsincheongstatus() {
+	public int sujeongsincheongstatus(AdminDTO2 dto) throws SQLException{
+		int result = 0;
+		CallableStatement cstmt = null;
+		String sql;
 		
+		try {
+			sql = "CALL UPDATESINCHEONGSTATUS (? , ?)";
+			
+			cstmt = conn.prepareCall(sql);
+			
+			cstmt.setInt(1, dto.getSincheongcode());
+			cstmt.setString(2, dto.getSincheongstatus());
+			
+			cstmt.executeUpdate();
+			
+			result = 1;
+						
+		} catch (SQLException e) {
+			throw e;
+		} catch (Exception e) {
+		} finally {
+			DBUtil.close(cstmt);
+		}
 		
-		
-		return 0;
-	}
-    
+		return result;
+	}    
     
 }
