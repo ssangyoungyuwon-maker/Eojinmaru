@@ -7,6 +7,8 @@ public class AdminDTO2 {
 	private boolean baega;
 	private String overdueusername;
 	private String sincheongbook;
+	private String sincheongstatus;
+	private int sincheongcode;
 	private int notice;
 	
 	
@@ -40,11 +42,22 @@ public class AdminDTO2 {
 	public void setSincheongbook(String sincheongbook) {
 		this.sincheongbook = sincheongbook;
 	}
+	public String getSincheongstatus() {
+		return sincheongstatus;
+	}
+	public void setSincheongstatus(String sincheongstatus) {
+		this.sincheongstatus = sincheongstatus;
+	}
+	public int getSincheongcode() {
+		return sincheongcode;
+	}
+	public void setSincheongcode(int sincheongcode) {
+		this.sincheongcode = sincheongcode;
+	}
 	public int getNotice() {
 		return notice;
 	}
 	public void setNotice(int notice) {
 		this.notice = notice;
 	}
-	
 }
