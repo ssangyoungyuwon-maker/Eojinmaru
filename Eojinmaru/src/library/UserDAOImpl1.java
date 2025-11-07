@@ -32,7 +32,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 			while(rs.next()) {
 				BookInfoDTO1 dto = new BookInfoDTO1();
 				
-				dto.setBook_code(rs.getString("book_code"));
+				dto.setBook_code(rs.getInt("book_code"));
 				dto.setIsbn(rs.getString("isbn"));
 				dto.setBookName(rs.getString("bookname"));
 				dto.setAuthor_name(rs.getString("author_name"));
@@ -55,10 +55,74 @@ public class UserDAOImpl1 implements UserDAO1 {
 	}
 
 	@Override
-	// 대출신청/연장
-	public void loan(BookInfoDTO1 dto) throws SQLException {
-		// TODO Auto-generated method stub
+	// 대출신청
+	// 대출관리코드, 도서코드, user_code, checkout_date, 
+	public void insertloan(LoanDTO dto) throws SQLException {
+		PreparedStatement pstmt = null;
+		String sql;
 		
+		try {
+			// INSERT INTO 테이블명(컬럼명, 컬러명) VALUES (값1, 값2)
+			// INSERT ALL INTO 테이블명1(컬럼, 컬럼) VALUES(값, 값) INTO 테이블명2(컬럼, 컬럼) VALUES(값, 값);
+			sql = "INSERT INTO loan(loan_code, book_code, user_code, checkout_date, due_date, isExtended) VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
+			
+		    pstmt = conn.prepareStatement(sql);
+		    
+		    pstmt.setInt(1, dto.getBook_code());
+		    pstmt.setString(2, dto.getUser_code());
+		    
+		    pstmt.executeUpdate();
+		    
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			DBUtil.close(pstmt);
+		}
+		
+		return;
 	}
+
+	@Override
+	// 대출연장
+	// 회원번호, 회원이름, 도서번호, 도서제목, 대출일짜, 반납예정일짜, 실제반납일짜, 대출연장남은회기, 연체대출불가날짜
+	public List<LoanDTO> listloan(String user_code) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "SELECT u.user_code, user_name, b.book_code, bookname, checkout_date, due_date, return_date, ixextended, loan_renewaldate FROM bookinfo b, loan l JOIN user_info u ON u.user_code = l.user_code JOIN book b ON b.book_code = l.book_code";
+					
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				LoanDTO dto = new LoanDTO();
+				
+				dto.setUser_code(rs.getString("user_code"));
+				dto.setUser_name(rs.getString("user_name"));
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setCheckout_date(rs.getString("checkout_date"));
+				dto.setDue_date(rs.getString("due_date"));
+				dto.setReturn_date(rs.getString("return_date"));
+				dto.setIsExtended(rs.getString("ixextended"));
+				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
+				
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		return list;
+	}
+
 
 }

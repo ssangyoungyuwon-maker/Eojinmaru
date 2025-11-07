@@ -64,12 +64,12 @@ public class UserUI {
 				return;
 			}
 			for(BookInfoDTO1 dto : list) {
-				System.out.print(dto.getBook_code() + "\t");
-				System.out.print(dto.getIsbn() + "\t");
-				System.out.print(dto.getBookName() + "\t");
-				System.out.print(dto.getAuthor_name() + "\t");
-				System.out.print(dto.getPublisher_name() + "\t");
-				System.out.println(dto.getPublish_date());
+				System.out.print("도서번호" + dto.getBook_code() + "\t");
+				System.out.print("ISBN번호" + dto.getIsbn() + "\t");
+				System.out.print("도서제목" + dto.getBookName() + "\t");
+				System.out.print("도서저자" + dto.getAuthor_name() + "\t");
+				System.out.print("출판사" + dto.getPublisher_name() + "\t");
+				System.out.println("도서 발행일" + dto.getPublish_date());
 			}
 	
 		} catch (Exception e) {
@@ -80,31 +80,34 @@ public class UserUI {
 	
 	
 	// 2. 대출신청/연장
-	protected void loan () {
-
-		int ch = 0;
+	  // 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
+	  // 대출 연장 시 연장 가능 회기 출력
+	public void loan() {
+	
+	}
+	
+	protected void insertloan() {
+		System.out.println("\n[대출신청]");
 		
-		while(true) {
-			System.out.println("\n[대출]");
+		// String bookname;
+		
+		
+		try {
+			System.out.print("대출할 도서제목 ? ");
+			// bookname = br.readLine();
+
+			// LoanDTO dto = new LoanDTO();
 			
-			try {
-				System.out.print("1.대출신청 2.대출연장");
-				ch = Integer.parseInt(br.readLine());
 				
-				if(ch == 1) {
-					System.out.println("대출이 신청되었습니다.");
-					return;
-				} else {
-					
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		
 	}
+	
+
+	
+	
 	// 3. 반납신청
 	protected void returnbook() {
 		System.out.println("\n[반납신청]");

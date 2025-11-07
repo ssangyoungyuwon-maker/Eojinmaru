@@ -2,8 +2,8 @@ package library;
 
 public class BookInfoDTO1 {
 	private String isbn;
-	private String category_id;
-	private String book_code;
+	private int category_id;
+	private int book_code;
 	private String publisher_id;
 	private String bookName;
 	private String publish_date;
@@ -11,25 +11,23 @@ public class BookInfoDTO1 {
 	private String author_name;
 	private String publisher_code;
 	private String publisher_name;
-	
-	
 	public String getIsbn() {
 		return isbn;
 	}
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
 	}
-	public String getCategory_id() {
+	public int getCategory_id() {
 		return category_id;
 	}
-	public String getBook_code() {
+	public void setCategory_id(int category_id) {
+		this.category_id = category_id;
+	}
+	public int getBook_code() {
 		return book_code;
 	}
-	public void setBook_code(String book_code) {
+	public void setBook_code(int book_code) {
 		this.book_code = book_code;
-	}
-	public void setCategory_id(String category_id) {
-		this.category_id = category_id;
 	}
 	public String getPublisher_id() {
 		return publisher_id;
@@ -73,5 +71,7 @@ public class BookInfoDTO1 {
 	public void setPublisher_name(String publisher_name) {
 		this.publisher_name = publisher_name;
 	}
+	
+
 		
 }
