@@ -6,6 +6,7 @@ package library;
 public class MainDTO {
     
 	// 테이블 컬럼과 1:1로 매칭되는 필드
+	private int user_code;
     private String user_Id;
 	private String user_pwd;
     private String user_name;
@@ -14,6 +15,9 @@ public class MainDTO {
     private String user_email;
     private String user_address;
  
+    public void setUser_code(int user_code) {
+		this.user_code = user_code;
+	}
     public String getUser_Id() {
 		return user_Id;
 	}
@@ -56,6 +60,10 @@ public class MainDTO {
 	public void setUser_address(String user_address) {
 		this.user_address = user_address;
 	}
+	public int getUser_code() {
+		return user_code;
+	}
+	
 	
     
     // (user_code는 시퀀스가 자동 생성, loan_renewaldate는 쿼리에서 SYSDATE로 처리할 예정)
