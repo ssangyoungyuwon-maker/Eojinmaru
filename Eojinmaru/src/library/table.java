@@ -72,9 +72,10 @@ CREATE TABLE Book (
 );
 
 -- 도서 신청 목록 테이블
-CREATE TABLE Sincheong (
-    sincheong_code NUMBER(4) PRIMARY KEY,
-    sincheong_name VARCHAR2(1000)
+CREATE TABLE sincheong (
+    sincheong_code NUMBER PRIMARY KEY,
+    sincheong_name VARCHAR2(1000),
+    sincheong_status VARCHAR2(50)
 );
 
 -----------------------------------------------------------------------------------------------------
