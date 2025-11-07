@@ -18,7 +18,7 @@ public class MainUI {
     	this.mainDAO = new MainDAOImpl();
     	this.login = new LoginInfo(); // <-- [수정] 로그인 객체 생성
     }
-
+  
     public void menu() {
         
         boolean isMainRunning = true; 
