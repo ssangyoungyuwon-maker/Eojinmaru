@@ -1,12 +1,22 @@
 package library;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
+
+import DBUtil.DBConn;
 
 public class MainUI {
 
     private static final String ADMIN_ID = "admin";
     private static final String ADMIN_PW = "admin";
     
+    private Connection conn = DBConn.getConnection();
+    
+    private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private Scanner scanner = new Scanner(System.in);
     
     private AdminUI admin = new AdminUI();
@@ -51,6 +61,7 @@ public class MainUI {
         
     }
     
+    // 로그인
     private void signin() {
     	System.out.println("\n--- [로그인] ---");
         System.out.print("아이디: ");
@@ -85,6 +96,7 @@ public class MainUI {
         }
     }
     
+    // 회원 가입
     private void signup() {
     	// (회원가입 로직은 동일)
         System.out.println("\n--- [회원가입] ---");
@@ -110,6 +122,42 @@ public class MainUI {
             System.out.println(">> 회원가입에 실패하였습니다.");
         }
     }
+    
+    // 공지사항 목록 보기
+    private void notice() {
+    	final int MaxNumInPage = 5;
+    	int pages = 1;
+    	
+    	PreparedStatement pstmt = null;
+    	ResultSet rs = null;
+    	String sql;
+    	
+    	System.out.println("\n[공지사항]");
+    	System.out.println("번호\t제목\t게시날짜");
+    	
+    	
+    	try {
+			sql = "SELECT notice_id, norice_title, notice_date FROM notice ORDER BY notice_id DESC OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, (pages-1)*MaxNumInPage);
+			pstmt.setInt(2, MaxNumInPage);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				System.out.println(rs.getString("notice_id") + "\t" + rs.getString("norice_title") + "\t" + rs.getString("notice_date"));
+			}
+			
+			System.out.println();// 페이지나 게시글 보기 입력 받기...
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    }
+    
+    
     
     
 }
