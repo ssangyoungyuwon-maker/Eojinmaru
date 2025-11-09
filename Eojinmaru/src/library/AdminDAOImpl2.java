@@ -82,5 +82,72 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 		
 		return result;
 	}    
+	
+	@Override
+	public List<AdminDTO2> notice() {
+		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "SELECT NOTICE_ID, NOTICE_TITLE, NOTICE_CONTENT, "
+					+ "to_char(NOTICE_DATE, 'yyyy-mm-dd') as NOTICE_DATE FROM Notice ORDER BY NOTICE_ID";
+		
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		
+		while (rs.next()) {
+			AdminDTO2 dto = new AdminDTO2();
+			
+			dto.setNoticeId(rs.getInt("NOTICE_ID"));
+			dto.setNoticeTitle(rs.getString("NOTICE_TITLE"));
+			dto.setNoticeContent(rs.getString("NOTICE_CONTENT"));
+			dto.setNoticeDate(rs.getString("NOTICE_DATE"));
+			
+			list.add(dto);
+		}
+		} catch (Exception e) {
+		} finally {
+			DBUtil.close(pstmt);
+		}
+		
+		return list;		
+	}
+	
+	@Override
+	public AdminDTO2 selectNoticeById(int noticeId) {
+		
+		AdminDTO2 dto = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    String sql;
+
+	    try {
+	        sql = "SELECT NOTICE_ID, NOTICE_TITLE, NOTICE_CONTENT, TO_CHAR(NOTICE_DATE, 'YYYY-MM-DD') AS NOTICE_DATE FROM Notice WHERE NOTICE_ID = ?";
+	        
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, noticeId); 
+	        rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            dto = new AdminDTO2();
+	            
+	            dto.setNoticeId(rs.getInt("NOTICE_ID"));
+	            dto.setNoticeTitle(rs.getString("NOTICE_TITLE"));
+	            dto.setNoticeContent(rs.getString("NOTICE_CONTENT")); 
+	            dto.setNoticeDate(rs.getString("NOTICE_DATE"));
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace(); 
+	    } finally {
+	        DBUtil.close(rs); 
+	        DBUtil.close(pstmt); 
+	    }
+	    
+	    return dto;
+	}
+	
+	
     
 }

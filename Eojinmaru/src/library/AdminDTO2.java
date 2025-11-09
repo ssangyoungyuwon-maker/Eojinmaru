@@ -9,7 +9,11 @@ public class AdminDTO2 {
 	private String sincheongbook;
 	private String sincheongstatus;
 	private int sincheongcode;
-	private int notice;
+	private int noticeId;
+	private String noticeTitle;
+	private String noticeContent;
+	private String noticeDate;
+	
 	
 	
 	public String getBookname() {
@@ -51,13 +55,33 @@ public class AdminDTO2 {
 	public int getSincheongcode() {
 		return sincheongcode;
 	}
-	public void setSincheongcode(int string) {
-		this.sincheongcode = string;
+	public void setSincheongcode(int sincheongcode) {
+		this.sincheongcode = sincheongcode;
 	}
-	public int getNotice() {
-		return notice;
+	public int getNoticeId() {
+		return noticeId;
 	}
-	public void setNotice(int notice) {
-		this.notice = notice;
+	public void setNoticeId(int noticeId) {
+		this.noticeId = noticeId;
 	}
+	public String getNoticeTitle() {
+		return noticeTitle;
+	}
+	public void setNoticeTitle(String noticeTitle) {
+		this.noticeTitle = noticeTitle;
+	}
+	public String getNoticeContent() {
+		return noticeContent;
+	}
+	public void setNoticeContent(String noticeContent) {
+		this.noticeContent = noticeContent;
+	}
+	public String getNoticeDate() {
+		return noticeDate;
+	}
+	public void setNoticeDate(String noticeDate) {
+		this.noticeDate = noticeDate;
+	}
+
+	
 }

@@ -10,8 +10,13 @@ public class AdminUI2 {
 
 	Scanner sc = new Scanner(System.in);
 
-	public void showAdminmenu() {
+	private List<AdminDTO2> list;
 
+	public void showAdminmenu() {
+		
+		boolean isAdminRunning = true; 
+
+        while (isAdminRunning) {
 		System.out.println("3. 대출 및 반납 관리");
 		System.out.println("4. 신청 도서 관리");
 		System.out.println("5. 공지사항 등록");
@@ -31,12 +36,14 @@ public class AdminUI2 {
 			this.showsincheongmanage();
 			break;
 		case "5":
-			System.out.println(">> (구현예정) 전체 회원 목록을 조회합니다.");
+			System.out.println("📢 공지사항 관리 페이지로 이동합니다.");
+			this.noticeadmin() ;
 			break;
 		case "6":
-			System.out.println(">> (구현예정) 전체 회원 목록을 조회합니다.");
-			break;
-		case "7":
+			System.out.println("메인 화면으로 돌아갑니다. ");
+			isAdminRunning = false;
+            break;
+		case "7": // 시스템 종료
 			System.out.println("❗정말 시스템을 종료하시겠습니까 ? [Y/N]");
 
 			String shutdown;
@@ -60,12 +67,14 @@ public class AdminUI2 {
 
 			this.showAdminmenu();
 			break;
+			
 		default:
 			System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요.");
 			System.out.println();
 			this.showAdminmenu();
 			break;
 		}
+	}
 	}
 
 	public void showsincheongmanage() {
@@ -89,14 +98,13 @@ public class AdminUI2 {
 						dao.truncateString(dto.getSincheongbook(), 15), dto.getSincheongstatus()));
 			}
 		}
-		System.out.println();
 		System.out.println(LINE);
 
 		this.sujeongsincheongstatus(list);
 
 	}
 
-	public void sujeongsincheongstatus(List<AdminDTO2> currentList) {
+	public void sujeongsincheongstatus(List<AdminDTO2> currentList)  {
 		System.out.println("\n🔢 처리할 신청 번호를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
 
 		String inputLine = sc.nextLine().trim();
@@ -132,9 +140,9 @@ public class AdminUI2 {
 		String newStatus = "";
 
 		System.out.println("\n[신청 도서: " + selectedDto.getSincheongbook() + "]");
-		System.out.print("이 " + selectedDto.getSincheongbook() + " 도서의 상태를 변경하시겠습니까? [Y = 승인, N = 반려] => ");
+		System.out.print("선택하신 ▶ " + selectedDto.getSincheongbook() + " ◀ 도서의 상태를 변경하시겠습니까? [Y = 승인, N = 반려] => ");
 
-		String confirm = sc.nextLine().trim().toUpperCase();
+		String confirm = sc.nextLine().trim();
 
 		if (confirm.equalsIgnoreCase("Y")) {
 			newStatus = "승인";
@@ -145,7 +153,7 @@ public class AdminUI2 {
 			this.sujeongsincheongstatus(currentList);
 			return;
 		}
-
+ 
 		AdminDTO2 updateDto = new AdminDTO2();
 		updateDto.setSincheongcode(s);
 		updateDto.setSincheongstatus(newStatus);
@@ -165,4 +173,130 @@ public class AdminUI2 {
 		this.showsincheongmanage();
 	}
 
+	public void noticeadmin() {
+		list = dao.notice();
+		
+		System.out.println();
+		String LINE = "================================================================================";
+		
+		System.out.printf("\t\t\t\t💡 공지사항 목록\n");
+		
+		System.out.println(LINE);
+
+		System.out.println(String.format("|%-4s|\t\t\t%-25s\t\t| %-4s|", "번호", "공지사항", "    일자    "));
+		System.out.println("--------------------------------------------------------------------------------"); 
+
+		if (list.isEmpty()) {
+			System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
+		} else {
+			for (AdminDTO2 dto : list) {
+				System.out.println(String.format("| %-3s| %-45s\t| %-4s |", dto.getNoticeId(),
+						dao.truncateString(dto.getNoticeTitle(), 25), dto.getNoticeDate()));
+			}
+		}
+		System.out.println(LINE);
+		
+		
+		while (true) {
+	        System.out.println("📔 메뉴 선택: [ 등록 ] 공지 등록, [ 공지번호 ] 수정/삭제, [ 0 ] 이전 메뉴로 돌아가기");
+	        System.out.print("선택 입력 > ");
+	        
+	        String input = sc.nextLine().trim(); 
+
+	        if (input.equalsIgnoreCase("등록")) {
+	            System.out.println("\n📢 공지사항 등록 화면으로 이동합니다.");
+	            this.noticeinsert();
+	            break; 
+	            
+	        } else if (input.equals("0")) {
+	            System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다.");
+	            System.out.println();
+	            return;
+	            
+	        } else {
+                try {
+                    int noticeId = Integer.parseInt(input);
+                    
+                    boolean isValidId = false; 
+                    
+                    for (AdminDTO2 dto : list) {
+                        if (dto.getNoticeId() == noticeId) {
+                            isValidId = true;
+                            break; 
+                        }
+                    }
+                    if (isValidId) {
+                        System.out.println("\n✏️ 공지 번호 " + noticeId + "번 수정/삭제 화면으로 이동합니다.");
+                        this.noticeupdate(noticeId); 
+                        break;
+                    } else {
+                        System.out.println("🚨 유효하지 않은 공지 번호입니다. 다시 입력해주세요.");
+                    }
+                } catch (NumberFormatException e) {
+	                System.out.println("🚨 잘못된 입력입니다. '등록', 공지번호, 또는 '0'을 입력해주세요.");
+	            }
+	        }
+	    }
+	    this.noticeadmin();		
+	}
+	
+	public void noticeinsert() {  // '등록'으로 들어와 공지사항 등록하기 
+		
+	}
+	
+	public void noticeupdate(int noticeId) {
+	    AdminDTO2 selectedNotice = dao.selectNoticeById(noticeId);
+	    
+	    if (selectedNotice == null) {
+	        System.out.println("🚨 오류: 해당 번호의 공지사항 정보를 찾을 수 없습니다.");
+	        return; 
+	    }
+	    
+	    System.out.println("\n=======================================================");
+	    System.out.printf("📢 공지사항 상세 정보 (No. %d)\n", selectedNotice.getNoticeId());
+	    System.out.println("=======================================================");
+	    System.out.printf("작성일: %s\n", selectedNotice.getNoticeDate());
+	    System.out.println("-------------------------------------------------------");
+	    System.out.printf("제목: %s\n", selectedNotice.getNoticeTitle());
+	    System.out.println("-------------------------------------------------------");
+	    System.out.println("내용:");
+	    System.out.println(selectedNotice.getNoticeContent());
+	    System.out.println("=======================================================");
+	    
+	   
+	    while (true) {
+	        System.out.println("✅ 메뉴 선택: [ 1 ] 수정, [ 2 ] 삭제, [ 0 ] 목록으로 돌아가기");
+	        System.out.print("선택 입력 > ");
+
+	        String choice = sc.nextLine().trim();
+	        
+	        if (choice.equals("1")) {
+	            System.out.println("\n✏️ 공지사항 수정 화면으로 이동합니다.");
+	            this.NoticeModify(selectedNotice);
+	            return; 
+	            
+	        } else if (choice.equals("2")) {
+	            System.out.println("\n❌ 공지사항 삭제를 진행합니다.");
+	            this.NoticeDelete(noticeId);
+	            return; 
+	            
+	        } else if (choice.equals("0")) {
+	            System.out.println("\n⬅️ 공지사항 목록으로 돌아갑니다.");
+	            return; 
+	            
+	        } else {
+	            System.out.println("🚨 잘못된 입력입니다. 0, 1, 2 중 하나를 입력해주세요.");
+	        }
+	    }
+	}
+	
+	private void NoticeModify(AdminDTO2 selectedNotice) { // 공지사항 수정
+		
+	}
+
+	
+	public void NoticeDelete(int noticeId) { // 공지사항 삭제
+		
+	}
+	
 }
