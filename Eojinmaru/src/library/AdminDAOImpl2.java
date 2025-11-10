@@ -15,7 +15,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 	private Connection conn = DBConn.getConnection();
 	
 	@Override
-	public List<AdminDTO2> sinchoengstatus() {
+	public List<AdminDTO2> sinchoengdagidoseo() {
 		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -148,6 +148,61 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 	    return dto;
 	}
 	
+	@Override
+	public int noticeUpdate(AdminDTO2 dto) {
+		
+		int result = 0;
+		CallableStatement cstmt = null;
+		String sql;
+		
+		try {
+			sql = "CALL UPDATENOTICE (?, ?, ?)";
+			
+			cstmt = conn.prepareCall(sql);
+			
+			cstmt.setString(1, dto.getNoticeTitle());
+			cstmt.setString(2, dto.getNoticeContent());
+			cstmt.setInt(3, dto.getNoticeId());
+			
+			cstmt.executeUpdate();
+			
+			result = 1;
+						
+		} catch (SQLException e) {
+			System.err.println("SQL 예외가 발생했습니다. : " + e.getMessage());
+		} catch (Exception e) {
+		} finally {
+			DBUtil.close(cstmt);
+		}
+		return result;
+	}
+	
+	@Override
+	public int noticeDelete(int noticeId) {
+		
+		int result = 0;
+		CallableStatement cstmt = null;
+		String sql;
+		
+		try {
+			sql = "CALL DELETENOTICE (?)";
+			
+			cstmt = conn.prepareCall(sql);
+			
+			cstmt.setInt(1, noticeId);
+			
+			cstmt.executeUpdate();
+			
+			result = 1;
+						
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+		} finally {
+			DBUtil.close(cstmt);
+		}
+		return result;
+	}
 	
     
 }

@@ -37,7 +37,7 @@ CREATE TABLE admin (
 
 CREATE TABLE notice (
     notice_id NUMBER PRIMARY KEY,
-    notice_title VARCHAR2(100) NOT NULL,
+    notice_title VARCHAR2(4000) NOT NULL,
     notice_content VARCHAR2(4000) NOT NULL,
     notice_date DATE
 );
