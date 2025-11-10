@@ -149,6 +149,29 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 	}
 	
 	@Override
+	public int noticeInsert(AdminDTO2 dto) {
+		int result = 0;
+	    PreparedStatement pstmt = null;
+	    String sql;
+
+	    try {
+	        sql = "INSERT INTO NOTICE (notice_title, notice_content, notice_date) VALUES (?, ?, SYSDATE) ";
+	        
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, dto.getNoticeTitle() ); 
+	        pstmt.setString(2, dto.getNoticeContent());  
+	        result = pstmt.executeUpdate();
+	            
+	    } catch (Exception e) {
+	        e.printStackTrace(); 
+	    } finally { 
+	        DBUtil.close(pstmt); 
+	    }
+	    
+		return result;
+	}
+	
+	@Override
 	public int noticeUpdate(AdminDTO2 dto) {
 		
 		int result = 0;
@@ -160,9 +183,9 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 			
 			cstmt = conn.prepareCall(sql);
 			
-			cstmt.setString(1, dto.getNoticeTitle());
-			cstmt.setString(2, dto.getNoticeContent());
-			cstmt.setInt(3, dto.getNoticeId());
+			cstmt.setInt(1, dto.getNoticeId());
+			cstmt.setString(2, dto.getNoticeTitle());
+			cstmt.setString(3, dto.getNoticeContent());
 			
 			cstmt.executeUpdate();
 			

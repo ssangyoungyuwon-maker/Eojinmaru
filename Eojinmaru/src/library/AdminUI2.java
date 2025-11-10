@@ -29,7 +29,9 @@ public class AdminUI2 {
 
 			switch (memberChoice) {
 			case "3":
-				System.out.println(">> (구현예정) 연체 회원 목록을 조회합니다.");
+				System.out.println(" 🤖 도서 대출/반납 관리 페이지로 이동합니다.");
+				System.out.println();
+				this.showLoanBookandMemberInfo();
 				break;
 			case "4":
 				System.out.println(" 📚 신청 도서 목록으로 이동합니다.");
@@ -37,12 +39,13 @@ public class AdminUI2 {
 				this.showsincheongmanage();
 				break;
 			case "5":
+				System.out.println();
 				System.out.println("📢 공지사항 관리 페이지로 이동합니다.");
 				System.out.println();
 				this.noticeadmin();
 				break;
 			case "6":
-				System.out.println("메인 화면으로 돌아갑니다. ");
+				System.out.println(" 📋 메인 화면으로 돌아갑니다. ");
 				isAdminRunning = false;
 				break;
 			case "7": // 시스템 종료
@@ -78,7 +81,59 @@ public class AdminUI2 {
 			}
 		}
 	}
+	
+	public void showLoanBookandMemberInfo() { // 3.대출/반납 관리
+		String LINE = "=========================================================================";
+		
+		System.out.println("\n\t\t\t🧑‍💼 [ 회원 도서 대출/반납 관리 ] 📚\t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.println();
+		System.out.println("1.대출된 도서 확인  2.반납된 도서 확인  3.연체된 도서 확인  4.연체회원 목록 확인");
+		System.out.println("메뉴를 선택해주세요 : ");
+		
+		String memberChoice = sc.nextLine();
 
+		switch (memberChoice) {
+		case "1":
+			System.out.println(" 🤖 대출도서 확인 페이지로 이동합니다.");
+			System.out.println();
+			this.loanbookcheck();
+			break;
+		case "2":
+			System.out.println(" 🤖 반납된 도서 확인 페이지로 이동합니다.");
+			System.out.println();
+			break;
+		case "3":
+			System.out.println(" 🤖 연체된 도서 확인 페이지로 이동합니다.");
+			System.out.println();
+			break;
+		case "4":
+			System.out.println(" 🤖 연체회원 목록 확인 페이지로 이동합니다.");
+			System.out.println();
+			break;
+		default : 
+			System.out.println("잘못된 입력입니다. 메뉴로 돌아갑니다.");
+			break;
+		}
+		
+	}
+
+//	 배가업무용...
+//	String childrenWithCart = 
+//            // 빨간색 수레와 책
+//              "    O         ."+ "📚책📚" + ".\n"  
+//            + "   /|\\--------/\u2500\u2500\u2500\u2500\u2500\u2500\\ "+ " 끌고가는중... " + "\n" 
+//            + "    |        |\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500| + " 도서정리중... " + \n" 
+//            + "   / \\       `O------O` \n";
+//        
+//        System.out.println(childrenWithCart);	
+	
+	public void loanbookcheck() {
+		
+		
+	}
+	
+	
 	public void showsincheongmanage() {
 		List<AdminDTO2> list = dao.sinchoengdagidoseo();
 
@@ -228,7 +283,7 @@ public class AdminUI2 {
 					}
 					if (isValidId) {
 						System.out.println("\n✏️ 공지 번호 " + noticeId + "번 수정/삭제 화면으로 이동합니다.");
-						this.noticeupdate(noticeId);
+						this.noticeUpdate(noticeId);
 						break;
 					} else {
 						System.out.println("🚨 유효하지 않은 공지 번호입니다. 다시 입력해주세요.");
@@ -242,10 +297,41 @@ public class AdminUI2 {
 	}
 
 	public void noticeinsert() { // '등록'으로 들어와 공지사항 등록하기
+		
+		System.out.println("등록할 공지 제목을 입력해주세요 \n 제목 : ");
+		String newTitle = sc.nextLine().trim();
+
+		System.out.println("등록할 공지 내용을 입력해주세요 \n 내용 : ");
+		String newContent = sc.nextLine().trim();
+		
+		
+		if (newTitle.isEmpty() && newContent.isEmpty()) {
+			System.out.println("\n✅ 입력된 내용이 없어 공지사항 등록이 취소되었습니다.");
+			this.noticeadmin();
+			return;
+		}
+		
+		AdminDTO2 insertdto = new AdminDTO2();
+		insertdto.setNoticeTitle(newTitle);
+		insertdto.setNoticeContent(newContent);
+		
+		try {
+			int result = dao.noticeInsert(insertdto);
+
+			if (result > 0) {
+				System.out.println("🎉 성공적으로 " + insertdto.getNoticeTitle() + " 공지가 \n\t 등록되었습니다.");
+			} else {
+				System.out.println("❌ 공지사항 등록에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			System.out.println("❌ 오류 발생: 공지사항 등록 중 문제가 발생했습니다. " + e.getMessage());
+		} finally {
+			this.noticeadmin();
+		}
 
 	}
 
-	public void noticeupdate(int noticeId) {
+	public void noticeUpdate(int noticeId) { // 공지사항 수정 UI진입
 		AdminDTO2 selectedNotice = dao.selectNoticeById(noticeId);
 
 		if (selectedNotice == null) {
@@ -330,7 +416,7 @@ public class AdminUI2 {
 			int result = dao.noticeUpdate(updatedto);
 
 			if (result > 0) {
-				System.out.println("🎉 성공적으로 " + selectedNotice.getNoticeTitle() + " 공지가 수정되었습니다.");
+				System.out.println("🎉 성공적으로 " + selectedNotice.getNoticeTitle() + " 공지가 \n\t 수정되었습니다.");
 			} else {
 				System.out.println("❌ 공지사항 수정에 실패했습니다.");
 			}

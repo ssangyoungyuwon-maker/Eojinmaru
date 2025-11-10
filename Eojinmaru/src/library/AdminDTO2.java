@@ -15,7 +15,6 @@ public class AdminDTO2 {
 	private String noticeDate;
 	
 	
-	
 	public String getBookname() {
 		return bookname;
 	}
