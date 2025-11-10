@@ -67,7 +67,7 @@ CREATE TABLE Loan (
 -- 도서 테이블
 CREATE TABLE Book (
     book_code NUMBER(4) PRIMARY KEY,
-    ISBN NUMBER(4),
+    ISBN VARCHAR2(20),
     book_condition VARCHAR2(50)
 );
 
