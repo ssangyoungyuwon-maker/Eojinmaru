@@ -60,7 +60,7 @@ CREATE TABLE Loan (
     checkout_date DATE NOT NULL,
     due_date DATE NOT NULL,
     return_date DATE,
-    ixExtended VARCHAR2(1)
+    isExtended VARCHAR2(1)
 );
 
 
