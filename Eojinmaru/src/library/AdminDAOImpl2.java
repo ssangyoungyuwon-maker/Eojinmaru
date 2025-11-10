@@ -227,5 +227,33 @@ public class AdminDAOImpl2 implements AdminDAO2 {	// 도서 신청 목록(번호
 		return result;
 	}
 	
+	@Override
+	public List<AdminDTO2> loanbooklist() {
+		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = " ";
+		
+		pstmt = conn.prepareStatement(sql);
+		rs = pstmt.executeQuery();
+		
+		while (rs.next()) {
+			AdminDTO2 dto = new AdminDTO2();
+			
+			dto.setNoticeId(rs.getInt("NOTICE_ID"));
+			
+			list.add(dto);
+		}
+		} catch (Exception e) {
+		} finally {
+			DBUtil.close(pstmt);
+		}
+		
+		return list;		
+	}
+	
     
 }

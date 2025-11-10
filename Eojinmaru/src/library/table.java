@@ -14,7 +14,7 @@ CREATE TABLE bookinfo(
     category_id NUMBER(4),
     publisher_id VARCHAR2(50) NOT NULL,
     bookname VARCHAR2(50) NOT NULL,
-    publisher_date DATE NOT NULL
+    publish_date DATE NOT NULL
 );
 
 CREATE TABLE bookcategory(
