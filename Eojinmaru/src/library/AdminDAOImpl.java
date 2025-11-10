@@ -14,13 +14,13 @@ public class AdminDAOImpl implements AdminDAO {
     private Connection conn = DBConn.getConnection();
 
     @Override
-    public MainDTO findUserById(String userId) {
+    public MemberDTO findUserById(String userId) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_id = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MainDTO user = null;
+        MemberDTO user = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -28,7 +28,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                user = new MainDTO();
+                user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -49,13 +49,13 @@ public class AdminDAOImpl implements AdminDAO {
     }
 
     @Override
-    public MainDTO findUserByCode(int userCode) {
+    public MemberDTO findUserByCode(int userCode) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_code = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MainDTO user = null;
+        MemberDTO user = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -63,7 +63,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                user = new MainDTO();
+                user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -84,8 +84,8 @@ public class AdminDAOImpl implements AdminDAO {
     }
     
     @Override
-    public List<MainDTO> findUserByName(String name) {
-        List<MainDTO> list = new ArrayList<>();
+    public List<MemberDTO> findUserByName(String name) {
+        List<MemberDTO> list = new ArrayList<>();
         // 이름의 일부만 입력해도 검색되도록 LIKE 사용
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_name LIKE ? ORDER BY user_name";
@@ -99,7 +99,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MainDTO user = new MainDTO();
+                MemberDTO user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -145,8 +145,8 @@ public class AdminDAOImpl implements AdminDAO {
     }
     
     @Override
-    public List<MainDTO> findAllUsers() {
-        List<MainDTO> list = new ArrayList<>();
+    public List<MemberDTO> findAllUsers() {
+        List<MemberDTO> list = new ArrayList<>();
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info ORDER BY user_code ASC";
         
@@ -158,7 +158,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MainDTO user = new MainDTO();
+                MemberDTO user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));

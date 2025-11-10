@@ -19,7 +19,7 @@ public class MypageUI {
 		int ch;
 		while (true) {
 			try {
-				MainDTO loginUser = login.loginUser();
+				MemberDTO loginUser = login.loginUser();
 				System.out.println(loginUser.getUser_name() + "님 아래 메뉴를 선택하세요.");
 				System.out.println("1.내정보확인 2.내정보수정 3.탈퇴 4.로그아웃 5.홈으로");
 				ch = Integer.parseInt(br.readLine());
@@ -43,7 +43,7 @@ public class MypageUI {
 	public void chkmyinfo() {
 		System.out.println("\n[내정보확인]");
 		try {
-			MainDTO dto = login.loginUser();
+			MemberDTO dto = login.loginUser();
 			String pwd;
 
 			for (int i = 1; i <= 3; i++) {
@@ -78,7 +78,7 @@ public class MypageUI {
 	public void update() {
 		System.out.println("\n[내정보수정]");
 		try {
-			MainDTO dto = login.loginUser();
+			MemberDTO dto = login.loginUser();
 
 			System.out.println("정보 수정을 위해 기존 비밀번호를 입력하세요.");
 			String pwd = br.readLine();
@@ -115,7 +115,7 @@ public class MypageUI {
 		System.out.println("\n[탈퇴]");
 
 		try {
-			MainDTO dto = login.loginUser();
+			MemberDTO dto = login.loginUser();
 
 			System.out.println("비밀번호를 입력하세요.");
 			String pwd = br.readLine();

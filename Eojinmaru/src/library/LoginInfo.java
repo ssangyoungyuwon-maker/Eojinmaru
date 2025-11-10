@@ -1,13 +1,13 @@
 package library;
 
 public class LoginInfo {
-	private MainDTO loginUser = null;
+	private MemberDTO loginUser = null;
 
-	public MainDTO loginUser() {
+	public MemberDTO loginUser() {
 		return loginUser;
 	}
 
-	public void login(MainDTO loginUser) {
+	public void login(MemberDTO loginUser) {
 		this.loginUser = loginUser;
 	}
 

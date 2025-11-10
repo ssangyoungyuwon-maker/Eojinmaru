@@ -11,7 +11,7 @@ import DBUtil.DBUtil;
 public class UserDAO {
 	private Connection conn = DBConn.getConnection();
 
-	public void updateUser(MainDTO dto) throws SQLException {
+	public void updateUser(MemberDTO dto) throws SQLException {
 		PreparedStatement pstmt = null;
 		String sql;
 
@@ -70,8 +70,8 @@ public class UserDAO {
 			}
 		}
 	}
-	public MainDTO chkmyinfo(String id) throws SQLException{
-		MainDTO dto = null;
+	public MemberDTO chkmyinfo(String id) throws SQLException{
+		MemberDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -86,7 +86,7 @@ public class UserDAO {
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				dto = new MainDTO();
+				dto = new MemberDTO();
 				
 				dto.setUser_Id(rs.getString("user_Id"));
 				dto.setUser_pwd(rs.getString("user_pwd"));

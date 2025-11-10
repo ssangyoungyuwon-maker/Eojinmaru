@@ -108,11 +108,11 @@ public class AdminUI {
             case "1":
                 System.out.print(">> 검색할 회원의 아이디를 입력하세요: ");
                 String id = scanner.nextLine();
-                MainDTO user = adminDAO.findUserById(id);
+                MemberDTO user = adminDAO.findUserById(id);
                 if (user != null) {
                     System.out.println("--- 검색 결과 (1건) ---");
                     // 1명의 정보만 리스트에 담아서 헬퍼 메서드로 전달
-                    List<MainDTO> resultList = new ArrayList<>();
+                    List<MemberDTO> resultList = new ArrayList<>();
                     resultList.add(user);
                     printUserList(resultList);
                 } else {
@@ -124,7 +124,7 @@ public class AdminUI {
             case "2":
                 System.out.print(">> 검색할 회원의 이름(전체 또는 일부)을 입력하세요: ");
                 String name = scanner.nextLine();
-                List<MainDTO> nameList = adminDAO.findUserByName(name);
+                List<MemberDTO> nameList = adminDAO.findUserByName(name);
                 if (nameList.isEmpty()) {
                     System.out.println(">> 해당 이름의 회원을 찾을 수 없습니다.");
                 } else {
@@ -141,7 +141,7 @@ public class AdminUI {
                
                
                 // 삭제 전 확인
-                MainDTO userToDel = adminDAO.findUserById(deleteId);
+                MemberDTO userToDel = adminDAO.findUserById(deleteId);
                 if (userToDel == null) {
                     System.out.println(">> 해당 아이디의 회원이 존재하지 않습니다.");
                     break;
@@ -172,7 +172,7 @@ public class AdminUI {
             // 전체 리스트
             case "5":
                 // --- [수정] 4. 전체 리스트 ---
-                List<MainDTO> allList = adminDAO.findAllUsers();
+                List<MemberDTO> allList = adminDAO.findAllUsers();
                 if (allList.isEmpty()) {
                     System.out.println(">> 등록된 회원이 없습니다.");
                 } else {
@@ -197,7 +197,7 @@ public class AdminUI {
      * [신규] 회원 목록을 콘솔에 예쁘게 출력하는 헬퍼(Helper) 메서드
      * @param users : 출력할 회원 목록
      */
-    private void printUserList(List<MainDTO> users) {
+    private void printUserList(List<MemberDTO> users) {
         if (users == null || users.isEmpty()) {
             return; // 출력할 내용 없음
         }
@@ -209,7 +209,7 @@ public class AdminUI {
         System.out.println("--------------------------------------------------------------------------------------------------");
 
         // 내용 출력
-        for (MainDTO user : users) {
+        for (MemberDTO user : users) {
             System.out.printf("%-5d | %-12s | %-8s | %-12s | %-13s | %-20s | %-15s\n",
                     user.getUser_code(),
                     user.getUser_Id(),

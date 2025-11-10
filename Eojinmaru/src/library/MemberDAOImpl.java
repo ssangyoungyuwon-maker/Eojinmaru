@@ -7,7 +7,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import DBUtil.DBConn;
 
-public class MainDAOImpl implements MainDAO {
+public class MemberDAOImpl implements MemberDAO {
 	
 	private Connection conn = DBConn.getConnection();
     
@@ -18,13 +18,13 @@ public class MainDAOImpl implements MainDAO {
      * @return : 로그인 성공 시 해당 유저의 MainDTO, 실패 시 null
      */
     @Override 
-    public MainDTO login(String id, String pw) {
+    public MemberDTO login(String id, String pw) {
         String sql = "SELECT user_id, user_name, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null; // 쿼리 결과를 받을 ResultSet
-        MainDTO user = null; // 로그인 성공 시 채워질 객체
+        MemberDTO user = null; // 로그인 성공 시 채워질 객체
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -35,7 +35,7 @@ public class MainDAOImpl implements MainDAO {
 
             // 쿼리 결과가 있다면 (로그인 성공)
             if (rs.next()) {
-                user = new MainDTO(); // 빈 DTO 객체 생성
+                user = new MemberDTO(); // 빈 DTO 객체 생성
                 
                 // ResultSet에서 DTO로 정보 옮겨 담기
                 user.setUser_Id(rs.getString("user_id"));
@@ -63,7 +63,7 @@ public class MainDAOImpl implements MainDAO {
 	
     // (기존 signUpUser 메서드는 그대로 둠)
 	@Override
-	public boolean signUpUser(MainDTO user) {
+	public boolean signUpUser(MemberDTO user) {
         
         String sql = "INSERT INTO user_info (user_code, user_id, user_pwd, user_name, user_birth, " +
                      "user_tel, user_email, user_address, loan_renewaldate) " +

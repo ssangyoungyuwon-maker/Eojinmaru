@@ -3,7 +3,7 @@ package library;
 /**
  * 회원 정보 데이터를 담는 클래스 (Data Transfer Object)
  */
-public class MainDTO {
+public class MemberDTO {
     
 	// 테이블 컬럼과 1:1로 매칭되는 필드
 	private int user_code;

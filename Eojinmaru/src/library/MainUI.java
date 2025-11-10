@@ -20,7 +20,7 @@ public class MainUI {
     private Scanner scanner = new Scanner(System.in);
     
     private AdminUI admin = new AdminUI();
-    private MainDAO mainDAO = new MainDAOImpl();
+    private MemberDAO mainDAO = new MemberDAOImpl();
     private LoginInfo login = new LoginInfo(); // <-- [수정] 로그인 정보(세션) 객체 추가
 
     public void menu() {
@@ -76,7 +76,7 @@ public class MainUI {
         // 2. 관리자가 아니면, 사용자 로그인 시도
         else {
             // [수정] MainDAO를 통해 사용자 로그인 시도
-            MainDTO user = mainDAO.login(inputId, inputPw);
+            MemberDTO user = mainDAO.login(inputId, inputPw);
             
             if(user != null) {
                 // [수정] 로그인 성공 -> LoginInfo에 정보 저장
@@ -98,7 +98,7 @@ public class MainUI {
     private void signup() {
     	// (회원가입 로직은 동일)
         System.out.println("\n--- [회원가입] ---");
-        MainDTO newUser = new MainDTO();
+        MemberDTO newUser = new MemberDTO();
         System.out.print("아이디: ");
         newUser.setUser_Id(scanner.nextLine());
         System.out.print("비밀번호: ");
