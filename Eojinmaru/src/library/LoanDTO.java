@@ -3,15 +3,16 @@ package library;
 public class LoanDTO {
 	private int loan_code; // 대출번호
 	private int book_code; // 도서번호
+	private String bookname; // 도서제목
 	private String user_code; // 회원번호
 	private String user_name; // 회원이름
 	private String checkout_date; // 대출일자
-	private String due_date; // 반납날짜
+	private String due_date; // 반납예정날짜
 	private String return_date; // 실제 반납날짜
-	private String isExtended; // 대출연장
+	private int isExtended; // 대출연장 가능여부
 	private String reservation_date; // 대출예약
 	private String loan_renewaldate; // 연체 대출불가날짜
-	
+	private String book_condition; // 도서대출? 현황 상태(대출중, 대충가능, 반납 등)
 	
 	public int getLoan_code() {
 		return loan_code;
@@ -24,6 +25,12 @@ public class LoanDTO {
 	}
 	public void setBook_code(int book_code) {
 		this.book_code = book_code;
+	}
+	public String getBookname() {
+		return bookname;
+	}
+	public void setBookname(String bookname) {
+		this.bookname = bookname;
 	}
 	public String getUser_code() {
 		return user_code;
@@ -55,10 +62,10 @@ public class LoanDTO {
 	public void setReturn_date(String return_date) {
 		this.return_date = return_date;
 	}
-	public String getIsExtended() {
+	public int getIsExtended() {
 		return isExtended;
 	}
-	public void setIsExtended(String isExtended) {
+	public void setIsExtended(int isExtended) {
 		this.isExtended = isExtended;
 	}
 	public String getReservation_date() {
@@ -73,7 +80,13 @@ public class LoanDTO {
 	public void setLoan_renewaldate(String loan_renewaldate) {
 		this.loan_renewaldate = loan_renewaldate;
 	}
+	public String getBook_condition() {
+		return book_condition;
+	}
+	public void setBook_condition(String book_condition) {
+		this.book_condition = book_condition;
+	}
 	
-	
+
 
 }
