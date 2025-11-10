@@ -157,7 +157,6 @@ public class MainUI {
 					System.out.println(rs.getString("notice_id") + "\t" + rs.getString("notice_title") + "\t" + rs.getString("notice_date"));
 				}
 				
-				// 커밋 테스트
 				System.out.print("1.왼쪽 2.오른쪽 3.게시글 보기 4.이전 => ");
 				
 				int ch = Integer.parseInt(br.readLine());
