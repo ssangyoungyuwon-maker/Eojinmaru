@@ -106,8 +106,8 @@ public class UserDAOImpl1 implements UserDAO1 {
 				dto.setBook_code(rs.getInt("book_code"));
 				dto.setCheckout_date(rs.getString("checkout_date"));
 				dto.setDue_date(rs.getString("due_date"));
-				dto.setReturn_date(rs.getString("return_date"));
-				dto.setIsExtended(rs.getString("ixextended"));
+				dto.setReservation_date(rs.getString("return_date"));
+				dto.setIsExtended(rs.getInt("ixextended"));
 				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
 				
 				list.add(dto);
