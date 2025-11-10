@@ -4,7 +4,7 @@ public class LoanDTO {
 	private int loan_code; // 대출번호
 	private int book_code; // 도서번호
 	private String bookname; // 도서제목
-	private String user_code; // 회원번호
+	private int user_code; // 회원번호
 	private String user_name; // 회원이름
 	private String checkout_date; // 대출일자
 	private String due_date; // 반납예정날짜
@@ -32,10 +32,10 @@ public class LoanDTO {
 	public void setBookname(String bookname) {
 		this.bookname = bookname;
 	}
-	public String getUser_code() {
+	public int getUser_code() {
 		return user_code;
 	}
-	public void setUser_code(String user_code) {
+	public void setUser_code(int user_code) {
 		this.user_code = user_code;
 	}
 	public String getUser_name() {
