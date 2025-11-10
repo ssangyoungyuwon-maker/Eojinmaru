@@ -11,6 +11,7 @@ public class BookInfoDTO1 {
 	private String author_name;
 	private String publisher_code;
 	private String publisher_name;
+	
 	public String getIsbn() {
 		return isbn;
 	}

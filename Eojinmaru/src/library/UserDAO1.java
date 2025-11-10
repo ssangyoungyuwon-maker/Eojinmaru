@@ -10,6 +10,8 @@ public interface UserDAO1 {
 	// 대출 신청
 	public void insertloan(LoanDTO dto) throws SQLException;
 	
-	// 대출 연장
+	// 전체 대출 리스트
 	public List<LoanDTO> listloan(String user_code);
+	// 대출 중 리스트
+	public List<LoanDTO> listloaning(String user_code);	
 }

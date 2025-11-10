@@ -86,7 +86,7 @@ public class MainUI {
                 // [수정] UserUI 생성자에 login 객체 전달
                 UserUI userUI = new UserUI(login); 
                 // [수정] UserUI.menu에 scanner 전달 (BufferedReader 충돌 방지)
-                //userUI.menu(scanner); 
+                userUI.menu(); 
             } else {
                 // 로그인 실패
                 System.out.println(">> 아이디 또는 비밀번호가 일치하지 않습니다.");
