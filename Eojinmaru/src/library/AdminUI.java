@@ -3,6 +3,7 @@ package library;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 /**
  * 도서관 키오스크 - 관리자 메뉴 화면
@@ -61,7 +62,7 @@ public class AdminUI {
                 case "7":
                 	
                 	System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");                	
-                	Scanner sc = new Scanner(System.in);
+                	Scanner sc = new Scanner(System.in); // 스캐너 공유가 좋지만 일단 유지
                 	
                 	while (true) {
                 		String s = sc.nextLine();
@@ -91,7 +92,7 @@ public class AdminUI {
     private void showMemberMenu(Scanner scanner) {
         boolean isMemberMenuRunning = true;
         while (isMemberMenuRunning) {
-            System.out.println("\n--- [회원 관리] ---");
+            System.out.println("\n--- [1. 회원 관리] ---");
             System.out.println("1. 아이디 검색");
             System.out.println("2. 이름 검색");
             System.out.println("3. 회원 삭제");
@@ -108,11 +109,10 @@ public class AdminUI {
             case "1":
                 System.out.print(">> 검색할 회원의 아이디를 입력하세요: ");
                 String id = scanner.nextLine();
-                MemberDTO user = adminDAO.findUserById(id);
+                MainDTO user = adminDAO.findUserById(id);
                 if (user != null) {
                     System.out.println("--- 검색 결과 (1건) ---");
-                    // 1명의 정보만 리스트에 담아서 헬퍼 메서드로 전달
-                    List<MemberDTO> resultList = new ArrayList<>();
+                    List<MainDTO> resultList = new ArrayList<>();
                     resultList.add(user);
                     printUserList(resultList);
                 } else {
@@ -124,7 +124,7 @@ public class AdminUI {
             case "2":
                 System.out.print(">> 검색할 회원의 이름(전체 또는 일부)을 입력하세요: ");
                 String name = scanner.nextLine();
-                List<MemberDTO> nameList = adminDAO.findUserByName(name);
+                List<MainDTO> nameList = adminDAO.findUserByName(name);
                 if (nameList.isEmpty()) {
                     System.out.println(">> 해당 이름의 회원을 찾을 수 없습니다.");
                 } else {
@@ -135,19 +135,22 @@ public class AdminUI {
                 
             // 회원 삭제
             case "3":               
-            	// 회원 삭제
-                System.out.print(">> 삭제할 회원의 아이디를 입력하세요: ");
-                String deleteId = scanner.nextLine();
+                System.out.print(">> 삭제할 회원의 코드를 입력하세요: ");
+                String inputCode = scanner.nextLine();
+                int deleteCode;      
                
+                try {
+                    deleteCode = Integer.parseInt(inputCode);
+                } catch (NumberFormatException e) {
+                    System.out.println(">> 잘못된 입력입니다. 회원 코드는 숫자만 입력할 수 있습니다.");
+                    break; 
+                }
                
-                // 삭제 전 확인
-                MemberDTO userToDel = adminDAO.findUserById(deleteId);
+                MainDTO userToDel = adminDAO.findUserByCode(deleteCode);
                 if (userToDel == null) {
-                    System.out.println(">> 해당 아이디의 회원이 존재하지 않습니다.");
+                    System.out.println(">> 해당 코드의 회원이 존재하지 않습니다.");
                     break;
                 }
-                
-                int deleteCode = userToDel.getUser_code();
                 
                 System.out.print(">> 정말로 '" + userToDel.getUser_name() + "(" + userToDel.getUser_Id() + ")' 님을 삭제하시겠습니까? (Y/N): ");
                 String confirm = scanner.nextLine();
@@ -157,7 +160,7 @@ public class AdminUI {
                     if (isDeleted) {
                         System.out.println(">> 회원 정보가 성공적으로 삭제되었습니다.");
                     } else {
-                        System.out.println(">> 회원 삭제에 실패하였습니다. (관리자에게 문의)");
+                        System.out.println(">> 회원 삭제에 실패하였습니다.");
                     }
                 } else {
                     System.out.println(">> 회원 삭제를 취소하였습니다.");
@@ -171,8 +174,7 @@ public class AdminUI {
                 
             // 전체 리스트
             case "5":
-                // --- [수정] 4. 전체 리스트 ---
-                List<MemberDTO> allList = adminDAO.findAllUsers();
+                List<MainDTO> allList = adminDAO.findAllUsers();
                 if (allList.isEmpty()) {
                     System.out.println(">> 등록된 회원이 없습니다.");
                 } else {
@@ -187,19 +189,18 @@ public class AdminUI {
                 break;
                 
             default:
-                System.out.println(">> 잘못된 입력입니다. 1~5 사이의 숫자를 입력해주세요.");
+                System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
                 break;
             }
         }
     }
 
     /**
-     * [신규] 회원 목록을 콘솔에 예쁘게 출력하는 헬퍼(Helper) 메서드
-     * @param users : 출력할 회원 목록
+     * 회원 목록을 콘솔에 예쁘게 출력하는 헬퍼(Helper) 메서드
      */
-    private void printUserList(List<MemberDTO> users) {
+    private void printUserList(List<MainDTO> users) {
         if (users == null || users.isEmpty()) {
-            return; // 출력할 내용 없음
+            return; 
         }
 
         // 헤더 출력
@@ -209,12 +210,12 @@ public class AdminUI {
         System.out.println("--------------------------------------------------------------------------------------------------");
 
         // 내용 출력
-        for (MemberDTO user : users) {
+        for (MainDTO user : users) {
             System.out.printf("%-5d | %-12s | %-8s | %-12s | %-13s | %-20s | %-15s\n",
                     user.getUser_code(),
                     user.getUser_Id(),
                     user.getUser_name(),
-                    user.getUser_birth(), // DTO에서 String으로 변환됨
+                    user.getUser_birth(), 
                     user.getUser_tel(),
                     user.getUser_email(),
                     user.getUser_address());
@@ -234,20 +235,244 @@ public class AdminUI {
             System.out.println("3. 파손 도서 확인");
             System.out.println("4. 폐기 도서 등록");
             System.out.println("5. 신상 도서 등록");
-            System.out.println("6. 뒤로가기"); // [관리자 화면]으로
+            System.out.println("6. 도서 삭제"); 
+            System.out.println("7. 뒤로가기"); 
             System.out.println("--------------------");
             System.out.print("도서 관리 메뉴 선택: ");
 
             String bookChoice = scanner.nextLine();
             switch (bookChoice) {
-                case "1": System.out.println(">> (구현예정) 도서 전체 리스트를 조회합니다."); break;
-                case "2": System.out.println(">> (구현예정) 도서를 검색합니다."); break;
-                case "3": System.out.println(">> (구현예정) 파손 도서 목록을 확인합니다."); break;
-                case "4": System.out.println(">> (구현예정) 폐기 도서를 등록합니다."); break;
-                case "5": System.out.println(">> (구현예정) 신상 도서를 등록합니다."); break;
-                case "6": isBookMenuRunning = false; break; // 도서관리 루프 종료
-                default: System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요."); break;
+                case "1": 
+                	// (도서 전체 리스트 - 기존 코드)
+                    List<BookInfoDTO1> allBooks = adminDAO.findAllBooks();
+                    if (allBooks.isEmpty()) {
+                        System.out.println(">> 등록된 도서가 없습니다.");
+                    } else {
+                        System.out.println("--- 전체 도서 목록 (" + allBooks.size() + "건) ---");
+                        printBookList(allBooks);
+                    }
+                    break;
+                	
+                	
+                case "2": 
+                	// (도서 검색 - 기존 코드)
+                    System.out.print(">> 검색할 도서명(전체 또는 일부)을 입력하세요: ");
+                    String bookName = scanner.nextLine();
+                    List<BookInfoDTO1> bookList = adminDAO.findBooksByName(bookName);
+                    if (bookList.isEmpty()) {
+                        System.out.println(">> 해당 도서명의 도서를 찾을 수 없습니다.");
+                    } else {
+                        System.out.println("--- 도서 검색 결과 (" + bookList.size() + "건) ---");
+                        printBookList(bookList);
+                    }
+                    break;
+                	
+                	
+                case "3": 
+                	// --- [수정] 3. 폐기 도서 확인 ---
+                    List<DisposedBookDTO> disposedList = adminDAO.findAllDisposedBooks();
+                    if (disposedList.isEmpty()) {
+                        System.out.println(">> 폐기 등록된 도서가 없습니다.");
+                    } else {
+                        System.out.println("--- 폐기 도서 목록 (" + disposedList.size() + "건) ---");
+                        printDisposedBookList(disposedList); // <-- 새로운 헬퍼 메서드 호출
+                    }
+                    break;
+                	
+                case "4": 
+                	// --- [수정] 4. 폐기 도서 등록 ---
+                	System.out.println("\n--- [4. 폐기 도서 등록] ---");
+                    System.out.print(">> 폐기할 도서의 **코드(BOOK_CODE)**를 입력하세요: ");
+                    String bookCodeToDispose = scanner.nextLine();
+
+                    // 폐기 등록 전, 도서가 book (재고) 테이블에 존재하는지 확인
+                    BookInfoDTO1 bookToDispose = adminDAO.findBookByCode(bookCodeToDispose);
+                    if (bookToDispose == null) {
+                        System.out.println(">> 해당 도서 코드(" + bookCodeToDispose + ")의 도서가 'book' 테이블에 존재하지 않습니다.");
+                        break;
+                    }
+
+                    System.out.print(">> 도서 '" + bookToDispose.getBookName() + "'의 폐기 사유를 입력하세요 (파손, 분실 등): ");
+                    String reason = scanner.nextLine();
+
+                    System.out.print(">> 정말로 '" + bookToDispose.getBookName() + "' 도서를 폐기 등록하시겠습니까? (y/n): ");
+                    String confirmDispose = scanner.nextLine();
+                    
+                    if (confirmDispose.equalsIgnoreCase("y")) {
+                        // DAO 호출 (DAO가 disposed_book에 INSERT, book에서 DELETE)
+                        boolean registerSuccess = adminDAO.registerDisposedBook(bookCodeToDispose, reason);
+                        
+                        if (registerSuccess) {
+                            System.out.println(">> 폐기 등록이 완료되었으며, book (재고) 테이블에서 삭제되었습니다.");
+                        } else {
+                            System.out.println(">> 폐기 등록에 실패했습니다. (DB 오류 또는 코드 형식 오류)");
+                        }
+                    } else {
+                        System.out.println(">> 폐기 등록을 취소하였습니다.");
+                    }
+                	break;
+                	
+                case "5": 
+                	// --- 5. 신상 도서 등록 ---
+                	System.out.println("\n--- [5. 신상 도서 등록] ---");
+                    BookInfoDTO1 newBook = new BookInfoDTO1();
+
+                    // 1. ISBN
+                    System.out.print("ISBN (13자리 숫자): ");
+                    String isbnInput = scanner.nextLine();
+                    String validIsbn = validateAndCleanISBN(isbnInput); // 하이픈 제거 및 13자리 검증
+                    if (validIsbn == null) {
+                        System.out.println(">> 유효하지 않은 ISBN입니다. (숫자 13자리)");
+                        break;
+                    }
+                    newBook.setIsbn(validIsbn);
+
+                    // 2. Category ID
+                    System.out.print("Category ID: ");
+                    newBook.setCategory_id(scanner.nextLine());
+
+                    // 3. Publisher ID
+                    System.out.print("Publisher ID: ");
+                    newBook.setPublisher_id(scanner.nextLine());
+                    
+                    // 4. Book Name
+                    System.out.print("도서명: ");
+                    newBook.setBookName(scanner.nextLine());
+
+                    // 5. Publish Date
+                    System.out.print("출판일 (YYYY-MM-DD): ");
+                    String dateInput = scanner.nextLine();
+                    // YYYY-MM-DD 형식 검증
+                    if (!Pattern.matches("^\\d{4}-\\d{2}-\\d{2}$", dateInput)) {
+                        System.out.println(">> 날짜 형식이 잘못되었습니다. (YYYY-MM-DD 형식으로 입력하세요)");
+                        break;
+                    }
+                    newBook.setPublish_date(dateInput);
+                    
+                    // 6. Book Code (신규)
+                    System.out.print("도서 코드 (BOOK_CODE): ");
+                    newBook.setBook_code(scanner.nextLine());
+
+                    // DAO 호출
+                    boolean insertSuccess = adminDAO.insertBook(newBook);
+                    if (insertSuccess) {
+                        System.out.println(">> 신상 도서가 성공적으로 등록되었습니다.");
+                    } else {
+                        System.out.println(">> 도서 등록에 실패하였습니다. (DB 오류 또는 날짜 형식 오류)");
+                    }
+                	break;
+                	
+                case "6": 
+                	// --- 6. 도서 삭제 (book_code 기준) ---
+                    System.out.print(">> 삭제할 도서의 **코드(BOOK_CODE)**를 입력하세요: ");
+                    String deleteBookCode = scanner.nextLine();
+                    
+                    BookInfoDTO1 bookToDel = adminDAO.findBookByCode(deleteBookCode);
+                    if (bookToDel == null) {
+                        System.out.println(">> 해당 도서 코드(" + deleteBookCode + ")의 도서가 존재하지 않습니다.");
+                        break;
+                    }
+                    
+                    System.out.print(">> (폐기 등록이 아닙니다!) 정말로 도서 '" + bookToDel.getBookName() + "(" + deleteBookCode + ")'를 영구 삭제하시겠습니까? (y/n): ");
+                    String confirmDel = scanner.nextLine();
+                    
+                    if (confirmDel.equalsIgnoreCase("y")) {
+                        boolean isDeleted = adminDAO.deleteBookByCode(deleteBookCode);
+                        if (isDeleted) {
+                            System.out.println(">> 도서 정보가 성공적으로 삭제되었습니다.");
+                        } else {
+                            System.out.println(">> 도서 삭제에 실패하였습니다.");
+                        }
+                    } else {
+                        System.out.println(">> 도서 삭제를 취소하였습니다.");
+                    }
+                	break;
+                	
+                case "7": 
+                	isBookMenuRunning = false; break;
+                default: 
+                	System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요."); 
+                	break;
             }
         }
+    }
+    
+    /**
+     * ISBN 13자리를 979-11-001-1619-9 형식으로 변환합니다.
+     */
+    private String formatISBN(String isbn) {
+        if (isbn == null || isbn.length() != 13) {
+            return (isbn == null) ? "-" : isbn; // 널이거나 13자리 아니면 원본 반환
+        }
+        try {
+            return isbn.substring(0, 3) + "-" + 
+                   isbn.substring(3, 5) + "-" + 
+                   isbn.substring(5, 8) + "-" + 
+                   isbn.substring(8, 12) + "-" + 
+                   isbn.substring(12);
+        } catch (Exception e) {
+            return isbn; // 혹시 모를 오류 대비
+        }
+    }
+    
+    /**
+     * 입력받은 ISBN 문자열에서 숫자 13자리를 추출하고 유효성을 검사합니다.
+     */
+    private String validateAndCleanISBN(String input) {
+        if (input == null) return null;
+        // 하이픈, 공백 등 비숫자 제거
+        String cleanIsbn = input.replaceAll("[^0-9]", "");
+        
+        if (cleanIsbn.length() == 13) {
+            return cleanIsbn;
+        }
+        return null;
+    }
+    
+    /**
+     * 도서 목록을 콘솔에 출력 (printf %d -> %s 수정 완료)
+     */
+    private void printBookList(List<BookInfoDTO1> books) {
+        if (books == null || books.isEmpty()) {
+            return;
+        }
+
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n", 
+                            "ISBN", "BookCode", "Cat_ID", "Pub_ID", "도서명", "출판일");
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+
+        for (BookInfoDTO1 book : books) {
+            System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n",
+                    formatISBN(book.getIsbn()), // 하이픈 포맷 적용
+                    book.getBook_code() != null ? book.getBook_code() : "-",
+                    book.getCategory_id(), // String(%s)
+                    book.getPublisher_id(), // String(%s)
+                    book.getBookName(),
+                    book.getPublish_date());
+        }
+        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+    }
+    
+    /**
+     * [신규] 폐기 도서 목록을 콘솔에 출력하는 헬퍼 메서드
+     */
+    private void printDisposedBookList(List<DisposedBookDTO> books) {
+        if (books == null || books.isEmpty()) {
+            return;
+        }
+
+        System.out.println("--------------------------------------------------------------------");
+        System.out.printf("%-10s | %-12s | %-30s\n", 
+                            "BookCode", "폐기일자", "폐기 사유");
+        System.out.println("--------------------------------------------------------------------");
+
+        for (DisposedBookDTO book : books) {
+            System.out.printf("%-10d | %-12s | %-30s\n",
+                    book.getBook_code(),
+                    book.getDispose_date(),
+                    book.getDispose_reason());
+        }
+        System.out.println("--------------------------------------------------------------------");
     }
 }

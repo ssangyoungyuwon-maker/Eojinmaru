@@ -6,10 +6,16 @@ import java.util.List;
  
 public interface AdminDAO {
 
-    public MemberDTO findUserById(String userId);
-    public MemberDTO findUserByCode(int userCode);
+    public MainDTO findUserById(String userId);
+    public MainDTO findUserByCode(int userCode);
     public boolean deleteUserByCode(int userCode);
-    public List<MemberDTO> findUserByName(String name);
-    public List<MemberDTO> findAllUsers();
-    
+    public List<MainDTO> findUserByName(String name);
+    public List<MainDTO> findAllUsers();
+    public List<BookInfoDTO1> findAllBooks();
+    public List<BookInfoDTO1> findBooksByName(String bookName);
+    public boolean insertBook(BookInfoDTO1 newBook);
+    public BookInfoDTO1 findBookByCode(String bookCode);
+    public boolean deleteBookByCode(String bookCode);
+    public boolean registerDisposedBook(String bookCode, String reason);
+    public List<DisposedBookDTO> findAllDisposedBooks();
 }
