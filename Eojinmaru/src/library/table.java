@@ -44,7 +44,7 @@ CREATE TABLE notice (
 
 CREATE TABLE author (
     author_id VARCHAR2(50) NOT NULL,
-    isbn NUMBER(20),
+    isbn VARCHAR2(20),
     book_code NUMBER(4),
     PRIMARY KEY(author_id)
 );
