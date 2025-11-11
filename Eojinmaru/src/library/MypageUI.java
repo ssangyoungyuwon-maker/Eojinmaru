@@ -7,12 +7,10 @@ public class MypageUI {
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	private LoginInfo login = null;
-	private UserUI userUI;
 	private UserDAO dao = new UserDAO();
 
 	public MypageUI(LoginInfo login) {
 		this.login = login;
-		userUI = new UserUI(login);
 	}
 
 	public void menu() {
@@ -28,11 +26,10 @@ public class MypageUI {
 				case 1: chkmyinfo(); break;
 				case 2: update(); break;
 				case 3: delete(); break;
-				case 4:
-					login.logout();
+				case 4: login.logout();
 					System.out.println("로그아웃되었습니다.");
-					userUI.menu();
-				case 5: return;
+					return;
+				case 5:System.exit(0);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

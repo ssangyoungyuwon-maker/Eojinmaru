@@ -10,10 +10,16 @@ import java.util.List;
 public class UserUI {
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	private UserDAOImpl1 dao = new UserDAOImpl1();
+	
 	private LoginInfo login = null;
+	private ReturnUI returnUI = null;
+	private MypageUI mypageUI = null;
 	
 	public UserUI(LoginInfo login) {
 		this.login = login;
+		
+		returnUI = new ReturnUI(login);
+		mypageUI = new MypageUI(login);
 	}
 	
 	public void menu() {
@@ -36,9 +42,9 @@ public class UserUI {
 					switch(ch) {
 					case 1 : findBybook(); break;
 					case 2 : loan(); break;
-					case 3 : returnbook(); break;
+					case 3 : returnUI.start(); break;
 					case 4 : sincheong(); break;
-					case 5 : mypage(); break;					
+					case 5 : mypageUI.menu(); break;					
 					}
 				} catch (Exception e) {
 				e.printStackTrace();
@@ -166,20 +172,9 @@ public class UserUI {
 		System.out.println();
 	}
 	
-	
-	// 3. 반납신청
-	protected void returnbook() {
-		System.out.println("\n[반납신청]");
-		
-	}
 	// 4. 도서신청
 	protected void sincheong() {
 		System.out.println("\n[도서신청]");
-		
-	}
-	// 5. 마이페이지
-	protected void mypage() {
-		System.out.println("\n[마이페이지]");
 		
 	}
 }
