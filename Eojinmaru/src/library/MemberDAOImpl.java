@@ -19,7 +19,7 @@ public class MemberDAOImpl implements MemberDAO {
      */
     @Override 
     public MemberDTO login(String id, String pw) {
-        String sql = "SELECT user_id, user_name, user_tel, user_email, user_address " +
+        String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
@@ -39,11 +39,11 @@ public class MemberDAOImpl implements MemberDAO {
                 
                 // ResultSet에서 DTO로 정보 옮겨 담기
                 user.setUser_Id(rs.getString("user_id"));
+                user.setUser_pwd(rs.getString("user_pwd"));
                 user.setUser_name(rs.getString("user_name"));
                 user.setUser_tel(rs.getString("user_tel"));
                 user.setUser_email(rs.getString("user_email"));
                 user.setUser_address(rs.getString("user_address"));
-                // (비밀번호는 DTO에 담지 않습니다 - 보안)
             }
 
         } catch (SQLException e) {
