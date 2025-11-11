@@ -29,8 +29,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 					+ " left outer JOIN bookinfo bi ON b.isbn = bi.isbn "
 					+ " left outer JOIN author a ON bi.isbn = a.isbn "
 					+ " left outer JOIN publisher p ON bi.publisher_id = p.publisher_id "
-					+ " WHERE bookName = ? OR author_name = ? ";
-			
+					+ " WHERE INSTR(bookName, ?) >= 1 OR INSTR(author_name, ?) >= 1 ";
 	
 			pstmt = conn.prepareStatement(sql);
 			
@@ -49,6 +48,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 				dto.setPublisher_name(rs.getString("publisher_name"));
 				dto.setPublish_date(rs.getString("publish_date"));
 				
+				list.add(dto);
 			}
 	
     	} catch (Exception e) {
