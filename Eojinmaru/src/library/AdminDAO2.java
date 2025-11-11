@@ -17,4 +17,5 @@ public interface AdminDAO2 {
 	public List<AdminDTO2> loanbooklist();
 	public AdminDTO2 loanbooksearchbybookcode(int bookcode);
 	public int loanbookreturn(AdminDTO2 dto);
+	public AdminDTO2 loanbooksearchbyname(String username) ;
 }

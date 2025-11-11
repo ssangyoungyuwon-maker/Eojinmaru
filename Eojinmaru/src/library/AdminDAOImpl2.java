@@ -296,29 +296,19 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 		String sql;
 
 		try {
-			sql = "SELECT " + "    T.유저이름, T.대출번호, T.북코드, T.책이름, T.대출일, T.반납예정일, T.실제반납일, T.도서상태, T.연체일수 " 
-					+ " FROM "
-					+ "    ( " 
-					+ "     SELECT " 
-					+ "        ui.user_name AS 유저이름, " 
-					+ "        lon.LOAN_CODE AS 대출번호, "
-					+ "        lon.book_code AS 북코드, " 
-					+ "        bi.bookname AS 책이름, "
+			sql = "SELECT " + "    T.유저이름, T.대출번호, T.북코드, T.책이름, T.대출일, T.반납예정일, T.실제반납일, T.도서상태, T.연체일수 " + " FROM "
+					+ "    ( " + "     SELECT " + "        ui.user_name AS 유저이름, " + "        lon.LOAN_CODE AS 대출번호, "
+					+ "        lon.book_code AS 북코드, " + "        bi.bookname AS 책이름, "
 					+ "        TO_CHAR(lon.CHECKOUT_DATE, 'YYYY-MM-DD') AS 대출일, "
 					+ "        TO_CHAR(lon.DUE_DATE, 'YYYY-MM-DD') AS 반납예정일, "
 					+ "        TO_CHAR(lon.RETURN_DATE, 'YYYY-MM-DD') AS 실제반납일, "
-					+ "        bk.book_condition AS 도서상태, " 
-					+ "            CASE "
+					+ "        bk.book_condition AS 도서상태, " + "            CASE "
 					+ "                WHEN lon.return_date IS NOT NULL AND lon.return_date > lon.DUE_DATE THEN TRUNC(lon.return_date - lon.DUE_DATE)"
 					+ "                WHEN lon.return_date IS NULL AND lon.DUE_DATE < SYSDATE THEN TRUNC(SYSDATE - lon.DUE_DATE)"
-					+ "                ELSE 0 " 
-					+ "            END AS 연체일수 " 
-					+ "        FROM loan lon "
+					+ "                ELSE 0 " + "            END AS 연체일수 " + "        FROM loan lon "
 					+ "        JOIN user_info ui ON ui.user_code = lon.user_code"
 					+ "        JOIN book bk ON bk.book_code = lon.book_code"
-					+ "        JOIN bookinfo bi ON bi.isbn = bk.isbn" 
-					+ "    ) T " 
-					+ " WHERE 북코드 = ? ";
+					+ "        JOIN bookinfo bi ON bi.isbn = bk.isbn" + "    ) T " + " WHERE 북코드 = ? ";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, bookcode);
@@ -336,7 +326,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 				dto.setReturn_date(rs.getString("실제반납일"));
 				dto.setBook_condition(rs.getString("도서상태"));
 				dto.setOverdue_date(rs.getInt("연체일수"));
-	
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -346,10 +336,10 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public int loanbookreturn(AdminDTO2 dto) {
-		
+
 		int result = 0;
 		CallableStatement cstmt = null;
 		String sql;
@@ -374,4 +364,63 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 		}
 		return result;
 	}
+
+	@Override
+	public AdminDTO2 loanbooksearchbyname(String username) {
+
+		AdminDTO2 dto = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+
+		try {
+			sql = "SELECT T.유저이름, T.대출번호, T.북코드, T.책이름, T.대출일, T.반납예정일, T.실제반납일, T.도서상태, T.연체일수 "
+					+ "					 FROM " 
+					+ "					   (  " 
+					+ "					    SELECT  "
+					+ "					        ui.user_name AS 유저이름,  "
+					+ "					       lon.LOAN_CODE AS 대출번호,  "
+					+ "					        lon.book_code AS 북코드,  "
+					+ "					     bi.bookname AS 책이름,  "
+					+ "					        TO_CHAR(lon.CHECKOUT_DATE, 'YYYY-MM-DD') AS 대출일,  "
+					+ "					        TO_CHAR(lon.DUE_DATE, 'YYYY-MM-DD') AS 반납예정일,  "
+					+ "					        TO_CHAR(lon.RETURN_DATE, 'YYYY-MM-DD') AS 실제반납일,  "
+					+ "					        bk.book_condition AS 도서상태,  " + "					            CASE  "
+					+ "					                WHEN lon.return_date IS NOT NULL AND lon.return_date > lon.DUE_DATE THEN TRUNC(lon.return_date - lon.DUE_DATE) "
+					+ "					                WHEN lon.return_date IS NULL AND lon.DUE_DATE < SYSDATE THEN TRUNC(SYSDATE - lon.DUE_DATE) "
+					+ "					                ELSE 0  " + "					            END AS 연체일수  "
+					+ "					        FROM loan lon  "
+					+ "					        JOIN user_info ui ON ui.user_code = lon.user_code "
+					+ "					        JOIN book bk ON bk.book_code = lon.book_code "
+					+ "					        JOIN bookinfo bi ON bi.isbn = bk.isbn " 
+					+ "					    ) T  "
+					+ "					WHERE INSER(유저이름, ?) >= 1 ";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				dto = new AdminDTO2();
+
+				dto.setUsername(rs.getString("유저이름"));
+				dto.setLoancode(rs.getInt("대출번호"));
+				dto.setBookcode(rs.getInt("북코드"));
+				dto.setBookname(rs.getString("책이름"));
+				dto.setCheckout_date(rs.getString("대출일"));
+				dto.setDue_date(rs.getString("반납예정일"));
+				dto.setReturn_date(rs.getString("실제반납일"));
+				dto.setBook_condition(rs.getString("도서상태"));
+				dto.setOverdue_date(rs.getInt("연체일수"));
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		return dto;
+	}
+
 }
