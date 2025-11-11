@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface UserDAO1 {
 	// 도서검색
-	public List<BookInfoDTO1> listBook(String bookname, String author_name);
+	public List<BookInfoDTO1> listBook(String search);
 	
 	// 대출 신청
 	public void insertloan(LoanDTO dto) throws SQLException;

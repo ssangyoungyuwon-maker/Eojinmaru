@@ -15,7 +15,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 
 	@Override
 	// 도서검색(제목/저자)
-	public List<BookInfoDTO1> listBook(String bookname, String author_name) {
+	public List<BookInfoDTO1> listBook(String search) {
 		List<BookInfoDTO1> list = new ArrayList<BookInfoDTO1>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -23,9 +23,19 @@ public class UserDAOImpl1 implements UserDAO1 {
 		
 		try {
 			  // 도서번호, isbn, 도서이름, 저자, 출판사, 발행일를 출력
-			sql = "SELECT book_code, bi.isbn, bookName, author_name, publisher_name, TO_CHAR(publisher_date, 'YYYYY-MM-DD') publisher_date FROM book b, bookinfo bi, author a, publisher p WHERE b.isbn = bi.isbn";
+
+			 sql = "SELECT b.book_code, bi.isbn, bookName, author_name, publisher_name, TO_CHAR(publish_date, 'YYYY-MM-DD') publish_date "
+					+ " FROM book b"
+					+ " left outer JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ " left outer JOIN author a ON bi.isbn = a.isbn "
+					+ " left outer JOIN publisher p ON bi.publisher_id = p.publisher_id "
+					+ " WHERE bookName = ? OR author_name = ? ";
 			
+	
 			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, search);
+			pstmt.setString(2, search);
 			
 			rs = pstmt.executeQuery();
 			
@@ -37,20 +47,16 @@ public class UserDAOImpl1 implements UserDAO1 {
 				dto.setBookName(rs.getString("bookname"));
 				dto.setAuthor_name(rs.getString("author_name"));
 				dto.setPublisher_name(rs.getString("publisher_name"));
-				dto.setPublish_date(rs.getString("publisher_date"));
+				dto.setPublish_date(rs.getString("publish_date"));
 				
-				list.add(dto);
 			}
-			
-		} catch(SQLException e) {
-			e.printStackTrace();		
+	
     	} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			DBUtil.close(rs);
 			DBUtil.close(pstmt);
 		}
-		
 		return list;
 	}
 

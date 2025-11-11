@@ -57,20 +57,20 @@ public class UserUI {
 	protected void findBybook() {
 		System.out.println("\n[도서검색]");
 		
-		String bookname;
-		String authorname;
+		String search;
+		
 		
 		try {
-			System.out.print("도서 제목 ? ");
-			bookname = br.readLine();
-			authorname = br.readLine();
+			System.out.print("도서 제목 또는 저자 ? ");
+			search = br.readLine();
 			
-			List<BookInfoDTO1> list = dao.listBook(bookname, authorname);
-			
+			List<BookInfoDTO1> list = dao.listBook(search);
+
 			if(list.size() == 0) {
 				System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
 				return;
 			}
+			
 			for(BookInfoDTO1 dto : list) {
 				System.out.print("도서번호" + dto.getBook_code() + "\t");
 				System.out.print("ISBN번호" + dto.getIsbn() + "\t");
