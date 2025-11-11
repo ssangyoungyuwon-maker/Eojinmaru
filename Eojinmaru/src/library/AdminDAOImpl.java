@@ -15,13 +15,13 @@ public class AdminDAOImpl implements AdminDAO {
 
     // 회원 관리 메서드
     @Override
-    public MainDTO findUserById(String userId) {
+    public MemberDTO findUserById(String userId) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_id = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MainDTO user = null;
+        MemberDTO user = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -29,7 +29,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                user = new MainDTO();
+                user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -50,13 +50,13 @@ public class AdminDAOImpl implements AdminDAO {
     }
 
     @Override
-    public MainDTO findUserByCode(int userCode) {
+    public MemberDTO findUserByCode(int userCode) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_code = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MainDTO user = null;
+        MemberDTO user = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -64,7 +64,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                user = new MainDTO();
+                user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -85,8 +85,8 @@ public class AdminDAOImpl implements AdminDAO {
     }
     
     @Override
-    public List<MainDTO> findUserByName(String name) {
-        List<MainDTO> list = new ArrayList<>();
+    public List<MemberDTO> findUserByName(String name) {
+        List<MemberDTO> list = new ArrayList<>();
         // 이름의 일부만 입력해도 검색되도록 LIKE 사용
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_name LIKE ? ORDER BY user_name";
@@ -100,7 +100,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MainDTO user = new MainDTO();
+                MemberDTO user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -146,8 +146,8 @@ public class AdminDAOImpl implements AdminDAO {
     }
     
     @Override
-    public List<MainDTO> findAllUsers() {
-        List<MainDTO> list = new ArrayList<>();
+    public List<MemberDTO> findAllUsers() {
+        List<MemberDTO> list = new ArrayList<>();
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info ORDER BY user_code ASC";
         
@@ -159,7 +159,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                MainDTO user = new MainDTO();
+                MemberDTO user = new MemberDTO();
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
@@ -200,11 +200,11 @@ public class AdminDAOImpl implements AdminDAO {
             while (rs.next()) {
                 BookInfoDTO1 book = new BookInfoDTO1();
                 book.setIsbn(rs.getString("ISBN"));
-                book.setCategory_id(rs.getString("category_id"));
+                book.setCategory_id(rs.getInt("category_id"));
                 book.setPublisher_id(rs.getString("publisher_id"));
                 book.setBookName(rs.getString("bookname"));
                 book.setPublish_date(rs.getDate("publish_date").toString());
-                book.setBook_code(rs.getString("book_code")); // book_code 설정
+                book.setBook_code(rs.getInt("book_code")); // book_code 설정
                 list.add(book);
             }
         } catch (SQLException e) {
@@ -237,11 +237,11 @@ public class AdminDAOImpl implements AdminDAO {
             while (rs.next()) {
                 BookInfoDTO1 book = new BookInfoDTO1();
                 book.setIsbn(rs.getString("ISBN"));
-                book.setCategory_id(rs.getString("category_id"));
+                book.setCategory_id(rs.getInt("category_id"));
                 book.setPublisher_id(rs.getString("publisher_id"));
                 book.setBookName(rs.getString("bookname"));
                 book.setPublish_date(rs.getDate("publish_date").toString());
-                book.setBook_code(rs.getString("book_code")); // book_code 설정
+                book.setBook_code(rs.getInt("book_code")); // book_code 설정
                 list.add(book);
             }
         } catch (SQLException e) {
@@ -276,11 +276,11 @@ public class AdminDAOImpl implements AdminDAO {
             if (rs.next()) {
                 book = new BookInfoDTO1();
                 book.setIsbn(rs.getString("ISBN"));
-                book.setCategory_id(rs.getString("CATEGORY_ID"));
+                book.setCategory_id(rs.getInt("CATEGORY_ID"));
                 book.setPublisher_id(rs.getString("PUBLISHER_ID"));
                 book.setBookName(rs.getString("BOOKNAME"));
                 book.setPublish_date(rs.getString("PUBLISHER_DATE"));
-                book.setBook_code(rs.getString("BOOK_CODE")); // <-- 코드 설정
+                book.setBook_code(rs.getInt("BOOK_CODE")); // <-- 코드 설정
             }
         } catch (NumberFormatException e) {
             System.err.println(">> DAO 오류: book_code가 숫자가 아닙니다.");
@@ -307,7 +307,7 @@ public class AdminDAOImpl implements AdminDAO {
             pstmt = conn.prepareStatement(sql);
             
             pstmt.setString(1, book.getIsbn());
-            pstmt.setInt(2, Integer.parseInt(book.getCategory_id())); 
+            pstmt.setInt(2, book.getCategory_id()); 
             pstmt.setString(3, book.getPublisher_id());
             pstmt.setString(4, book.getBookName());
             pstmt.setString(5, book.getPublish_date());
