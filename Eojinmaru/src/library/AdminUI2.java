@@ -81,41 +81,65 @@ public class AdminUI2 {
 			}
 		}
 	}
-	
+
 	public void showLoanBookandMemberInfo() { // 3.대출/반납 관리
-		String LINE = "=========================================================================";
-		
-		System.out.println("\n\t\t\t🧑‍💼 [ 회원 도서 대출/반납 관리 ] 📚\t\t\t\t\t");
+		List<AdminDTO2> list = dao.loanbooklist();
+
+		String LINE = "====================================================================================================================================================";
+
+		System.out.println("\n\t\t\t📚 [ 대출/반납 관리 메뉴 ] 📚\t\t\t\t\t");
 		System.out.println(LINE);
+		System.out.printf("\t\t\t💡 대출중인 도서 수: %d 개\n", list.size());
+		System.out.println(LINE);
+
+		System.out.printf("| %-6s | %-4s | %-4s | %-40s| %-10s| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호", "북코드",
+				"         책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
+		System.out.println(LINE);
+
+		// 5. 데이터 출력
+		if (list.isEmpty()) {
+			// 테이블 포맷에 맞추어 중앙에 메시지 출력
+			System.out.println(String.format("| %-145s |", "     대출중인 도서가 없습니다."));
+		} else {
+			for (AdminDTO2 dto : list) {
+				String returnDateDisplay = dto.getReturn_date();
+				if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
+					returnDateDisplay = "          "; // 10칸 공백
+				}
+				System.out.printf("| %-6s | %-5d | %-5d | %-40s| %-10s | %-10s | %-10s | %-8s | %-6d |\n",
+						dto.getUsername(), dto.getLoancode(), dto.getBookcode(),
+						dao.truncateString(dto.getBookname(), 10), dto.getCheckout_date(), dto.getDue_date(),
+						returnDateDisplay, dto.getBook_condition(), dto.getOverdue_date());
+			}
+		}
+		System.out.println(LINE);
+
 		System.out.println();
-		System.out.println("1.대출된 도서 확인  2.반납된 도서 확인  3.연체된 도서 확인  4.연체회원 목록 확인");
-		System.out.println("메뉴를 선택해주세요 : ");
-		
+		System.out.println(" 1.대출된 도서검색  2.회원별 대출도서검색  3.연체된도서검색 ");
+		System.out.println("  ' < ' 이전페이지📚             📚다음페이지 ' > ' ");
+		System.out.println(" 입력 =>  ");
+
 		String memberChoice = sc.nextLine();
 
 		switch (memberChoice) {
 		case "1":
-			System.out.println(" 🤖 대출도서 확인 페이지로 이동합니다.");
+			System.out.println(" 🤖 대출 도서 검색 페이지로 이동합니다.");
 			System.out.println();
-			this.loanbookcheck();
+			this.loanbooksearchbybookcode(list);
 			break;
 		case "2":
-			System.out.println(" 🤖 반납된 도서 확인 페이지로 이동합니다.");
+			System.out.println(" 🤖 회원별 대출도서 검색 페이지로 이동합니다.");
 			System.out.println();
 			break;
 		case "3":
 			System.out.println(" 🤖 연체된 도서 확인 페이지로 이동합니다.");
 			System.out.println();
 			break;
-		case "4":
-			System.out.println(" 🤖 연체회원 목록 확인 페이지로 이동합니다.");
+		default:
+			System.out.println("잘못된 입력입니다. 메뉴로 돌아갑니다.");
 			System.out.println();
 			break;
-		default : 
-			System.out.println("잘못된 입력입니다. 메뉴로 돌아갑니다.");
-			break;
 		}
-		
 	}
 
 //	 배가업무용...
@@ -127,15 +151,100 @@ public class AdminUI2 {
 //            + "   / \\       `O------O` \n";
 //        
 //        System.out.println(childrenWithCart);	
-	
-	public void loanbookcheck() {
+
+	public void loanbooksearchbybookcode(List<AdminDTO2> currentList) {
+		System.out.println("\n🔢 검색할 책번호(bookcode)를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
+
+		String inputLine = sc.nextLine().trim();
+		int s = 0;
+
+		try {
+			s = Integer.parseInt(inputLine);
+		} catch (NumberFormatException e) {
+			System.out.println("\n⛔ 잘못된 입력 형식입니다. 메뉴로 돌아갑니다.\n");
+			this.showLoanBookandMemberInfo();
+			return;
+		}
+		if (s == 0) {
+			System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다. \n");
+			this.showLoanBookandMemberInfo();
+			return;
+		}
+
+		AdminDTO2 selectedDto = dao.loanbooksearchbybookcode(s);
+
+		if (selectedDto == null) {
+			System.out.println("⛔ 유효하지 않은 북코드입니다. 다시 입력해주세요.");
+			this.loanbooksearchbybookcode(currentList);
+			return;
+		}
+
+		String LINE = "====================================================================================================================================================";
+		System.out.println("\n\t\t\t🔎 [ 검색 결과 : Bookcode " + s + "  ] \t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.printf("| %-6s | %-4s | %-4s | %-40s| %-10s| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호", "북코드",
+				"         책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
+		System.out.println(LINE);
+		String returnDateDisplay = selectedDto.getReturn_date();
+		if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
+			returnDateDisplay = "          "; // 10칸 공백
+		}
+		System.out.printf("| %-6s | %-5d | %-5d | %-40s| %-10s | %-10s | %-10s | %-8s | %-6d |\n",
+				selectedDto.getUsername(), selectedDto.getLoancode(), selectedDto.getBookcode(),
+				dao.truncateString(selectedDto.getBookname(), 40), selectedDto.getCheckout_date(), selectedDto.getDue_date(),
+				returnDateDisplay, selectedDto.getBook_condition(), selectedDto.getOverdue_date());
+		System.out.println(LINE);
 		
-		  
+		if ("대출중".equals(selectedDto.getBook_condition())) {
+	        System.out.println("\n✨ 이 도서는 현재 **'대출중'** 상태입니다.");
+	        System.out.print("해당 도서를 바로 반납 처리하시겠습니까? [반납] 입력 (다른 키 입력 시 취소) => ");
+	        String confirmReturn = sc.nextLine().trim();
+	        
+	        if (confirmReturn.equals("반납")) {
+	            this.loanbookreturn(selectedDto); 
+	        } else {
+	            System.out.println("✅ 도서 반납 처리가 취소되었습니다.");
+	        }
+	    } else {
+	        System.out.println("\nℹ️ 이 도서는 현재 **'" + selectedDto.getBook_condition() + "'** 상태이므로 반납 처리를 할 수 없습니다.");
+	    }
+	    
+	    System.out.println("\n1. 다시 검색  0. 이전 메뉴로 돌아가기");
+	    System.out.print("입력 => ");
+	    String nextAction = sc.nextLine().trim();
+	    
+	    if(nextAction.equals("1")) {
+	        this.loanbooksearchbybookcode(currentList); 
+	    } else {
+	        this.showLoanBookandMemberInfo();
+	    }
+
 	}
-	
-	
+
+	public void loanbookreturn(AdminDTO2 loanInfo) {
+	    
+	    AdminDTO2 updateDto = new AdminDTO2();
+	    updateDto.setBookcode(loanInfo.getBookcode());
+	    updateDto.setBook_condition("반납"); 
+	    
+	    try {
+	        int result = dao.loanbookreturn(updateDto);
+	        if (result > 0) {
+	            System.out.println("🎉 북코드 " + loanInfo.getBookcode() + "번 도서의 반납 처리가 성공적으로 완료되었습니다.");
+	            
+	            if (loanInfo.getOverdue_date() > 0) {
+	                System.out.println("❗ 경고: 해당 도서는 " + loanInfo.getOverdue_date() + "일 연체 상태였습니다.");
+	            }
+	        } else {
+	            System.out.println("❌ 반납 처리에 실패했습니다.");
+	        }
+	    } catch (Exception e) {
+	        System.out.println("❌ 오류 발생: 반납 처리 중 문제가 발생했습니다. " + e.getMessage());
+	    }
+	}
+
 	public void showsincheongmanage() {
-		List<AdminDTO2> list = dao.sinchoengdagidoseo();
+		List<AdminDTO2> list = dao.sinchoengdaegidoseo();
 
 		String LINE = "=========================================================================";
 
@@ -151,8 +260,8 @@ public class AdminUI2 {
 			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
 		} else {
 			for (AdminDTO2 dto : list) {
-				System.out.println(String.format("|  %-4s| %-50s \t| %-4s |", dto.getSincheongcode(),
-						dao.truncateString(dto.getSincheongbook(), 15), dto.getSincheongstatus()));
+				System.out.println(String.format("|  %-4s| %-30 \t| %-4s |", dto.getSincheongcode(),
+						dao.truncateString(dto.getSincheongbook(), 10), dto.getSincheongstatus()));
 			}
 		}
 		System.out.println(LINE);
@@ -297,24 +406,23 @@ public class AdminUI2 {
 	}
 
 	public void noticeinsert() { // '등록'으로 들어와 공지사항 등록하기
-		
+
 		System.out.println("등록할 공지 제목을 입력해주세요 \n 제목 : ");
 		String newTitle = sc.nextLine().trim();
 
 		System.out.println("등록할 공지 내용을 입력해주세요 \n 내용 : ");
 		String newContent = sc.nextLine().trim();
-		
-		
+
 		if (newTitle.isEmpty() && newContent.isEmpty()) {
 			System.out.println("\n✅ 입력된 내용이 없어 공지사항 등록이 취소되었습니다.");
 			this.noticeadmin();
 			return;
 		}
-		
+
 		AdminDTO2 insertdto = new AdminDTO2();
 		insertdto.setNoticeTitle(newTitle);
 		insertdto.setNoticeContent(newContent);
-		
+
 		try {
 			int result = dao.noticeInsert(insertdto);
 

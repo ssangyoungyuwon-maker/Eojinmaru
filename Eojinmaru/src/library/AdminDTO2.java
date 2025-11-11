@@ -5,7 +5,14 @@ public class AdminDTO2 {
 	private String bookname;
 	private String loanperiod;
 	private boolean baega;
-	private String overdueusername;
+	private String username;
+	private int loancode;
+	private int bookcode;
+	private int overdue_date; // 연체일수
+	private String checkout_date;
+	private String return_date;
+	private String due_date;
+	private String book_condition;	
 	private String sincheongbook;
 	private String sincheongstatus;
 	private int sincheongcode;
@@ -33,11 +40,47 @@ public class AdminDTO2 {
 	public void setBaega(boolean baega) {
 		this.baega = baega;
 	}
-	public String getOverdueusername() {
-		return overdueusername;
+	public String getUsername() {
+		return username;
 	}
-	public void setOverdueusername(String overdueusername) {
-		this.overdueusername = overdueusername;
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public int getLoancode() {
+		return loancode;
+	}
+	public void setLoancode(int loancode) {
+		this.loancode = loancode;
+	}
+	public int getBookcode() {
+		return bookcode;
+	}
+	public void setBookcode(int bookcode) {
+		this.bookcode = bookcode;
+	}
+	public String getCheckout_date() {
+		return checkout_date;
+	}
+	public void setCheckout_date(String checkout_date) {
+		this.checkout_date = checkout_date;
+	}
+	public String getReturn_date() {
+		return return_date;
+	}
+	public void setReturn_date(String return_date) {
+		this.return_date = return_date;
+	}
+	public String getDue_date() {
+		return due_date;
+	}
+	public void setDue_date(String due_date) {
+		this.due_date = due_date;
+	}
+	public String getBook_condition() {
+		return book_condition;
+	}
+	public void setBook_condition(String book_condition) {
+		this.book_condition = book_condition;
 	}
 	public String getSincheongbook() {
 		return sincheongbook;
@@ -81,6 +124,14 @@ public class AdminDTO2 {
 	public void setNoticeDate(String noticeDate) {
 		this.noticeDate = noticeDate;
 	}
+	public int getOverdue_date() {
+		return overdue_date;
+	}
+	public void setOverdue_date(int overdue_date) {
+		this.overdue_date = overdue_date;
+	}
+	
+		
 
 	
 }

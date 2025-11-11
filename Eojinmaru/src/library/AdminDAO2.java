@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AdminDAO2 {
 	
-	public List<AdminDTO2> sinchoengdagidoseo();					// 신청도서 불러오기
+	public List<AdminDTO2> sinchoengdaegidoseo();					// 신청도서 불러오기
 	public String truncateString(String text, int maxLength);	// 신청 글자수가 길면 잘라줌
 	public int sujeongsincheongstatus(AdminDTO2 dto) throws SQLException; // 
 	public List<AdminDTO2> notice() ;	// 전체 공지사항 불러오기
@@ -15,4 +15,6 @@ public interface AdminDAO2 {
 	public int noticeUpdate(AdminDTO2 dto) ; // 공지 번호로 수정 하기
 	public int noticeInsert(AdminDTO2 dto); // 공지사항 등록하기
 	public List<AdminDTO2> loanbooklist();
+	public AdminDTO2 loanbooksearchbybookcode(int bookcode);
+	public int loanbookreturn(AdminDTO2 dto);
 }
