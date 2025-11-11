@@ -67,7 +67,7 @@ public class MemberDAOImpl implements MemberDAO {
         
         String sql = "INSERT INTO user_info (user_code, user_id, user_pwd, user_name, user_birth, " +
                      "user_tel, user_email, user_address, loan_renewaldate) " +
-                     "VALUES (user_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
+                     "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, SYSDATE)";
         
         PreparedStatement pstmt = null;
 
