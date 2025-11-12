@@ -20,7 +20,7 @@ public class MemberDAOImpl implements MemberDAO {
     @Override 
     public MemberDTO login(String id, String pw) {
         String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address " +
-                     "FROM User Info WHERE user_id = ? AND user_pwd = ?";
+                     "FROM UserInfo WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null; // 쿼리 결과를 받을 ResultSet
