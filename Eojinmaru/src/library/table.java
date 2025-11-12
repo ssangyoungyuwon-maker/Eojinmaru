@@ -136,6 +136,7 @@ ALTER TABLE Loan add constraint fk_loan_userinfo foreign key (user_code) REFEREN
 
 -- Book 테이블 제약조건
 ALTER TABLE BOOK add constraint fk_book_bookinfo foreign key (ISBN) REFERENCES BookInfo(isbn); -- 완료
+ALTER TABLE book MODIFY book_condition DEFAULT '대출가능'; -- 완료
 
 ----------------------------------------------------------------------------
 -- 시퀀스 (초기화 하려면 삭제 후 다시 생성)
