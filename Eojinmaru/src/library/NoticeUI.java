@@ -54,7 +54,7 @@ public class NoticeUI {
 					System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
 				} else {
 					while(rs.next()) {
-						System.out.println(String.format("| %-3s| %-45s\t| %-4s |", rs.getString("notice_id"),
+						System.out.println(String.format("| %-3s| %-45s\t| %-4s |", rs.getInt("notice_id"),
 								truncateString(rs.getString("notice_title"), 25), rs.getString("notice_date")));
 					}
 				}
@@ -70,23 +70,18 @@ public class NoticeUI {
 					case "등록": break;
 					case "0": return;
 					default: 
+						// 없는 공지글 번호가 입력되면 부적절한 입력 에러
+						showNotice(ch);
+					
+							
+	
 				}
 				
-				
-//				System.out.print("1.왼쪽 2.오른쪽 3.게시글 보기 4.이전 => ");
-//				
-//				int ch = Integer.parseInt(br.readLine());
-//				switch(ch) {
-//				case 1: if(pages > 1) pages -= 1; break;
-//				case 2: if(pages < maxPage) pages += 1; break;
-//				case 3: break;
-//				case 4: return;
-//				default: throw new Exception("부적절한 입력");
-//				}
-			
+		
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+			//e.printStackTrace();
 		}
     	
     	
@@ -139,8 +134,40 @@ public class NoticeUI {
     	
     }
     
+    protected void showNotice(String noticeId) throws Exception {
+    	
+    	PreparedStatement pstmt = null;
+    	ResultSet rs = null;
+    	String sql;
+   
+    	try {
+    		sql = "SELECT notice_id, notice_title, TO_CHAR(notice_date, 'YY-MM-DD') notice_date, notice_content FROM notice WHERE notice_id = ?";
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.setInt(1, Integer.parseInt(noticeId));
+    		rs = pstmt.executeQuery();
+    		if(rs.next()) {
+    			System.out.println("\n=======================================================");
+    			System.out.printf("\t\t📢 공지사항 상세 정보 (No. %d)\n", rs.getInt("notice_id"));
+    			System.out.println("=======================================================");
+    			System.out.printf("\t\t\t\t       작성일: %s\n", rs.getString("notice_date"));
+    			System.out.println("-------------------------------------------------------");
+    			System.out.printf("제목: %s\n", rs.getString("notice_title"));
+    			System.out.println("-------------------------------------------------------");
+    			System.out.println("내용:");
+    			System.out.println(rs.getString("notice_content"));
+    			System.out.println("=======================================================");
+    			
+    			
+    		} else {
+    			throw new Exception("🚨 존재하지 않은 공지 번호입니다. 다시 입력해주세요.");
+    		}
+		} catch (Exception e) {
+			throw new Exception("🚨 유효하지 않은 공지 번호입니다. 다시 입력해주세요.");
+		}  
+    }
     
-    public String truncateString(String text, int maxLength) {
+    
+    private String truncateString(String text, int maxLength) {
         if (text == null) {
             return "";
         }
