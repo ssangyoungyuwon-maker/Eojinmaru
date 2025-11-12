@@ -19,7 +19,7 @@ public class MemberDAOImpl implements MemberDAO {
      */
     @Override 
     public MemberDTO login(String id, String pw) {
-        String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address " +
+        String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address, loan_renewaldate " +
                      "FROM UserInfo WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
@@ -44,6 +44,7 @@ public class MemberDAOImpl implements MemberDAO {
                 user.setUser_tel(rs.getString("user_tel"));
                 user.setUser_email(rs.getString("user_email"));
                 user.setUser_address(rs.getString("user_address"));
+                user.setLoan_renewaldate(rs.getString("loan_renewaldate"));
             }
 
         } catch (SQLException e) {

@@ -14,6 +14,7 @@ public class MemberDTO {
     private String user_tel;
     private String user_email;
     private String user_address;
+    private String loan_renewaldate;
  
     public void setUser_code(int user_code) {
 		this.user_code = user_code;
@@ -60,6 +61,14 @@ public class MemberDTO {
 	public void setUser_address(String user_address) {
 		this.user_address = user_address;
 	}
+	public String getLoan_renewaldate() {
+		return loan_renewaldate;
+	}
+	public void setLoan_renewaldate(String loan_renewaldate) {
+		this.loan_renewaldate = loan_renewaldate;
+	}
+	
+	
 	public int getUser_code() {
 		return user_code;
 	}
