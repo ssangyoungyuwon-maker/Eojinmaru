@@ -162,8 +162,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 				dto.setReservation_date(rs.getString("return_date"));
 				dto.setIsExtended(rs.getInt("ixextended"));
 				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
-				
-				
+					
 				list.add(dto);
 			}
 			
@@ -178,7 +177,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 		return list;
 	}
 	
-	// 대출 중 대출리스트
+	// 회원 대출리스트
 	public List<LoanDTO> listloaning(String user_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
@@ -207,8 +206,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 				dto.setDue_date(rs.getString("due_date"));
 				dto.setReservation_date(rs.getString("return_date"));
 				dto.setIsExtended(rs.getInt("ixextended"));
-				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
-				
+				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));			
 				
 				list.add(dto);
 			}
@@ -222,6 +220,25 @@ public class UserDAOImpl1 implements UserDAO1 {
 			DBUtil.close(pstmt);
 		}
 		return list;
+	}
+
+	@Override
+	// 도서상태(대출중) 리스트
+	public List<LoanDTO> loaning(String book_condition) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		
+		return list;
+	}
+	
+	@Override
+	// 도서상태(대출 중인 도서) 예약 신청
+	public void loanreservation(LoanDTO dto) throws SQLException {
+		
+		
 	}
 	
 }

@@ -17,4 +17,10 @@ public interface UserDAO1 {
 	public List<LoanDTO> listloan(String user_code);
 	// 대출 중 리스트
 	public List<LoanDTO> listloaning(String user_code);	
+	
+	// 대출 중인 도서 리스트
+	public List<LoanDTO> loaning(String book_condition);
+	
+	// 대출 중인 도서 예약
+	public void loanreservation(LoanDTO dto) throws SQLException;
 }

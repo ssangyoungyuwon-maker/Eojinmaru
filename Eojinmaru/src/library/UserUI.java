@@ -2,7 +2,6 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserUI {
@@ -38,21 +37,11 @@ public class UserUI {
 					return;
 				}
 				switch (ch) {
-				case 1:
-					findBybook();
-					break;
-				case 2:
-					loan();
-					break;
-				case 3:
-					returnUI.start();
-					break;
-				case 4:
-					sincheong();
-					break;
-				case 5:
-					mypageUI.menu();
-					break;
+				case 1: findBybook(); break;
+				case 2: loan(); break;
+				case 3: returnUI.start(); break;
+				case 4: sincheong(); break;
+				case 5: mypageUI.menu(); break;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -103,14 +92,9 @@ public class UserUI {
 				ch2 = Integer.parseInt(br.readLine());
 
 				switch (ch2) {
-				case 1:
-					insertloan();
-					break;
-				case 2:
-					renewloan();
-					break;
+				case 1: insertloan(); break;
+				case 2: renewloan(); break;
 				}
-
 				return;
 
 			} catch (Exception e) {
