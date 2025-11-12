@@ -14,8 +14,9 @@ public interface AdminDAO {
     public List<BookInfoDTO1> findAllBooks();
     public List<BookInfoDTO1> findBooksByName(String bookName);
     public boolean insertBook(BookInfoDTO1 newBook);
-    public BookInfoDTO1 findBookByCode(String bookCode);
-    public boolean deleteBookByCode(String bookCode);
-    public boolean registerDisposedBook(String bookCode, String reason);
+    public BookInfoDTO1 findBookByCode(int bookCode);
+    public boolean deleteBookByCode(int bookCode);
+    public boolean registerDisposedBook(int bookCode, String reason);
+    public boolean deleteDisposedBook(int bookCode);
     public List<DisposedBookDTO> findAllDisposedBooks();
 }

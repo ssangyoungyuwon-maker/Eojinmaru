@@ -60,7 +60,7 @@ public class AdminDAOImpl implements AdminDAO {
 
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, userCode); // <-- int로 설정
+            pstmt.setInt(1, userCode); 
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
@@ -87,7 +87,7 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public List<MemberDTO> findUserByName(String name) {
         List<MemberDTO> list = new ArrayList<>();
-        // 이름의 일부만 입력해도 검색되도록 LIKE 사용
+        
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
                      "FROM user_info WHERE user_name LIKE ? ORDER BY user_name";
         
@@ -96,7 +96,7 @@ public class AdminDAOImpl implements AdminDAO {
 
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, "%" + name + "%"); // 예: "홍" -> "%홍%"
+            pstmt.setString(1, "%" + name + "%"); 
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -131,9 +131,9 @@ public class AdminDAOImpl implements AdminDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userCode);
             
-            int resultRows = pstmt.executeUpdate(); // DELETE 실행
+            int resultRows = pstmt.executeUpdate(); 
             
-            return (resultRows > 0); // 1줄 이상 삭제되었으면 true
+            return (resultRows > 0); 
 
         } catch (SQLException e) {
             System.err.println(">> 회원 삭제 중 오류: " + e.getMessage());
@@ -142,7 +142,7 @@ public class AdminDAOImpl implements AdminDAO {
                 if (pstmt != null) pstmt.close();
             } catch (SQLException e) { e.printStackTrace(); }
         }
-        return false; // 삭제 실패
+        return false; 
     }
     
     @Override
@@ -184,7 +184,7 @@ public class AdminDAOImpl implements AdminDAO {
 	@Override
 	public List<BookInfoDTO1> findAllBooks() {
 		List<BookInfoDTO1> list = new ArrayList<>();
-        // ISBN, category_id, publisher_id, bookname, publisher_date
+       
 		String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM bookinfo bi " +
                 "LEFT JOIN book b ON bi.ISBN = b.ISBN " +
@@ -231,7 +231,7 @@ public class AdminDAOImpl implements AdminDAO {
 
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, "%" + bookName + "%"); // 부분 일치 검색
+            pstmt.setString(1, "%" + bookName + "%"); 
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -241,7 +241,7 @@ public class AdminDAOImpl implements AdminDAO {
                 book.setPublisher_id(rs.getString("publisher_id"));
                 book.setBookName(rs.getString("bookname"));
                 book.setPublish_date(rs.getDate("publish_date").toString());
-                book.setBook_code(rs.getInt("book_code")); // book_code 설정
+                book.setBook_code(rs.getInt("book_code"));
                 list.add(book);
             }
         } catch (SQLException e) {
@@ -257,8 +257,8 @@ public class AdminDAOImpl implements AdminDAO {
 	
     // 도서 코드 검색 구현
     @Override
-    public BookInfoDTO1 findBookByCode(String bookCode) {
-        // book_code는 BookInfoDTO1에 정의된 필드입니다.
+    public BookInfoDTO1 findBookByCode(int bookCode) {
+        
     	String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM book b " +
                 "JOIN bookinfo bi ON b.ISBN = bi.ISBN " +
@@ -270,17 +270,17 @@ public class AdminDAOImpl implements AdminDAO {
 
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, Integer.parseInt(bookCode));
+            pstmt.setInt(1, bookCode);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 book = new BookInfoDTO1();
                 book.setIsbn(rs.getString("ISBN"));
-                book.setCategory_id(rs.getInt("CATEGORY_ID"));
-                book.setPublisher_id(rs.getString("PUBLISHER_ID"));
-                book.setBookName(rs.getString("BOOKNAME"));
-                book.setPublish_date(rs.getString("PUBLISHER_DATE"));
-                book.setBook_code(rs.getInt("BOOK_CODE")); // <-- 코드 설정
+                book.setCategory_id(rs.getInt("category_id"));
+                book.setPublisher_id(rs.getString("publisher_id"));
+                book.setBookName(rs.getString("bookname"));
+                book.setPublish_date(rs.getString("publish_date"));
+                book.setBook_code(rs.getInt("book_code")); 
             }
         } catch (NumberFormatException e) {
             System.err.println(">> DAO 오류: book_code가 숫자가 아닙니다.");
@@ -297,52 +297,77 @@ public class AdminDAOImpl implements AdminDAO {
 	
     @Override
     public boolean insertBook(BookInfoDTO1 book) {
-        // DB 실제 컬럼명을 가정하고 작성 (publisher_date로 가정)
-        String sql = "INSERT INTO bookInfo (ISBN, category_id, publisher_id, bookname, publish_date) " +
+        
+        String sqlInfo = "INSERT INTO bookInfo (ISBN, category_id, publisher_id, bookname, publish_date) " +
                      "VALUES (?, ?, ?, ?, ?)";
         
-        PreparedStatement pstmt = null;
+        String sqlBook = "INSERT INTO book (BOOK_CODE, ISBN) VALUES (?, ?)";
+        
+        PreparedStatement pstmtInfo = null;
+        PreparedStatement pstmtBook = null;
 
         try {
-            pstmt = conn.prepareStatement(sql);
-            
-            pstmt.setString(1, book.getIsbn());
-            pstmt.setInt(2, book.getCategory_id()); 
-            pstmt.setString(3, book.getPublisher_id());
-            pstmt.setString(4, book.getBookName());
-            pstmt.setString(5, book.getPublish_date());
+        	conn.setAutoCommit(false);
+        	
+            pstmtInfo = conn.prepareStatement(sqlInfo);
+            pstmtInfo.setString(1, book.getIsbn());
+            pstmtInfo.setInt(2, book.getCategory_id()); 
+            pstmtInfo.setString(3, book.getPublisher_id());
+            pstmtInfo.setString(4, book.getBookName());
+            pstmtInfo.setString(5, book.getPublish_date());
 
-            int resultRows = pstmt.executeUpdate(); 
+            int resultInfo = pstmtInfo.executeUpdate();
             
-            return (resultRows > 0); 
+            if (resultInfo == 0) {
+                conn.rollback();
+                return false;
+            }
+            
+            pstmtBook = conn.prepareStatement(sqlBook);
+            pstmtBook.setInt(1, book.getBook_code()); 
+            pstmtBook.setString(2, book.getIsbn());   
+            
+            int resultBook = pstmtBook.executeUpdate();
 
-        } catch (NumberFormatException e) {
-            System.err.println(">> DAO 오류: Category ID가 숫자가 아닙니다.");
-        } catch (IllegalArgumentException e) {
-            System.err.println(">> " + "날짜 형식이 잘못되었습니다. (YYYY-MM-DD 형식으로 입력하세요)");
+            if (resultBook == 0) {
+                conn.rollback();
+                return false;
+            }
+              
+            conn.commit(); 
+            return true;
+           
         } catch (SQLException e) {
+            try {
+                conn.rollback(); 
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             System.err.println(">> 도서 등록 중 DB 오류 발생: " + e.getMessage());
         } finally {
             try {
-                if (pstmt != null) pstmt.close();
+               
+                if (pstmtInfo != null) pstmtInfo.close();
+                if (pstmtBook != null) pstmtBook.close();
+                
+                conn.setAutoCommit(true); 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
         
-        return false; 
+        return false;
     }
     
     // 도서 삭제
     @Override
-    public boolean deleteBookByCode(String bookCode) {
-        // ISBN이 아닌 BOOK_CODE로 삭제
+    public boolean deleteBookByCode(int bookCode) {
         String sql = "DELETE FROM book WHERE BOOK_CODE = ?";
         PreparedStatement pstmt = null;
         
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, bookCode); // BOOK_CODE는 String이므로 setString
+            pstmt.setInt(1, bookCode); 
             return pstmt.executeUpdate() > 0;
             
         } catch (NumberFormatException e) {
@@ -359,40 +384,44 @@ public class AdminDAOImpl implements AdminDAO {
 	
 	// 폐기 등록
     @Override
-    public boolean registerDisposedBook(String bookCode, String reason) {
+    public boolean registerDisposedBook(int bookCode, String reason) {
         
-    	// SQL 1: disposed_book 테이블에 폐기 이력 삽입
-        String sqlInsert = "INSERT INTO disposedbook (book_code, dispose_date, dispose_reason) " +
-                           "VALUES (?, SYSDATE, ?)";
+    	
+        BookInfoDTO1 bookToDispose = findBookByCode(bookCode); 
+        if (bookToDispose == null) {
+            System.err.println(">> (DAO) 폐기 등록 실패: 해당 도서를 찾을 수 없음.");
+            return false;
+        }
+        String isbn = bookToDispose.getIsbn(); // ISBN 확보
         
-        // SQL 2: bookInfo에서 해당 book_code의 도서 삭제
+        String sqlInsert = "INSERT INTO disposedbook (book_code, isbn, dispose_date, dispose_reason) " +
+                           "VALUES (?, ?, SYSDATE, ?)"; 
+        
         String sqlDelete = "DELETE FROM book WHERE BOOK_CODE = ?";
         
         PreparedStatement pstmtInsert = null;
         PreparedStatement pstmtDelete = null;
         
-        // (참고: 안전을 위해 Transaction 처리가 필요하지만, 현재 구조에서는 순차 실행)
         try {
-        	int bookCodeNum = Integer.parseInt(bookCode); // book_code는 NUMBER
-
-            // 1. disposed_book에 삽입
+        	
             pstmtInsert = conn.prepareStatement(sqlInsert);
-            pstmtInsert.setInt(1, bookCodeNum);
-            pstmtInsert.setString(2, reason);
+            pstmtInsert.setInt(1, bookCode);
+            pstmtInsert.setString(2, isbn); 
+            pstmtInsert.setString(3, reason);
             int insertRows = pstmtInsert.executeUpdate();
 
             if (insertRows == 0) {
-                // 이 경우는 거의 없지만, INSERT 실패 시
-                System.err.println(">> (DAO) 폐기 등록 실패: disposedbook 테이블 INSERT 실패.");
+            	System.err.println(">> (DAO) 폐기 등록 실패: disposedbook 테이블 INSERT 실패.");
+            	
                 return false;
             }
 
-            // 2. book 테이블에서 삭제
             pstmtDelete = conn.prepareStatement(sqlDelete);
-            pstmtDelete.setInt(1, bookCodeNum);
+            pstmtDelete.setInt(1, bookCode);
             pstmtDelete.executeUpdate();
             
-            return true; // 두 작업 모두 성공
+            
+            return true; 
 
         } catch (NumberFormatException e) {
             System.err.println(">> DAO 오류: book_code가 숫자가 아닙니다.");
@@ -414,21 +443,10 @@ public class AdminDAOImpl implements AdminDAO {
     public List<DisposedBookDTO> findAllDisposedBooks() {
         List<DisposedBookDTO> list = new ArrayList<>();
         
-        // book_code가 숫자인 것을 이용해 bookinfo, book 테이블과 JOIN하여 도서명(bookname)을 가져옴
         String sql = "SELECT d.book_code, bi.bookname, d.dispose_date, d.dispose_reason " +
-                     "FROM disposedbook d " +
-                     "LEFT JOIN book b ON d.book_code = b.book_code " + // (삭제되었으니 없을 수도 있음, book_code만 필요하면 이 JOIN은 불필요)
-                     "LEFT JOIN bookinfo bi ON b.ISBN = bi.ISBN " + // (도서명을 가져오기 위한 JOIN)
-                     "ORDER BY d.dispose_date DESC";
-        
-        
-        // [수정] 도서명을 가져오기 어려운 스키마이므로, disposed_book 테이블만 조회
-        // (만약 book_code로 bookinfo를 바로 조인할 수 있다면 JOIN 사용)
-        
-        /*
-        String sql = "SELECT book_code, dispose_date, dispose_reason " +
-                            "FROM disposed_book ORDER BY dispose_date DESC";
-		*/
+                "FROM disposedbook d " +
+                "LEFT JOIN bookinfo bi ON d.ISBN = bi.ISBN " + 
+                "ORDER BY d.dispose_date DESC ";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -443,15 +461,37 @@ public class AdminDAOImpl implements AdminDAO {
                 disposed.setBookName(rs.getString("bookname"));
                 disposed.setDispose_date(rs.getDate("dispose_date").toString());
                 disposed.setDispose_reason(rs.getString("dispose_reason"));
-                // (bookname은 이 쿼리로 가져올 수 없음)
                 list.add(disposed);
             }
         } catch (SQLException e) {
             System.err.println(">> 폐기 도서 목록 조회 중 오류: " + e.getMessage());
         } finally {
-            // (자원 해제 로직 생략)
+           
         }
         return list;
+    }
+
+    @Override
+    public boolean deleteDisposedBook(int bookCode) {
+        String sql = "DELETE FROM disposedbook WHERE book_code = ?";
+        PreparedStatement pstmt = null;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, bookCode);
+            
+            int resultRows = pstmt.executeUpdate();  
+            
+            return (resultRows > 0);                       
+
+        } catch (SQLException e) {
+            System.err.println(">> 폐기 도서 기록 삭제 중 오류: " + e.getMessage());
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return false; 
     }
 	
 }
