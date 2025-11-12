@@ -6,11 +6,13 @@ public class BookInfoDTO1 {
 	private int book_code;
 	private String publisher_id;
 	private String bookName;
+	private String book_condition;
 	private String publish_date;
 	private String author_id;
 	private String author_name;
 	private String publisher_code;
 	private String publisher_name;
+	
 	
 	public String getIsbn() {
 		return isbn;
@@ -41,6 +43,12 @@ public class BookInfoDTO1 {
 	}
 	public void setBookName(String bookName) {
 		this.bookName = bookName;
+	}
+	public String getBook_condition() {
+		return book_condition;
+	}
+	public void setBook_condition(String book_condition) {
+		this.book_condition = book_condition;
 	}
 	public String getPublish_date() {
 		return publish_date;
@@ -73,6 +81,7 @@ public class BookInfoDTO1 {
 		this.publisher_name = publisher_name;
 	}
 	
+
 
 		
 }

@@ -7,6 +7,9 @@ public interface UserDAO1 {
 	// 도서검색
 	public List<BookInfoDTO1> listBook(String search);
 	
+	// 대출 신청 도서검색
+	public List<BookInfoDTO1> loanBook(String bookName);
+	
 	// 대출 신청
 	public void insertloan(LoanDTO dto) throws SQLException;
 	

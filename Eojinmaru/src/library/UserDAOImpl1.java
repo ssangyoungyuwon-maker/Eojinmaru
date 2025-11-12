@@ -59,6 +59,48 @@ public class UserDAOImpl1 implements UserDAO1 {
 		}
 		return list;
 	}
+	
+	@Override
+	// 대출 신청 전 책 리스트 조회
+	public List<BookInfoDTO1> loanBook(String bookName) {
+		List<BookInfoDTO1> list = new ArrayList<BookInfoDTO1>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "SELECT b.book_code, bookName, book_condition "
+					+ " FROM book b "
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ " WHERE INSTR(bookName, ?) >= 1";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, bookName);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				BookInfoDTO1 dto = new BookInfoDTO1();
+				
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookName(rs.getString("bookName"));
+				dto.setBook_condition(rs.getString("book_condition"));
+				
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		
+		return list;
+	}
 
 	@Override
 	// 대출신청
@@ -181,4 +223,5 @@ public class UserDAOImpl1 implements UserDAO1 {
 		}
 		return list;
 	}
+	
 }
