@@ -33,7 +33,7 @@ public class AdminDAOImpl implements AdminDAO {
                 user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_name(rs.getString("user_name"));
-                user.setUser_birth(rs.getDate("user_birth").toString()); // Date -> String
+                user.setUser_birth(rs.getDate("user_birth").toString()); 
                 user.setUser_tel(rs.getString("user_tel"));
                 user.setUser_email(rs.getString("user_email"));
                 user.setUser_address(rs.getString("user_address"));
@@ -362,7 +362,7 @@ public class AdminDAOImpl implements AdminDAO {
     public boolean registerDisposedBook(String bookCode, String reason) {
         
     	// SQL 1: disposed_book 테이블에 폐기 이력 삽입
-        String sqlInsert = "INSERT INTO disposed_book (book_code, dispose_date, dispose_reason) " +
+        String sqlInsert = "INSERT INTO disposedbook (book_code, dispose_date, dispose_reason) " +
                            "VALUES (?, SYSDATE, ?)";
         
         // SQL 2: bookInfo에서 해당 book_code의 도서 삭제
@@ -383,7 +383,7 @@ public class AdminDAOImpl implements AdminDAO {
 
             if (insertRows == 0) {
                 // 이 경우는 거의 없지만, INSERT 실패 시
-                System.err.println(">> (DAO) 폐기 등록 실패: disposed_book 테이블 INSERT 실패.");
+                System.err.println(">> (DAO) 폐기 등록 실패: disposedbook 테이블 INSERT 실패.");
                 return false;
             }
 
@@ -413,21 +413,23 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public List<DisposedBookDTO> findAllDisposedBooks() {
         List<DisposedBookDTO> list = new ArrayList<>();
-        /*
+        
         // book_code가 숫자인 것을 이용해 bookinfo, book 테이블과 JOIN하여 도서명(bookname)을 가져옴
-        String sql = "SELECT d.book_code, d.dispose_date, d.dispose_reason, bi.bookname " +
-                     "FROM disposed_book d " +
+        String sql = "SELECT d.book_code, bi.bookname, d.dispose_date, d.dispose_reason " +
+                     "FROM disposedbook d " +
                      "LEFT JOIN book b ON d.book_code = b.book_code " + // (삭제되었으니 없을 수도 있음, book_code만 필요하면 이 JOIN은 불필요)
                      "LEFT JOIN bookinfo bi ON b.ISBN = bi.ISBN " + // (도서명을 가져오기 위한 JOIN)
                      "ORDER BY d.dispose_date DESC";
-        */
+        
         
         // [수정] 도서명을 가져오기 어려운 스키마이므로, disposed_book 테이블만 조회
         // (만약 book_code로 bookinfo를 바로 조인할 수 있다면 JOIN 사용)
         
+        /*
         String sql = "SELECT book_code, dispose_date, dispose_reason " +
                             "FROM disposed_book ORDER BY dispose_date DESC";
-
+		*/
+        
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
@@ -438,6 +440,7 @@ public class AdminDAOImpl implements AdminDAO {
             while (rs.next()) {
                 DisposedBookDTO disposed = new DisposedBookDTO();
                 disposed.setBook_code(rs.getInt("book_code"));
+                disposed.setBookName(rs.getString("bookname"));
                 disposed.setDispose_date(rs.getDate("dispose_date").toString());
                 disposed.setDispose_reason(rs.getString("dispose_reason"));
                 // (bookname은 이 쿼리로 가져올 수 없음)

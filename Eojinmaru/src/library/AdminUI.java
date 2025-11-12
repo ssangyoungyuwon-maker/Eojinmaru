@@ -329,7 +329,7 @@ public class AdminUI {
 
                     // 2. Category ID
                     System.out.print("Category ID: ");
-                    newBook.setCategory_id(scanner.nextLine());
+                    newBook.setCategory_id(scanner.nextInt());
 
                     // 3. Publisher ID
                     System.out.print("Publisher ID: ");
@@ -351,7 +351,7 @@ public class AdminUI {
                     
                     // 6. Book Code (신규)
                     System.out.print("도서 코드 (BOOK_CODE): ");
-                    newBook.setBook_code(scanner.nextLine());
+                    newBook.setBook_code(scanner.nextInt());
 
                     // DAO 호출
                     boolean insertSuccess = adminDAO.insertBook(newBook);
@@ -445,7 +445,7 @@ public class AdminUI {
         for (BookInfoDTO1 book : books) {
             System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n",
                     formatISBN(book.getIsbn()), // 하이픈 포맷 적용
-                    book.getBook_code() != null ? book.getBook_code() : "-",
+                   (book.getBook_code() == 0 ? "-" : String.valueOf(book.getBook_code())),
                     book.getCategory_id(), // String(%s)
                     book.getPublisher_id(), // String(%s)
                     book.getBookName(),
@@ -463,13 +463,14 @@ public class AdminUI {
         }
 
         System.out.println("--------------------------------------------------------------------");
-        System.out.printf("%-10s | %-12s | %-30s\n", 
-                            "BookCode", "폐기일자", "폐기 사유");
+        System.out.printf("%-10s | %-30s | %-12s | %-30s\n", 
+                            "BookCode", "책 제목", "폐기일자", "폐기 사유");
         System.out.println("--------------------------------------------------------------------");
 
         for (DisposedBookDTO book : books) {
-            System.out.printf("%-10d | %-12s | %-30s\n",
+            System.out.printf("%-10d | %-30s | %-12s | %-30s\n",
                     book.getBook_code(),
+                    book.getBookName(),
                     book.getDispose_date(),
                     book.getDispose_reason());
         }

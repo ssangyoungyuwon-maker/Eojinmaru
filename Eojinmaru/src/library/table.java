@@ -78,6 +78,14 @@ CREATE TABLE sincheong (
     sincheong_status VARCHAR2(50)
 );
 
+-- 도서 폐기 테이블 
+CREATE TABLE disposedbook (
+    book_code NUMBER(4) NOT NULL,
+    dispose_date DATE DEFAULT SYSDATE,
+    ISBN VARCHAR2(20),
+    dispose_reason  VARCHAR2(200)
+);
+
 -----------------------------------------------------------------------------------------------------
 -- 서유원
 -- 데이터 저장하는 쿼리 작성 (회원, 대출 예약)
@@ -150,14 +158,30 @@ DROP SEQUENCE user_seq;
 
 ----------------------------------------------------------------------------
 -- 명령어
-select * from userinfo;
+select * from user_info;
 
-DROP TABLE userinfo PURGE;
+DROP TABLE user_info PURGE;
+
+select * from bookinfo;
+
+DESC bookinfo;
+
+desc book;
+
+select * from book;
+
+select * from tab;
+
+select * from book where book_code = '9999';
+
+ALTER TABLE bookinfo RENAME COLUMN publisher_date TO publish_date;
+
 
 -- 유저 삭제
-DELETE FROM userinfo
+DELETE FROM user_info
 WHERE user_code = 1000;
 COMMIT;
+
 
 
 
