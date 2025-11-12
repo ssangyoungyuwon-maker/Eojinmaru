@@ -20,7 +20,7 @@ public class MemberDAOImpl implements MemberDAO {
     @Override 
     public MemberDTO login(String id, String pw) {
         String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address " +
-                     "FROM user_info WHERE user_id = ? AND user_pwd = ?";
+                     "FROM UserInfo WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null; // 쿼리 결과를 받을 ResultSet
@@ -65,7 +65,7 @@ public class MemberDAOImpl implements MemberDAO {
 	@Override
 	public boolean signUpUser(MemberDTO user) {
         
-        String sql = "INSERT INTO user_info (user_code, user_id, user_pwd, user_name, user_birth, " +
+        String sql = "INSERT INTO UserInfo (user_code, user_id, user_pwd, user_name, user_birth, " +
                      "user_tel, user_email, user_address, loan_renewaldate) " +
                      "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, SYSDATE)";
         
