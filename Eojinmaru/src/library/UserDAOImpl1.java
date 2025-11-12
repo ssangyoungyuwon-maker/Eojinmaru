@@ -112,7 +112,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 		try {
 			// INSERT INTO 테이블명(컬럼명, 컬러명) VALUES (값1, 값2)
 			// INSERT ALL INTO 테이블명1(컬럼, 컬럼) VALUES(값, 값) INTO 테이블명2(컬럼, 컬럼) VALUES(값, 값);
-			sql = "INSERT INTO loan(loan_code, book_code, user_code, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date isExtended) VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
+			sql = "INSERT INTO loan(loan_code, book_code, user_code, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, isExtended) VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
 			
 		    pstmt = conn.prepareStatement(sql);
 		    
@@ -267,7 +267,20 @@ public class UserDAOImpl1 implements UserDAO1 {
 	// 도서상태(대출 중인 도서) 예약 신청
 	public void loanreservation(LoanDTO dto) throws SQLException {
 		
+	}
+
+	@Override
+	public LoanDTO bookLoaning(String user_code) {
+		LoanDTO dto = null;
 		
+		// 연체여부 확인
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return dto;
 	}
 	
 }

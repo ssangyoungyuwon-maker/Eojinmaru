@@ -20,7 +20,7 @@ public class UserUI {
 	}
 
 	public void menu() {
-
+		
 		int ch = 0;
 
 		while (true) {
@@ -29,12 +29,11 @@ public class UserUI {
 			try {
 				System.out.print("1.도서검색 2.대출 3.반납신청 4.도서신청 5.마이페이지 6.로그아웃  =>  ");
 				ch = Integer.parseInt(br.readLine());
-
+				
 				if (ch == 6) {
 					login.logout();
 					System.out.println("로그아웃 되었습니다.");
-
-					return;
+					return;				
 				}
 				switch (ch) {
 				case 1: findBybook(); break;
@@ -52,6 +51,7 @@ public class UserUI {
 	// 1. 도서 검색[제목], [저자] / (도서번호, isbn, 도서이름, 저자, 출판사, 발행일를 출력)
 	protected void findBybook() {
 		System.out.println("\n[도서검색]");
+		
 
 		String search;
 
@@ -81,10 +81,11 @@ public class UserUI {
 
 	// 2. 대출신청/연장/예약신청
 	public void loan() {
+		
 		int ch2 = 0;
 
 		while (true) {
-			System.out.println("\n[대출]");				
+			System.out.println("\n[대출]");	
 				
 			try {
 				System.out.println("1.대출신청 2.대출연장 3.대출예약");
@@ -110,6 +111,7 @@ public class UserUI {
 
 		String bookname;
 		try {
+			
 			System.out.println("도서 제목 ? ");
 			bookname = br.readLine();
 
@@ -123,7 +125,7 @@ public class UserUI {
 				System.out.print("도서 제목 : " + dto.getBookName() + "\t");
 				System.out.print("도서 코드 : " + dto.getBook_code() + "\t");
 				System.out.println("도서 컨디션 : " + dto.getBook_condition() + "\t");
-
+				
 				LoanDTO loandto = new LoanDTO();
 				
 
@@ -174,6 +176,7 @@ public class UserUI {
 	// 대출 예약(대출 중인 도서)
 	protected void loanreservation() {
 		System.out.println("\n[대출 예약 신청]");
+		
 		
 	}
 	

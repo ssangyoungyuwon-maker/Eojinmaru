@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserDAO1 {
+	
 	// 도서검색
 	public List<BookInfoDTO1> listBook(String search);
 	
@@ -15,6 +16,7 @@ public interface UserDAO1 {
 	
 	// 전체 대출 리스트
 	public List<LoanDTO> listloan(String user_code);
+	
 	// 대출 중 리스트
 	public List<LoanDTO> listloaning(String user_code);	
 	
@@ -23,4 +25,8 @@ public interface UserDAO1 {
 	
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
+
+	// 연체 여부
+	public LoanDTO bookLoaning(String user_code);
+	
 }
