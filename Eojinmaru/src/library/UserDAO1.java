@@ -12,7 +12,7 @@ public interface UserDAO1 {
 	public List<BookInfoDTO1> loanBook(String bookName);
 	
 	// 대출 신청
-	public void insertloan(LoanDTO dto) throws SQLException;
+	public int insertloan(LoanDTO dto) throws SQLException;
 	
 	// 전체 대출 리스트
 	public List<LoanDTO> listloan(String user_code);
@@ -27,6 +27,8 @@ public interface UserDAO1 {
 	public void loanreservation(LoanDTO dto) throws SQLException;
 
 	// 연체 여부
-	public LoanDTO bookLoaning(String user_code);
+	public LoanDTO bookLoaning(int user_code);
+
+	List<LoanDTO> listloan(int user_code);
 	
 }

@@ -42,7 +42,9 @@ public class UserUI {
 				case 4: sincheong(); break;
 				case 5: mypageUI.menu(); break;
 				}
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
+				System.out.println("숫자만 입력해주세요");
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -52,18 +54,19 @@ public class UserUI {
 	protected void findBybook() {
 		System.out.println("\n[도서검색]");
 		
-
 		String search;
+		List<BookInfoDTO1> list = null;
 
 		try {
 			System.out.print("도서 제목 또는 저자 ? ");
 			search = br.readLine();
 
-			List<BookInfoDTO1> list = dao.listBook(search);
+			list = dao.listBook(search);
+			
 			if (list.size() == 0) {
 				System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
 				return;
-			}
+			}	
 			for (BookInfoDTO1 dto : list) {
 				System.out.print(dto.getBook_code() + "\t");
 				System.out.print(dto.getIsbn() + "\t");
@@ -72,6 +75,25 @@ public class UserUI {
 				System.out.print(dto.getPublisher_name() + "\t");
 				System.out.println(dto.getPublish_date());
 			}
+			System.out.println();
+			
+			int ch3 = 0;
+			
+			System.out.println("[디버그] 로그인 유저 = " + login.loginUser());
+			System.out.println("[디버그] 로그인 유저코드 = " + login.loginUser().getUser_code());
+			
+			try {
+				System.out.print("1.대출신청 2.사용자화면  =>  ");
+				ch3 = Integer.parseInt(br.readLine());
+				
+				switch(ch3) {
+				case 1: insertloan(list); break;
+				case 2: menu(); break;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -79,22 +101,75 @@ public class UserUI {
 		System.out.println();
 	}
 
+	// 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
+	// 대출 연장 시 연장 가능 회기 출력
+	protected int insertloan(List<BookInfoDTO1> list) {
+	    System.out.println("\n[대출신청]");
+	    int result = 0;
+
+	    try {
+	        System.out.print("도서 코드 ? ");
+	        String bookcodestr = br.readLine();
+	        int bookcode = Integer.parseInt(bookcodestr);
+
+	        // 1️⃣ 도서 찾기
+	        BookInfoDTO1 selectedBook = null;
+	        for (BookInfoDTO1 dto : list) {
+	            if (dto.getBook_code() == bookcode) {
+	                selectedBook = dto;
+	                break;
+	            }
+	        }
+
+	        // 2️⃣ 도서 코드 검증
+	        if (selectedBook == null) {
+	            System.out.println("해당 도서코드는 잘못되었습니다. 확인 후 다시 입력해주세요.");
+	            return 0;
+	        }
+
+	        // 3️⃣ 대출 정보 설정
+	        LoanDTO loandto = new LoanDTO();
+	        loandto.setBook_code(bookcode);
+	        loandto.setUser_code(login.loginUser().getUser_code());
+
+	        // 4️⃣ DB INSERT 실행 (1회만!)
+	        result = dao.insertloan(loandto);
+
+	        // 5️⃣ 결과 출력
+	        if (result > 0) {
+	            System.out.println("도서가 대출되었습니다.");
+	            System.out.println("도서코드 : " + selectedBook.getBook_code());
+	            System.out.println("도서제목 : " + selectedBook.getBookName());
+	            System.out.println("저자 : " + selectedBook.getAuthor_name());
+	            System.out.println("출판사 : " + selectedBook.getPublisher_name());
+	        } else {
+	            System.out.println("대출 신청에 실패하였습니다. 다시 시도해주세요.");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    System.out.println();
+	    return result;
+	}
+
+
+	
 	// 2. 대출신청/연장/예약신청
 	public void loan() {
-		
 		int ch2 = 0;
 
 		while (true) {
-			System.out.println("\n[대출]");	
+			System.out.println("\n[대출 연장/예약]");	
 				
 			try {
-				System.out.println("1.대출신청 2.대출연장 3.대출예약");
+				System.out.println("1.대출연장 2.대출예약");
 				ch2 = Integer.parseInt(br.readLine());
 				
 				switch (ch2) {
-				case 1: insertloan(); break;
-				case 2: renewloan(); break;
-				case 3: loanreservation(); break;
+				case 1: renewloan(); break;
+				case 2: loanreservation(); break;
 				}
 				return;
 
@@ -104,52 +179,16 @@ public class UserUI {
 		}
 	}
 
-	// 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
-	// 대출 연장 시 연장 가능 회기 출력
-	protected void insertloan() {
-		System.out.println("\n[대출신청]");
-
-		String bookname;
-		try {
-			
-			System.out.println("도서 제목 ? ");
-			bookname = br.readLine();
-
-			List<BookInfoDTO1> list = dao.loanBook(bookname);
-			if (list.size() == 0) {
-				System.out.println("도서관에 등록된 도서가 아닙니다.");
-				return;
-			}
-
-			for (BookInfoDTO1 dto : list) {
-				System.out.print("도서 제목 : " + dto.getBookName() + "\t");
-				System.out.print("도서 코드 : " + dto.getBook_code() + "\t");
-				System.out.println("도서 컨디션 : " + dto.getBook_condition() + "\t");
-				
-				LoanDTO loandto = new LoanDTO();
-				
-
-				System.out.print("도서 코드 ? ");
-				dto.setBook_code(br.read());
-
-				dao.insertloan(loandto);
-
-				System.out.println("도서가 대출되었습니다.");
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println();
-	}
 
 	protected void renewloan() {
 		System.out.println("\n[대출연장 신청]");
-		String usercode;
+		String usercodestr;
 
 		try {
 			System.out.print("회원 번호 ? ");
-			usercode = br.readLine();
+			usercodestr = br.readLine();
+			
+			int usercode = Integer.parseInt(usercodestr);
 
 			List<LoanDTO> list = dao.listloan(usercode);
 
