@@ -112,7 +112,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 		try {
 			// INSERT INTO 테이블명(컬럼명, 컬러명) VALUES (값1, 값2)
 			// INSERT ALL INTO 테이블명1(컬럼, 컬럼) VALUES(값, 값) INTO 테이블명2(컬럼, 컬럼) VALUES(값, 값);
-			sql = "INSERT INTO loan(loan_code, book_code, user_code, checkout_date, due_date, isExtended) VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
+			sql = "INSERT INTO loan(loan_code, book_code, user_code, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date isExtended) VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
 			
 		    pstmt = conn.prepareStatement(sql);
 		    
@@ -140,7 +140,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 		String sql;
 		
 		try {
-			sql = "SELECT l.user_code, user_name, b.book_code, bookname, checkout_date, due_date,return_date, ixextended, loan_renewaldate "
+			sql = "SELECT l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, ixextended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
 					+ " FROM loan l "
 					+ " JOIN user_info u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
@@ -185,7 +185,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 		String sql;
 		
 		try {
-			sql = "SELECT l.user_code, user_name, b.book_code, bookname, checkout_date, due_date, return_date, ixextended, loan_renewaldate "
+			sql = "SELECT l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, ixextended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
 					+ " FROM loan l "
 					+ " JOIN user_info u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
@@ -230,7 +230,36 @@ public class UserDAOImpl1 implements UserDAO1 {
 		ResultSet rs = null;
 		String sql;
 		
-		
+		try {
+			sql = "SELECT b.book_code, bi.bookName, b.book_condition, TO_CHAR(l.due_date, 'YYYY-MM-DD') "
+					+ " FROM book b "
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ " JOIN loan l ON b.book_code = l.book_code "
+					+ " WHERE b.book_condition = '대출중'";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(true) {
+				LoanDTO dto = new LoanDTO();
+				
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookName"));
+				dto.setBook_condition(rs.getString("book_condition"));
+				dto.setDue_date(rs.getString("due_date"));
+				
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
 		return list;
 	}
 	

@@ -79,21 +79,21 @@ public class UserUI {
 		System.out.println();
 	}
 
-	// 2. 대출신청/연장
-	// 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
-	// 대출 연장 시 연장 가능 회기 출력
+	// 2. 대출신청/연장/예약신청
 	public void loan() {
 		int ch2 = 0;
 
 		while (true) {
-			System.out.println("\n[대출]");
+			System.out.println("\n[대출]");				
+				
 			try {
-				System.out.println("1.대출신청 2.대출연장");
+				System.out.println("1.대출신청 2.대출연장 3.대출예약");
 				ch2 = Integer.parseInt(br.readLine());
-
+				
 				switch (ch2) {
 				case 1: insertloan(); break;
 				case 2: renewloan(); break;
+				case 3: loanreservation(); break;
 				}
 				return;
 
@@ -103,6 +103,8 @@ public class UserUI {
 		}
 	}
 
+	// 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
+	// 대출 연장 시 연장 가능 회기 출력
 	protected void insertloan() {
 		System.out.println("\n[대출신청]");
 
@@ -123,6 +125,7 @@ public class UserUI {
 				System.out.println("도서 컨디션 : " + dto.getBook_condition() + "\t");
 
 				LoanDTO loandto = new LoanDTO();
+				
 
 				System.out.print("도서 코드 ? ");
 				dto.setBook_code(br.read());
@@ -153,7 +156,7 @@ public class UserUI {
 				return;
 			}
 			for (LoanDTO dto : list) {
-				System.out.println(usercode + "회원님의 대출 도서 목록입니다.");
+				System.out.println("회원님의 대출 도서 목록입니다.");
 				System.out.print("도서 제목 : " + dto.getBookname() + "\t");
 				System.out.print("도서 코드 : " + dto.getBook_code() + "\t");
 				System.out.print("대출 일자 : " + dto.getCheckout_date() + "\t");
@@ -168,6 +171,12 @@ public class UserUI {
 		System.out.println();
 	}
 
+	// 대출 예약(대출 중인 도서)
+	protected void loanreservation() {
+		System.out.println("\n[대출 예약 신청]");
+		
+	}
+	
 	// 4. 도서신청
 	protected void sincheong() {
 		System.out.println("\n[도서신청]");
