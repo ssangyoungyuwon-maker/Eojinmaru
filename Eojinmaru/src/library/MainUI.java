@@ -23,6 +23,8 @@ public class MainUI {
     public void menu() {
         while (true) {
         	try {
+        		noticeUI.PrintlastestNoticeTitle();
+        		
         		System.out.println("\n===== [메인 화면] =====");
         		System.out.println("1. 로그인");
         		System.out.println("2. 회원가입");

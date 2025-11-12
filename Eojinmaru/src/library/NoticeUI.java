@@ -14,6 +14,32 @@ public class NoticeUI {
 	private Connection conn = DBConn.getConnection();
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	
+	// 가장 최근 공지사항 제목 출력
+	public void PrintlastestNoticeTitle() {
+		PreparedStatement pstmt = null;
+    	ResultSet rs = null;
+    	String sql;
+    	
+    	sql = "SELECT notice_title FROM notice ORDER BY notice_id DESC FETCH FIRST 1 ROWS ONLY";
+		
+    	try {
+    		pstmt = conn.prepareStatement(sql);
+    		rs = pstmt.executeQuery();
+    		System.out.println("============================================================");
+    		if(rs.next()) {
+				System.out.println(String.format("|%-4s| %-45s|", " 공지", truncateString(rs.getString("notice_title"), 30)));
+    		} else {
+    			System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
+    		}			
+    		System.out.println("------------------------------------------------------------");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(pstmt);
+			DBUtil.close(rs);
+		}
+	}
+	
 	// 공지사항 목록 보기
     public void noticeList() {
     	final int MaxNumInPage = 5;
@@ -86,6 +112,7 @@ public class NoticeUI {
 		}    	
     }
     
+    // 선택된 공지글 보여주기
     protected void showNotice(int noticeId) throws Exception {
     	
     	PreparedStatement pstmt = null;
@@ -106,7 +133,7 @@ public class NoticeUI {
     			System.out.printf("제목: %s\n", rs.getString("notice_title"));
     			System.out.println("-------------------------------------------------------");
     			System.out.println("내용:");
-    			System.out.println(rs.getString("notice_content"));
+    			printWrapped(rs.getString("notice_content"), 40);
     			System.out.println("=======================================================");
     			
     			
@@ -132,6 +159,7 @@ public class NoticeUI {
 		}
     }
     
+    // 공지글 쓰기
     protected void noticeWrite() throws Exception {
     	PreparedStatement pstmt = null;
     	String sql;
@@ -163,6 +191,7 @@ public class NoticeUI {
 		}
     }
     
+    // 선택된 공지글 수정
     protected void noticeUpdate(int noticeId) throws Exception {
     	PreparedStatement pstmt = null;
     	String sql;
@@ -178,11 +207,12 @@ public class NoticeUI {
     			throw new Exception("✅ 입력된 내용이 없어 공지사항 수정이 취소되었습니다.");
     		}
     		
-    		sql = "UPDATE NOTICE notice_title = ?, notice_content = ?, notice_date = SYSDATE WHERE notice_id = ?";
+    		sql = "UPDATE NOTICE SET notice_title = ?, notice_content = ?, notice_date = SYSDATE WHERE notice_id = ?";
     		
     		pstmt = conn.prepareStatement(sql);
     		pstmt.setString(1, newTitle);
     		pstmt.setString(2, newContent);
+    		pstmt.setInt(3, noticeId);
     		
     		if(pstmt.executeUpdate() <= 0) {
     			throw new Exception("❌ 공지사항 수정에 실패했습니다.");
@@ -194,19 +224,57 @@ public class NoticeUI {
 		}
     }
     
-    protected void noticeDelete(int noticeId) {
+    //선택된 공지글 삭제
+    protected void noticeDelete(int noticeId) throws Exception {
+    	PreparedStatement pstmt = null;
+    	String sql;
     	
+    	try {
+    		sql = "DELETE FROM NOTICE WHERE notice_id = ?";
+    		
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.setInt(1, noticeId);
+    		
+    		if(pstmt.executeUpdate() <= 0) {
+    			throw new Exception("❌ 공지사항 삭제에 실패했습니다.");
+    		}
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			DBUtil.close(pstmt);
+		}
     }
     
     
+    // 말줄임 함수(공지사항 제목 자르는데 사용)
     private String truncateString(String text, int maxLength) {
-        if (text == null) {
-            return "";
+    	if (text == null) {
+			text = "";
+		}
+		if (text.length() > maxLength) {
+			if (maxLength < 3) {
+				return text.substring(0, maxLength);
+			}
+			return text.substring(0, maxLength - 3) + "...";
+		}
+		if (text.length() < maxLength) {
+			StringBuilder sb = new StringBuilder(text);
+			int paddingLength = maxLength - text.length();
+			for (int i = 0; i < paddingLength; i++) {
+				sb.append("　");
+			}
+			return sb.toString();
+		}
+		return text;
+    }
+    
+    // 줄바꿈 함수(공지글 내용을 줄바꾸는 데 사용)
+    private void printWrapped(String text, int width) {
+        int length = text.length();
+        for (int i = 0; i < length; i += width) {
+            int end = Math.min(i + width, length);
+            System.out.println(text.substring(i, end));
         }
-        if (text.length() > maxLength) {
-            return text.substring(0, maxLength - 3) + "...";
-        }
-        return text;
     }
 
 }
