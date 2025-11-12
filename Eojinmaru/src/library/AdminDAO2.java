@@ -14,8 +14,9 @@ public interface AdminDAO2 {
 	public int noticeDelete(int noticeId) ; // 공지사항 번호로 삭제하기 
 	public int noticeUpdate(AdminDTO2 dto) ; // 공지 번호로 수정 하기
 	public int noticeInsert(AdminDTO2 dto); // 공지사항 등록하기
-	public List<AdminDTO2> loanbooklist();
-	public AdminDTO2 loanbooksearchbybookcode(int bookcode);
-	public int loanbookreturn(AdminDTO2 dto);
-	public AdminDTO2 loanbooksearchbyname(String username) ;
+	public List<AdminDTO2> loanbooklist();		// 대출중 도서 리스트 출력
+	public AdminDTO2 loanbooksearchbybookcode(int bookcode);	// 대출한 책 bookcode 로 조회하기
+	public int loanbookreturn(AdminDTO2 dto);	// 강제로 대출중 -> 반납처리
+	public List<AdminDTO2> loanbooksearchbyname(String username) ;	// 이름으로 도서 대여 이력 조회
+	public List<AdminDTO2> overdueloanbooklist()	; // 
 }
