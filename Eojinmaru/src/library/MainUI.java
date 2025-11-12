@@ -2,7 +2,6 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 
 public class MainUI {
 
@@ -12,7 +11,6 @@ public class MainUI {
     // private Connection conn = DBConn.getConnection(); 불필요해보임
     
     private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private Scanner scanner = new Scanner(System.in);
     
     private MemberDAO memberDAO = new MemberDAOImpl();
     private LoginInfo login = new LoginInfo(); // 로그인 정보 저장
@@ -76,7 +74,7 @@ public class MainUI {
     		// 1. 관리자 로그인 확인 및 관리자 메뉴 호출
     		if (ADMIN_ID.equals(inputId) && ADMIN_PW.equals(inputPw)) {
     			System.out.println(">> 관리자님, 환영합니다. [관리자 화면]으로 이동합니다.");
-    			adminUI.showMenu(scanner);
+    			adminUI.showMenu();
     		}
     		// 2. 관리자가 아니면, 사용자 로그인 시도
     		else {
