@@ -25,31 +25,29 @@ public class ReturnUI {
 
 	public void start() {
 		System.out.println("\n[도서반납]");
+		MemberDTO loginuser = login.loginUser();
+		
 
 		try {
-
-			MemberDTO loginuser = login.loginUser();
-
 			List<LoanDTO> list = showbooksonloan(loginuser.getUser_code());
-	
-
 			if (list.size() == 0) {
 				System.out.println("대출중인 도서가 없습니다.\n");
 				return;
 			}
 
-			System.out.println("회원번호\t대출번호\t책이름\t대출일자\t반납예정일\t대출연장여부");
-			System.out.println("----------------------------------------------");
+			System.out.println("|회원번호\t책번호\t책이름\t\t\t대출일자\t\t반납예정일\t\t대출연장여부|");
+			System.out.println("-------------------------------------------------------------------------------------");
 			
 			for (LoanDTO dto : list) {
 				System.out.print(dto.getUser_code() + "\t");
-				System.out.print(dto.getBookname() + "\t");
+				System.out.print(dto.getBook_code()+"\t");
+				System.out.print(dto.getBookname() + "\t\t");
 				System.out.print(dto.getCheckout_date() + "\t");
 				System.out.print(dto.getDue_date() + "\t");
-				System.out.println(dto.getIsExtended());
+				System.out.println(dto.getIsExtended()+"회");
 			}
 
-			System.out.println("반납할 책 번호를 입력하세요");
+			System.out.println("\n반납할 책 번호를 입력하세요");
 			int book_code =Integer.parseInt(br.readLine());
 			boolean b = false;
 			
@@ -77,13 +75,12 @@ public class ReturnUI {
 	// DAO
 	public List<LoanDTO> showbooksonloan(int user_code) throws SQLException {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
-		LoanDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
 
 		try {
-			sql = "SELECT l.user_code, bookname, checkout_date, due_date, isExtended  "
+			sql = "SELECT l.user_code, l.book_code, i.bookname, TO_CHAR(l.checkout_date,'YYYY-MM-DD')checkoutdate, TO_CHAR(l.due_date,'YYYY-MM-DD')duedate, l.isExtended  "
 					+ " FROM Loan l "
 					+ " JOIN Book b ON l.book_code=b.book_code "
 					+ " JOIN BOOKINFO i ON i.ISBN=b.ISBN "
@@ -95,12 +92,13 @@ public class ReturnUI {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				dto = new LoanDTO();
+				LoanDTO dto = new LoanDTO();
 
 				dto.setUser_code(rs.getInt("user_code"));
-				dto.setBookname(rs.getString("book_name"));
-				dto.setCheckout_date(rs.getString("checkout_date"));
-				dto.setDue_date(rs.getString("due_date"));
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookname"));
+				dto.setCheckout_date(rs.getString("checkoutdate"));
+				dto.setDue_date(rs.getString("duedate"));
 				dto.setIsExtended(rs.getInt("isExtended"));
 
 				list.add(dto);
@@ -142,13 +140,10 @@ public class ReturnUI {
 		} finally {
 			DBUtil.close(pstmt);
 			DBUtil.close(pstmt2);
-			
 			try {
 				conn.setAutoCommit(true);
 			} catch (Exception e2) {
 			}
 		}
 	}
-	
-	
 }

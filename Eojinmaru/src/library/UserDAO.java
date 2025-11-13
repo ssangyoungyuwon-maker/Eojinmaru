@@ -34,7 +34,7 @@ public class UserDAO {
 			conn.commit();
 		} catch (Exception e) {
 			DBUtil.rollback(conn);
-			
+
 		} finally {
 			DBUtil.close(pstmt);
 
@@ -48,48 +48,39 @@ public class UserDAO {
 	public void deleteUser(String id) throws SQLException {
 		PreparedStatement pstmt = null;
 		String sql;
-		
+
 		try {
-			conn.setAutoCommit(false);
-			
-			sql = "DELETE FROM UserInfo WHERE user_id=?";
-			
+			sql = "UPDATE UserInfo SET enabled=0 WHERE user_id=?";
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
-			
+
 			pstmt.executeUpdate();
-			
-			conn.commit();
+
 		} catch (Exception e) {
-			DBUtil.rollback(conn);
-		}finally {
+		} finally {
 			DBUtil.close(pstmt);
-			
-			try {
-				conn.setAutoCommit(true);
-			} catch (Exception e2) {
-			}
 		}
 	}
-	
-	public MemberDTO chkmyinfo(String id) throws SQLException{
+
+	public MemberDTO chkmyinfo(String id) throws SQLException {
 		MemberDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
-		
+
 		try {
-			sql="SELECT user_Id, user_pwd, user_name, user_birth, user_tel,user_email,user_address"
+			sql = "SELECT user_Id, user_pwd, user_name, user_birth, user_tel,user_email,user_address"
 					+ " FROM UserInfo WHERE user_id=?";
-		
+
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
-			
+
 			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
+
+			if (rs.next()) {
 				dto = new MemberDTO();
-				
+
 				dto.setUser_Id(rs.getString("user_Id"));
 				dto.setUser_pwd(rs.getString("user_pwd"));
 				dto.setUser_name(rs.getString("user_name"));
@@ -100,11 +91,11 @@ public class UserDAO {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			DBUtil.close(rs);
 			DBUtil.close(pstmt);
 		}
 		return dto;
 	}
-	
+
 }

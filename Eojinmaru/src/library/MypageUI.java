@@ -10,6 +10,7 @@ public class MypageUI {
 	private LoginInfo login = null;
 	private UserDAO dao = new UserDAO();
 	private ReturnUI returnUI;
+	private MainUI mainUI;
 	
 
 	public MypageUI(LoginInfo login) {
@@ -147,7 +148,7 @@ public class MypageUI {
 						dao.deleteUser(login.loginUser().getUser_Id());
 						System.out.println("탈퇴가 완료되었습니다.");
 						login.logout();
-						return;
+						new MainUI().menu();
 					}
 				} else if (rs.equalsIgnoreCase("n")) {
 					System.out.println("취소되었습니다. 이전 화면으로 돌아갑니다.");
@@ -162,5 +163,4 @@ public class MypageUI {
 			e.printStackTrace();
 		}
 	}
-
 }
