@@ -16,7 +16,7 @@ public class MainUI {
     private LoginInfo login = new LoginInfo(); // 로그인 정보 저장
     private AdminUI adminUI = new AdminUI();
     private UserUI userUI = new UserUI(login);
-    private NoticeUI noticeUI = new NoticeUI();
+    private NoticeUI noticeUI = new NoticeUI(false);
 
     public void menu() {
         while (true) {

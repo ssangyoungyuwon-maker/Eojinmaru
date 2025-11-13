@@ -10,9 +10,17 @@ import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
 public class NoticeUI {
+	private boolean isAdmin = false;
 	
 	private Connection conn = DBConn.getConnection();
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	
+	public NoticeUI() {
+	}
+	
+	public NoticeUI(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 	
 	// 가장 최근 공지사항 제목 출력
 	public void PrintlastestNoticeTitle() {
@@ -86,12 +94,14 @@ public class NoticeUI {
 					}
 				}
 				System.out.println(LINE);
-				System.out.println("📔 메뉴: [<]이전장, [>]다음장, [등록]공지 등록, [공지번호]보기 및 수정/삭제, [0]이전 메뉴");
-				System.out.print("선택 입력 >> ");
 				
-				String ch = br.readLine();
-				
-				switch(ch) {
+				if(isAdmin) {
+					System.out.println("📔 메뉴: [<]이전장, [>]다음장, [등록]공지 등록, [공지번호]보기 및 수정/삭제, [0]이전 메뉴");
+					System.out.print("선택 입력 >> ");
+					
+					String ch = br.readLine();
+					
+					switch(ch) {
 					case "<": if(pages > 1) pages -= 1; break; // 이전장, 첫 장이면 움직이지 않음
 					case ">": if(pages < maxPage) pages += 1; break; // 다음장, 마지마 장이면 움직이지 않음
 					case "등록": noticeWrite(); break;
@@ -99,6 +109,22 @@ public class NoticeUI {
 					default: 
 						// 없는 공지글 번호가 입력되면 부적절한 입력 에러
 						showNotice(Integer.parseInt(ch));
+					}
+					
+				} else {
+					System.out.println("📔 메뉴: [<]이전장, [>]다음장, [공지번호]보기, [0]이전 메뉴");
+					System.out.print("선택 입력 >> ");
+					
+					String ch = br.readLine();
+					
+					switch(ch) {
+					case "<": if(pages > 1) pages -= 1; break; // 이전장, 첫 장이면 움직이지 않음
+					case ">": if(pages < maxPage) pages += 1; break; // 다음장, 마지마 장이면 움직이지 않음
+					case "0": return;
+					default: 
+						// 없는 공지글 번호가 입력되면 부적절한 입력 에러
+						showNotice(Integer.parseInt(ch));
+					}
 				}
 				
     		} catch (NumberFormatException e) {
@@ -136,18 +162,31 @@ public class NoticeUI {
     			printWrapped(rs.getString("notice_content"), 40);
     			System.out.println("=======================================================");
     			
+    			if(isAdmin) {    				
+    				System.out.println("📔 메뉴: [1]수정, [2]삭제, [0]공지목록");
+    				System.out.print("선택 입력 >> ");
+    				
+    				int ch = Integer.parseInt(br.readLine());
+    				
+    				switch(ch) {
+    				case 1: noticeUpdate(noticeId); break;
+    				case 2: noticeDelete(noticeId); break;
+    				case 0: return;
+    				default: throw new Exception("🚨 유효하지 않은 입력입니다. 다시 입력해주세요.");
+    				}
+    				
+    			} else {
+    				System.out.println("📔 메뉴: [0]공지목록");
+    				System.out.print("선택 입력 >> ");
+    				
+    				int ch = Integer.parseInt(br.readLine());
+    				
+    				switch(ch) {
+    				case 0: return;
+    				default: throw new Exception("🚨 유효하지 않은 입력입니다. 다시 입력해주세요.");
+    				}
+    			}
     			
-    			System.out.println("📔 메뉴: [1]수정, [2]삭제, [0]공지목록");
-				System.out.print("선택 입력 >> ");
-				
-				int ch = Integer.parseInt(br.readLine());
-				
-				switch(ch) {
-					case 1: noticeUpdate(noticeId); break;
-					case 2: noticeDelete(noticeId); break;
-					case 0: return;
-					default: throw new Exception("🚨 유효하지 않은 입력입니다. 다시 입력해주세요.");
-				}
     		} else {
     			throw new Exception("🚨 존재하지 않은 공지 번호입니다. 다시 입력해주세요.");
     		}
