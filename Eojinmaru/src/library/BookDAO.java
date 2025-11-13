@@ -14,8 +14,11 @@ public interface BookDAO {
 	// 대출 신청
 	public void insertloan(LoanDTO dto) throws SQLException;
 	
+	// 대출 연장
+	public void updatloan(LoanDTO dto) throws SQLException;
+	
 	// 전체 대출 리스트
-	public List<LoanDTO> listloan(String user_code);
+	public List<LoanDTO> listloan(int user_code);
 	
 	// 대출 중 리스트
 	public List<LoanDTO> listloaning(int book_code);	
@@ -29,6 +32,5 @@ public interface BookDAO {
 	// 연체 여부
 	public LoanDTO bookLoaning(int user_code);
 
-	List<LoanDTO> listloan(int user_code);
 	
 }

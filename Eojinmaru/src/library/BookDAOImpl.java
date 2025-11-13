@@ -24,7 +24,7 @@ public class BookDAOImpl implements BookDAO {
 		try {
 			  // 도서번호, isbn, 도서이름, 저자, 출판사, 발행일를 출력
 
-			 sql = "SELECT b.book_code, bi.isbn, bookName, author_name, publisher_name, TO_CHAR(publish_date, 'YYYY-MM-DD') publish_date "
+			 sql = "SELECT b.book_code, bi.isbn, bookName, author_name, publisher_name, TO_CHAR(publish_date, 'YYYY-MM-DD') publish_date, book_condition "
 					+ " FROM book b"
 					+ " left outer JOIN bookinfo bi ON b.isbn = bi.isbn "
 					+ " left outer JOIN author a ON bi.isbn = a.isbn "
@@ -47,6 +47,7 @@ public class BookDAOImpl implements BookDAO {
 				dto.setAuthor_name(rs.getString("author_name"));
 				dto.setPublisher_name(rs.getString("publisher_name"));
 				dto.setPublish_date(rs.getString("publish_date"));
+				dto.setBook_condition(rs.getString("book_condition"));
 				
 				list.add(dto);
 			}
@@ -290,9 +291,11 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-	public List<LoanDTO> listloan(String user_code) {
+	// 대출연장 
+	public void updatloan(LoanDTO dto) throws SQLException {
 		// TODO Auto-generated method stub
-		return null;
+		
+		
 	}
 
 	
