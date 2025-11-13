@@ -10,12 +10,16 @@ public class MemberDTO {
     private String user_Id;
 	private String user_pwd;
     private String user_name;
-    private String user_birth; // DTO에서는 우선 문자열(String)로 받습니다.
+    private String user_birth;
     private String user_tel;
     private String user_email;
     private String user_address;
     private String loan_renewaldate;
  
+    
+    public int getUser_code() {
+    	return user_code;
+    }
     public void setUser_code(int user_code) {
 		this.user_code = user_code;
 	}
@@ -69,9 +73,6 @@ public class MemberDTO {
 	}
 	
 	
-	public int getUser_code() {
-		return user_code;
-	}
 	
 	
     

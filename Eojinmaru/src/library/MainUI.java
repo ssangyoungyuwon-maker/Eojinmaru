@@ -17,6 +17,7 @@ public class MainUI {
     private AdminUI adminUI = new AdminUI();
     private UserUI userUI = new UserUI(login);
     private NoticeUI noticeUI = new NoticeUI(false);
+    private BookRequestUI bookRequestUI = new BookRequestUI();
 
     public void menu() {
         while (true) {
@@ -44,9 +45,7 @@ public class MainUI {
         			System.out.println(">> (구현예정) 도서 검색 페이지로 이동합니다.");
         			break;
         			// 4. 도서 신청
-        		case 4:
-        			System.out.println(">> (구현예정) 도서 신청 페이지로 이동합니다.");
-        			break;
+        		case 4: bookRequestUI.request(); break;
         			// 5. 공지사항 조회
         		case 5: noticeUI.noticeList(); break;
         		default:
@@ -56,7 +55,7 @@ public class MainUI {
         	} catch (NumberFormatException e) {
         		System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
         }
         

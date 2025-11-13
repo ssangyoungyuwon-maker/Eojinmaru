@@ -19,7 +19,7 @@ public class MemberDAOImpl implements MemberDAO {
      */
     @Override 
     public MemberDTO login(String id, String pw) {
-        String sql = "SELECT user_id, user_pwd, user_name, user_tel, user_email, user_address, loan_renewaldate " +
+        String sql = "SELECT user_code, user_id, user_pwd, user_name, TO_CHAR(user_birth, 'YYYY-MM-DD') user_birth, user_tel, user_email, user_address, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate " +
                      "FROM UserInfo WHERE user_id = ? AND user_pwd = ?";
         
         PreparedStatement pstmt = null;
@@ -38,9 +38,11 @@ public class MemberDAOImpl implements MemberDAO {
                 user = new MemberDTO(); // 빈 DTO 객체 생성
                 
                 // ResultSet에서 DTO로 정보 옮겨 담기
+                user.setUser_code(rs.getInt("user_code"));
                 user.setUser_Id(rs.getString("user_id"));
                 user.setUser_pwd(rs.getString("user_pwd"));
                 user.setUser_name(rs.getString("user_name"));
+                user.setUser_birth(rs.getString("user_birth"));
                 user.setUser_tel(rs.getString("user_tel"));
                 user.setUser_email(rs.getString("user_email"));
                 user.setUser_address(rs.getString("user_address"));
