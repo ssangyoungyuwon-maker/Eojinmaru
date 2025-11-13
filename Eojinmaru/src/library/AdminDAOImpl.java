@@ -362,21 +362,42 @@ public class AdminDAOImpl implements AdminDAO {
     // 도서 삭제
     @Override
     public boolean deleteBookByCode(int bookCode) {
-        String sql = "DELETE FROM book WHERE BOOK_CODE = ?";
-        PreparedStatement pstmt = null;
+    	
+    	 String sqlLoan = "DELETE FROM LOAN WHERE BOOK_CODE = ?"; // 1. 자식 레코드 삭제
+         String sqlBook = "DELETE FROM book WHERE BOOK_CODE = ?";  // 2. 부모 레코드 삭제
+         
+         PreparedStatement pstmtLoan = null;
+         PreparedStatement pstmtBook = null;
+         
+        
         
         try {
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, bookCode); 
-            return pstmt.executeUpdate() > 0;
+        	conn.setAutoCommit(false); 
+        	
+        	pstmtLoan = conn.prepareStatement(sqlLoan);
+            pstmtLoan.setInt(1, bookCode);
+            pstmtLoan.executeUpdate(); 
             
-        } catch (NumberFormatException e) {
-            System.err.println(">> DAO 오류: book_code가 숫자가 아닙니다.");
+            pstmtBook = conn.prepareStatement(sqlBook);
+            pstmtBook.setInt(1, bookCode); 
+            int resultBook = pstmtBook.executeUpdate();
+            
+            if (resultBook > 0) {
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
+            
         } catch (SQLException e) {
-            System.err.println(">> 도서 삭제 중 오류: " + e.getMessage());
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.err.println(">> 도서 삭제 중 오류 (자식 레코드 문제 포함): " + e.getMessage());
         } finally {
             try {
-                if (pstmt != null) pstmt.close();
+                if (pstmtLoan != null) pstmtLoan.close();
+                if (pstmtBook != null) pstmtBook.close();
+                conn.setAutoCommit(true); 
             } catch (SQLException e) { e.printStackTrace(); }
         }
         return false;
@@ -492,6 +513,39 @@ public class AdminDAOImpl implements AdminDAO {
             } catch (SQLException e) { e.printStackTrace(); }
         }
         return false; 
+    }
+    
+    // 폐기 기록 조회 
+    public DisposedBookDTO findDisposedBookByCode(int bookCode) {
+        String sql = "SELECT d.book_code, bi.bookname " +
+                     "FROM disposedbook d " +
+                     "LEFT JOIN bookinfo bi ON d.ISBN = bi.ISBN " +
+                     "WHERE d.book_code = ?";
+
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        DisposedBookDTO disposedBook = null;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, bookCode);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                disposedBook = new DisposedBookDTO();
+                disposedBook.setBook_code(rs.getInt("book_code"));
+                disposedBook.setBookName(rs.getString("bookname"));
+                // dispose_date, dispose_reason은 이 쿼리에서 가져오지 않음 (단순 확인용)
+            }
+        } catch (SQLException e) {
+            System.err.println(">> 폐기 기록 검색 중 오류: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return disposedBook;
     }
 	
 }
