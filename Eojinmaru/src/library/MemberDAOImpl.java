@@ -20,7 +20,7 @@ public class MemberDAOImpl implements MemberDAO {
     @Override 
     public MemberDTO login(String id, String pw) {
         String sql = "SELECT user_code, user_id, user_pwd, user_name, TO_CHAR(user_birth, 'YYYY-MM-DD') user_birth, user_tel, user_email, user_address, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate " +
-                     "FROM UserInfo WHERE user_id = ? AND user_pwd = ?";
+                     "FROM UserInfo WHERE user_id = ? AND user_pwd = ? AND enabled = 1";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null; // 쿼리 결과를 받을 ResultSet
@@ -33,6 +33,7 @@ public class MemberDAOImpl implements MemberDAO {
             
             rs = pstmt.executeQuery(); // SELECT 쿼리는 executeQuery() 사용
 
+            
             // 쿼리 결과가 있다면 (로그인 성공)
             if (rs.next()) {
                 user = new MemberDTO(); // 빈 DTO 객체 생성
@@ -69,8 +70,8 @@ public class MemberDAOImpl implements MemberDAO {
 	public boolean signUpUser(MemberDTO user) {
         
         String sql = "INSERT INTO UserInfo (user_code, user_id, user_pwd, user_name, user_birth, " +
-                     "user_tel, user_email, user_address, loan_renewaldate) " +
-                     "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, SYSDATE)";
+                     "user_tel, user_email, user_address, loan_renewaldate, enabled) " +
+                     "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, SYSDATE, 1)";
         
         PreparedStatement pstmt = null;
 
