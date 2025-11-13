@@ -2,15 +2,19 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class MypageUI {
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	private LoginInfo login = null;
 	private UserDAO dao = new UserDAO();
+	private ReturnUI returnUI;
+	
 
 	public MypageUI(LoginInfo login) {
 		this.login = login;
+		this.returnUI = new ReturnUI(login);
 	}
 
 	public void menu() {
@@ -19,17 +23,23 @@ public class MypageUI {
 			try {
 				MemberDTO loginUser = login.loginUser();
 				System.out.println(loginUser.getUser_name() + "님 아래 메뉴를 선택하세요.");
-				System.out.println("1.내정보확인 2.내정보수정 3.탈퇴 4.로그아웃 5.홈으로");
+				System.out.print("\n1.내정보확인 2.내정보수정 3.탈퇴 4.이전화면 ");
 				ch = Integer.parseInt(br.readLine());
 
+
 				switch (ch) {
-				case 1: chkmyinfo(); break;
-				case 2: update(); break;
-				case 3: delete(); break;
-				case 4: login.logout();
-					System.out.println("로그아웃되었습니다.");
+				case 1:
+					chkmyinfo();
+					break;
+				case 2:
+					update();
+					break;
+				case 3:
+					delete();
+					break;
+				case 4:
+					System.out.println("이전 화면으로 이동합니다.");
 					return;
-				case 5:System.exit(0);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -58,6 +68,8 @@ public class MypageUI {
 					System.out.print(dto.getUser_tel() + "\t");
 					System.out.print(dto.getUser_email() + "\t");
 					System.out.println(dto.getUser_address());
+
+					System.out.println("\n이전 화면으로 이동합니다.");
 
 					return;
 				} else {
@@ -113,9 +125,11 @@ public class MypageUI {
 
 		try {
 			MemberDTO dto = login.loginUser();
+			List<LoanDTO> list = returnUI.showbooksonloan(dto.getUser_code());
 
 			System.out.println("비밀번호를 입력하세요.");
 			String pwd = br.readLine();
+			
 			if (!dto.getUser_pwd().equals(pwd)) {
 				System.out.println("비밀번호가 틀렸습니다. 마이페이지로 돌아갑니다.");
 				return;
@@ -125,25 +139,28 @@ public class MypageUI {
 				System.out.println("정말로 탈퇴하시겠습니까? [Y/N]");
 				String rs = br.readLine();
 
-				if (rs == null || rs.isBlank()) {
-					System.out.println("Y나 N중에 하나만 입력하세요.");
-					continue;
-				}
-
-				char input = rs.toUpperCase().charAt(0);
-
-				if (input == 'Y') {
-					dao.deleteUser(login.loginUser().getUser_Id());
-					System.out.println("탈퇴가 완료되었습니다.");
-					login.logout();
+				if (rs.equalsIgnoreCase("y")) {
+					if (list.size() != 0) {
+						System.out.println("현재 대출중인 도서가 있어 탈퇴가 불가합니다.");
+						return;
+					} else {
+						dao.deleteUser(login.loginUser().getUser_Id());
+						System.out.println("탈퇴가 완료되었습니다.");
+						login.logout();
+						return;
+					}
+				} else if (rs.equalsIgnoreCase("n")) {
+					System.out.println("취소되었습니다. 이전 화면으로 돌아갑니다.");
 					return;
-				} else if (input == 'N') {
-					System.out.println("취소되었습니다. 마이페이지로 이동합니다.");
-					return;
+				} else {
+					System.out.println("Y나 N중 하나만 입력하세요.");
 				}
 			}
-		} catch (Exception e) {
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
 }

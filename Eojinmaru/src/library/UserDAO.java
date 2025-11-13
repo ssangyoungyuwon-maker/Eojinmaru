@@ -18,7 +18,7 @@ public class UserDAO {
 		try {
 			conn.setAutoCommit(false);
 
-			sql = "UPDATE user_info SET user_pwd=?, user_name=?, user_tel=?, user_email=?,user_address=? WHERE user_id=?";
+			sql = "UPDATE UserInfo SET user_pwd=?, user_name=?, user_tel=?, user_email=?,user_address=? WHERE user_id=?";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -52,12 +52,13 @@ public class UserDAO {
 		try {
 			conn.setAutoCommit(false);
 			
-			sql = "DELETE FROM user_info WHERE user_id=?";
+			sql = "DELETE FROM UserInfo WHERE user_id=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			
 			pstmt.executeUpdate();
+			
 			conn.commit();
 		} catch (Exception e) {
 			DBUtil.rollback(conn);
@@ -70,6 +71,7 @@ public class UserDAO {
 			}
 		}
 	}
+	
 	public MemberDTO chkmyinfo(String id) throws SQLException{
 		MemberDTO dto = null;
 		PreparedStatement pstmt = null;
@@ -78,7 +80,7 @@ public class UserDAO {
 		
 		try {
 			sql="SELECT user_Id, user_pwd, user_name, user_birth, user_tel,user_email,user_address"
-					+ " FROM user_info WHERE user_id=?";
+					+ " FROM UserInfo WHERE user_id=?";
 		
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
@@ -104,4 +106,5 @@ public class UserDAO {
 		}
 		return dto;
 	}
+	
 }
