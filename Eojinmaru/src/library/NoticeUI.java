@@ -204,10 +204,10 @@ public class NoticeUI {
     	String sql;
     	
     	try {
-    		System.out.println("등록할 공지 제목을 입력해주세요 \n 제목 : ");
+    		System.out.print("등록할 공지 제목을 입력해주세요 \n 제목 : ");
     		String newTitle = br.readLine().trim();
     		
-    		System.out.println("등록할 공지 내용을 입력해주세요 \n 내용 : ");
+    		System.out.print("등록할 공지 내용을 입력해주세요 \n 내용 : ");
     		String newContent = br.readLine().trim();
     		
     		if (newTitle.isEmpty() && newContent.isEmpty()) {

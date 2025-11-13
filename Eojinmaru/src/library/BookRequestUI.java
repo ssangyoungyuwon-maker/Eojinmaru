@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import DBUtil.DBConn;
 import DBUtil.DBUtil;
@@ -19,7 +18,7 @@ public class BookRequestUI {
     	String sql;
     	
     	try {
-    		System.out.println("신청할 도서 정보를 입력해주세요 \n  : ");
+    		System.out.print("신청할 도서 정보를 입력해주세요 \n 도서정보 : ");
     		String bookInfo = br.readLine().trim();
     		
     		if (bookInfo.isEmpty()) {
