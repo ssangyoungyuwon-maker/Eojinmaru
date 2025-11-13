@@ -10,13 +10,13 @@ import java.util.List;
 import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
-public class UserDAOImpl1 implements UserDAO1 {
+public class BookDAOImpl implements BookDAO {
 	private Connection conn = DBConn.getConnection();
 
 	@Override
 	// 도서검색(제목/저자)
-	public List<BookInfoDTO1> listBook(String search) {
-		List<BookInfoDTO1> list = new ArrayList<BookInfoDTO1>();
+	public List<BookInfoDTO> listBook(String search) {
+		List<BookInfoDTO> list = new ArrayList<BookInfoDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -39,7 +39,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				BookInfoDTO1 dto = new BookInfoDTO1();
+				BookInfoDTO dto = new BookInfoDTO();
 				
 				dto.setBook_code(rs.getInt("book_code"));
 				dto.setIsbn(rs.getString("isbn"));
@@ -63,8 +63,8 @@ public class UserDAOImpl1 implements UserDAO1 {
 	@Override
 	// 대출 신청 전 책 리스트 조회
 
-	public List<BookInfoDTO1> loanBook(int bookcode) {
-		List<BookInfoDTO1> list = new ArrayList<BookInfoDTO1>();
+	public List<BookInfoDTO> loanBook(int bookcode) {
+		List<BookInfoDTO> list = new ArrayList<BookInfoDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -82,7 +82,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
-				BookInfoDTO1 dto = new BookInfoDTO1();
+				BookInfoDTO dto = new BookInfoDTO();
 				
 				dto.setBook_code(rs.getInt("book_code"));
 				dto.setBookName(rs.getString("bookName"));
@@ -143,12 +143,12 @@ public class UserDAOImpl1 implements UserDAO1 {
 		String sql;
 		
 		try {
-			sql = "SELECT l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, ixextended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
+			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
 					+ " FROM loan l "
-					+ " JOIN user_info u ON u.user_code = l.user_code "
+					+ " JOIN userinfo u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE l.user = ?";
+					+ " WHERE l.user_code = ?";
 					
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, user_code);
@@ -157,13 +157,14 @@ public class UserDAOImpl1 implements UserDAO1 {
 			while(rs.next()) {
 				LoanDTO dto = new LoanDTO();
 				
+				dto.setLoan_code(rs.getInt("Loan_code"));
 				dto.setUser_code(rs.getInt("user_code"));
 				dto.setUser_name(rs.getString("user_name"));
 				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookname"));
 				dto.setCheckout_date(rs.getString("checkout_date"));
 				dto.setDue_date(rs.getString("due_date"));
 				dto.setReservation_date(rs.getString("return_date"));
-				dto.setIsExtended(rs.getInt("ixextended"));
 				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
 					
 				list.add(dto);
@@ -181,30 +182,32 @@ public class UserDAOImpl1 implements UserDAO1 {
 	}
 	
 	// 회원 대출리스트
-	public List<LoanDTO> listloaning(String user_code) {
+	public List<LoanDTO> listloaning(int book_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
 		
 		try {
-			sql = "SELECT l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, ixextended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
+			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, ixextended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
 					+ " FROM loan l "
 					+ " JOIN user_info u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE l.user = ? AND return_date is null";
+					+ " WHERE b.book_code = ? AND return_date is null";
 					
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, user_code);
+			pstmt.setInt(1, book_code);
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
 				LoanDTO dto = new LoanDTO();
 				
+				dto.setLoan_code(rs.getInt("Loan_code"));
 				dto.setUser_code(rs.getInt("user_code"));
 				dto.setUser_name(rs.getString("user_name"));
 				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookname"));
 				dto.setCheckout_date(rs.getString("checkout_date"));
 				dto.setDue_date(rs.getString("due_date"));
 				dto.setReservation_date(rs.getString("return_date"));

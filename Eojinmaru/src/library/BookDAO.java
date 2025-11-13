@@ -3,13 +3,13 @@ package library;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface UserDAO1 {
+public interface BookDAO {
 	
 	// 도서검색
-	public List<BookInfoDTO1> listBook(String search);
+	public List<BookInfoDTO> listBook(String search);
 	
 	// 대출 신청 도서코드 검색
-	public List<BookInfoDTO1> loanBook(int book_code);
+	public List<BookInfoDTO> loanBook(int book_code);
 	
 	// 대출 신청
 	public void insertloan(LoanDTO dto) throws SQLException;
@@ -18,7 +18,7 @@ public interface UserDAO1 {
 	public List<LoanDTO> listloan(String user_code);
 	
 	// 대출 중 리스트
-	public List<LoanDTO> listloaning(String user_code);	
+	public List<LoanDTO> listloaning(int book_code);	
 	
 	// 대출 중인 도서 리스트
 	public List<LoanDTO> loaning(String book_condition);
