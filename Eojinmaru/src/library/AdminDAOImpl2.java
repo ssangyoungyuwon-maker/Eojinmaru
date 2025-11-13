@@ -15,8 +15,8 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	private Connection conn = DBConn.getConnection();
 
 	@Override
-	public List<AdminDTO2> sinchoengdaegidoseo() {
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+	public List<AdminDTO> sinchoengdaegidoseo() {
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -28,7 +28,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 
 				dto.setSincheongcode(rs.getInt("SINCHEONG_CODE"));
 				dto.setSincheongbook(rs.getString("SINCHEONG_NAME"));
@@ -68,7 +68,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int sujeongsincheongstatus(AdminDTO2 dto) throws SQLException {
+	public int sujeongsincheongstatus(AdminDTO dto) throws SQLException {
 		int result = 0;
 		CallableStatement cstmt = null;
 		String sql;
@@ -96,8 +96,8 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public List<AdminDTO2> notice() {
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+	public List<AdminDTO> notice() {
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -110,7 +110,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 
 				dto.setNoticeId(rs.getInt("NOTICE_ID"));
 				dto.setNoticeTitle(rs.getString("NOTICE_TITLE"));
@@ -128,9 +128,9 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public AdminDTO2 selectNoticeById(int noticeId) {
+	public AdminDTO selectNoticeById(int noticeId) {
 
-		AdminDTO2 dto = null;
+		AdminDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -143,7 +143,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				dto = new AdminDTO2();
+				dto = new AdminDTO();
 
 				dto.setNoticeId(rs.getInt("NOTICE_ID"));
 				dto.setNoticeTitle(rs.getString("NOTICE_TITLE"));
@@ -161,7 +161,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int noticeInsert(AdminDTO2 dto) {
+	public int noticeInsert(AdminDTO dto) {
 		int result = 0;
 		PreparedStatement pstmt = null;
 		String sql;
@@ -184,7 +184,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int noticeUpdate(AdminDTO2 dto) {
+	public int noticeUpdate(AdminDTO dto) {
 
 		int result = 0;
 		CallableStatement cstmt = null;
@@ -240,8 +240,8 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public List<AdminDTO2> loanbooklist() {
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+	public List<AdminDTO> loanbooklist() {
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -275,7 +275,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 				dto.setUsername(rs.getString("유저이름"));
 				dto.setLoancode(rs.getInt("대출번호"));
 				dto.setBookcode(rs.getInt("북코드"));
@@ -299,9 +299,9 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public AdminDTO2 loanbooksearchbybookcode(int bookcode) {
+	public AdminDTO loanbooksearchbybookcode(int bookcode) {
 
-		AdminDTO2 dto = null;
+		AdminDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -327,7 +327,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			if (rs.next()) {
-				dto = new AdminDTO2();
+				dto = new AdminDTO();
 
 				dto.setUsername(rs.getString("유저이름"));
 				dto.setLoancode(rs.getInt("대출번호"));
@@ -350,7 +350,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int loanbookreturn(AdminDTO2 dto) {
+	public int loanbookreturn(AdminDTO dto) {
 
 		int result = 0;
 		CallableStatement cstmt = null;
@@ -378,9 +378,9 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public List<AdminDTO2> loanbooksearchbyname(String username) {
+	public List<AdminDTO> loanbooksearchbyname(String username) {
 
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -413,7 +413,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 
 				dto.setUsername(rs.getString("유저이름"));
 				dto.setLoancode(rs.getInt("대출번호"));
@@ -437,8 +437,8 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 	
 	@Override
-	public List<AdminDTO2> overdueloanbooklist() {
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+	public List<AdminDTO> overdueloanbooklist() {
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -472,7 +472,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 				dto.setUsername(rs.getString("유저이름"));
 				dto.setLoancode(rs.getInt("대출번호"));
 				dto.setBookcode(rs.getInt("북코드"));
@@ -496,9 +496,9 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 	
 	@Override
-	public List<AdminDTO2> returnbooklist() {
+	public List<AdminDTO> returnbooklist() {
 	
-		List<AdminDTO2> list = new ArrayList<AdminDTO2>();
+		List<AdminDTO> list = new ArrayList<AdminDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
@@ -532,7 +532,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				AdminDTO2 dto = new AdminDTO2();
+				AdminDTO dto = new AdminDTO();
 				dto.setUsername(rs.getString("유저이름"));
 				dto.setLoancode(rs.getInt("대출번호"));
 				dto.setBookcode(rs.getInt("북코드"));
@@ -555,7 +555,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int returnbook_baega(AdminDTO2 dto) {
+	public int returnbook_baega(AdminDTO dto) {
 
 		int result = 0;
 		CallableStatement cstmt = null;
@@ -583,7 +583,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 	}
 
 	@Override
-	public int returnbook_baega_all(AdminDTO2 dto) {
+	public int returnbook_baega_all(AdminDTO dto) {
 
 
 		int result = 0;

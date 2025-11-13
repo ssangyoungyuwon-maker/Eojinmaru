@@ -1,5 +1,6 @@
 package library;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +11,7 @@ public class AdminUI {
 	
 	private AdminDAO adminDAO = new AdminDAOImpl();
 	private AdminDAOImpl adminDAOImpl = new AdminDAOImpl();
+	private List<AdminDTO> list;
     
     public void showMenu() {
         
@@ -20,13 +22,13 @@ public class AdminUI {
             System.out.println("\n===== [관리자 화면] =====");
             System.out.println("1. 회원관리");
             System.out.println("2. 도서관리");
-            System.out.println("3. 대출/반납");
-            System.out.println("4. 신청 도서");
-            System.out.println("5. 공지사항 등록");
-            System.out.println("6. 로그아웃"); 
-            System.out.println("7. 프로그램 종료");
-            System.out.println("=========================");
-            System.out.print("메뉴를 선택하세요: ");
+			System.out.println("3. 대출 및 반납 관리");
+			System.out.println("4. 신청 도서 관리");
+			System.out.println("5. 공지사항 등록");
+			System.out.println("6. 관리자 로그아웃");
+			System.out.println("7. 시스템 종료");
+			System.out.println("--------------------");
+			System.out.print("회원 관리 메뉴 선택: ");
 
             String adminChoice = scanner.nextLine();
 
@@ -39,47 +41,59 @@ public class AdminUI {
                     this.showBookMenu(); 
                     break;
                     
-                case "3" :   
-                    System.out.println(">> (구현예정) 대출/반납 관리 페이지로 이동합니다."); 
-                    break;
-                    
-                case "4": 
-                    System.out.println(">> (구현예정) 신청 도서 관리 페이지로 이동합니다."); 
-                    break;
-                    
-                case "5": 
-                    System.out.println(">> (구현예정) 공지사항 등록 페이지로 이동합니다."); 
-                    break;
-                    
-                case "6":
-                    isAdminRunning = false; 
-                    break;
-                    
-                case "7":
-                	System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");                	
-                	Scanner sc = new Scanner(System.in);
-                	
-                	while (true) {
-                		String s = sc.nextLine();
-	
-                		if (s.equalsIgnoreCase("y")) {
-                			System.out.println("🤖 시스템을 종료하겠습니다 ... ");
-                			System.exit(0);                		
-                		}  else if (s.equalsIgnoreCase("n")){ 
-                			System.out.println("메인화면으로 돌아갑니다.");
-                			break;
-                		} else {  
-                			System.out.println(" 🚨 [Y 또는 N 만 입력해주세요] -> ");
-                		}
-                		
-                	} break;
-                default:
-                    System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요.");
-                    break;
-            }
-        }
-        System.out.println(">> 로그아웃 되었습니다. [메인 화면]으로 돌아갑니다.");
-    }
+    			case "3":
+    				System.out.println(" 🤖 도서 대출/반납 관리 페이지로 이동합니다.");
+    				System.out.println();
+    				this.showLoanBookandMemberInfo();
+    				break;
+    			case "4":
+    				System.out.println(" 📚 신청 도서 목록으로 이동합니다.");
+    				System.out.println();
+    				this.showsincheongmanage();
+    				break;
+    			case "5":
+    				System.out.println();
+    				System.out.println("📢 공지사항 관리 페이지로 이동합니다.");
+    				System.out.println();
+    				this.noticeadmin();
+    				break;
+    			case "6":
+    				System.out.println(" 📋 메인 화면으로 돌아갑니다. ");
+    				isAdminRunning = false;
+    				break;
+    			case "7": // 시스템 종료
+    				System.out.println("❗정말 시스템을 종료하시겠습니까 ? [Y/N]");
+
+    				String shutdown;
+    				do {
+    					shutdown = scanner.next();
+    					scanner.nextLine();
+
+    					if (shutdown.equalsIgnoreCase("y")) {
+    						System.out.println("시스템을 종료합니다. 🤖");
+    						System.exit(0);
+
+    					} else if (shutdown.equalsIgnoreCase("n")) {
+    						System.out.println("시스템을 종료하지 않습니다.");
+    						System.out.println("이전으로 돌아갑니다.");
+    						System.out.println();
+
+    					} else {
+    						System.out.print(" 🚨 잘못된 입력입니다. Y 또는 N 을 입력하십시오. -> ");
+    					}
+    				} while (!shutdown.equalsIgnoreCase("y") && !shutdown.equalsIgnoreCase("n"));
+
+    				this.showMenu();
+    				break;
+
+    			default:
+    				System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요.");
+    				System.out.println();
+    				this.showMenu();
+    				break;
+    			}
+    		}
+    	}
 
     private void showMemberMenu() {
         boolean isMemberMenuRunning = true;
@@ -485,4 +499,796 @@ public class AdminUI {
         }
         System.out.println("--------------------------------------------------------------------");
     }
+    
+
+	public void showLoanBookandMemberInfo() { // 3.대출/반납 관리
+		List<AdminDTO> list = adminDAO.loanbooklist();
+
+		final int pageSize = 10;
+		int currentPage = 1;
+
+		int totalItems = list.size();
+		int totalPages = (totalItems + pageSize - 1) / pageSize;
+
+		String LINE = "========================================================================================================================";
+
+		while (true) {
+
+			int startIdx = (currentPage - 1) * pageSize;
+			int endIdx = Math.min(startIdx + pageSize, totalItems);
+
+			System.out.println("\n\t\t\t\t\t\t📚 [ 대출/반납 관리 메뉴 ] 📚\t\t\t\t\t");
+			System.out.println(LINE);
+			System.out.printf("\t\t\t\t\t\t💡 대출중인 도서 수: %d 개\n", list.size());
+			System.out.println(LINE);
+
+			System.out.printf("| %-6s |%-5s| %-5s| %-15s\t\t| %-10s| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호",
+					"북코드", "\t  책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
+			System.out.println(LINE);
+
+			if (list.isEmpty()) {
+				System.out.println(String.format("| %-145s |", "     대출중인 도서가 없습니다."));
+			} else {
+				for (int i = startIdx; i < endIdx; i++) {
+					AdminDTO dto = list.get(i);
+					String returnDateDisplay = dto.getReturn_date();
+
+					if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
+						returnDateDisplay = "          "; // 10칸 공백
+					}
+
+					System.out.printf("| %-6s | %-5d | %-5d | %-20s\t| %-10s | %-10s | %-10s | %-8s | %-6d |\n",
+							dto.getUsername(), dto.getLoancode(), dto.getBookcode(),
+							adminDAO.truncateString(dto.getBookname(), 20), dto.getCheckout_date(), dto.getDue_date(),
+							returnDateDisplay, dto.getBook_condition(), dto.getOverdue_date());
+				}
+			}
+			System.out.println(LINE);
+
+			String prevArrow = " ' < ' 이전페이지📚";
+			String s = String.format("페이지 %d / %d", currentPage, totalPages);
+			String nextArrow = "📚다음페이지 ' > '";
+
+			System.out.println("\t" + prevArrow + "\t\t\t\t\t" + s + "\t\t\t\t" + nextArrow);
+			System.out.println("🔎1.대출된 도서검색  \n🔎2.회원별 대출도서검색  \n🔎3.연체된도서검색 \n🔎4.도서반납관리(배가) \n (그 외 입력: 메뉴 종료) ");
+			System.out.print(" 입력 : ");
+
+			String memberChoice = scanner.nextLine();
+
+			switch (memberChoice) {
+
+			case "<":
+				if (currentPage > 1) {
+					currentPage--; // 이전 페이지로 이동
+				} else {
+					System.out.println("⚠️ 첫 번째 페이지입니다.");
+				}
+				break;
+			case ">":
+				if (currentPage < totalPages) {
+					currentPage++; // 다음 페이지로 이동
+				} else {
+					System.out.println("⚠️ 마지막 페이지입니다.");
+				}
+				break;
+
+			case "1":
+				System.out.println(" 🤖 대출 도서 검색 페이지로 이동합니다.");
+				System.out.println();
+				this.loanbooksearchbybookcode(list);
+				break;
+			case "2":
+				System.out.println(" 🤖 회원별 대출도서 검색 페이지로 이동합니다.");
+				System.out.println();
+				this.loanbooksearchbyusername(list);
+				break;
+			case "3":
+				System.out.println(" 🤖 연체된 도서 확인 페이지로 이동합니다.");
+				System.out.println();
+				this.overdueloanbooklist();
+				break;
+			case "4":
+				System.out.println(" 🤖 도서 반납 관리 페이지로 이동합니다.");
+				System.out.println();
+				this.loanbookbaega();
+				break;
+			default:
+				System.out.println("📋 메뉴로 돌아갑니다. 📋");
+				System.out.println();
+				return;
+			}
+
+		}
+	}
+
+//	 배가업무용...
+//	String childrenWithCart = 
+//            // 빨간색 수레와 책
+//              "    O         ."+ "📚책📚" + ".\n"  
+//            + "   /|\\--------/\u2500\u2500\u2500\u2500\u2500\u2500\\ "+ " 끌고가는중... " + "\n" 
+//            + "    |        |\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500| + " 도서정리중... " + \n" 
+//            + "   / \\       `O------O` \n";
+//        
+//        System.out.println(childrenWithCart);	
+
+	public void loanbooksearchbybookcode(List<AdminDTO> currentList) {
+		System.out.println("\n🔢 검색할 책번호(bookcode)를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
+
+		String inputLine = scanner.nextLine().trim();
+		int s = 0;
+
+		try {
+			s = Integer.parseInt(inputLine);
+		} catch (NumberFormatException e) {
+			System.out.println("\n⛔ 잘못된 입력 형식입니다. 메뉴로 돌아갑니다.\n");
+			this.showLoanBookandMemberInfo();
+			return;
+		}
+		if (s == 0) {
+			System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다. \n");
+			this.showLoanBookandMemberInfo();
+			return;
+		}
+
+		AdminDTO selectedDto = adminDAO.loanbooksearchbybookcode(s);
+
+		if (selectedDto == null) {
+			System.out.println("⛔ 유효하지 않은 북코드입니다. 다시 입력해주세요.");
+			this.loanbooksearchbybookcode(currentList);
+			return;
+		}
+
+		String LINE = "====================================================================================================================================================";
+		System.out.println("\n\t\t\t🔎 [ 검색 결과 : Bookcode " + s + "  ] \t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.printf("| %-6s | %-4s | %-4s | %-40s| %-10s| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호", "북코드",
+				"         책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
+		System.out.println(LINE);
+		String returnDateDisplay = selectedDto.getReturn_date();
+		if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
+			returnDateDisplay = "          ";
+		}
+		System.out.printf("| %-6s | %-5d | %-5d | %-40s| %-10s | %-10s | %-10s | %-8s | %-6d |\n",
+				selectedDto.getUsername(), selectedDto.getLoancode(), selectedDto.getBookcode(),
+				adminDAO.truncateString(selectedDto.getBookname(), 40), selectedDto.getCheckout_date(),
+				selectedDto.getDue_date(), returnDateDisplay, selectedDto.getBook_condition(),
+				selectedDto.getOverdue_date());
+		System.out.println(LINE);
+
+		if ("대출중".equals(selectedDto.getBook_condition())) {
+			System.out.println("\n✨ 이 도서는 현재 **'대출중'** 상태입니다.");
+			System.out.print("해당 도서를 바로 반납 처리하시겠습니까? [반납] 입력 (다른 키 입력 시 취소) => ");
+			String confirmReturn = scanner.nextLine().trim();
+
+			if (confirmReturn.equals("반납")) {
+				this.loanbookreturn(selectedDto);
+			} else {
+				System.out.println("✅ 도서 반납 처리가 취소되었습니다.");
+			}
+		} else {
+			System.out.println("\nℹ️ 이 도서는 현재 **'" + selectedDto.getBook_condition() + "'** 상태이므로 반납 처리를 할 수 없습니다.");
+		}
+
+		System.out.println("\n1. 다시 검색  0. 이전 메뉴로 돌아가기");
+		System.out.print("입력 => ");
+		String nextAction = scanner.nextLine().trim();
+
+		if (nextAction.equals("1")) {
+			this.loanbooksearchbybookcode(currentList);
+		} else {
+			this.showLoanBookandMemberInfo();
+		}
+	}
+
+	public void loanbookreturn(AdminDTO loanInfo) {
+
+		AdminDTO updateDto = new AdminDTO();
+		updateDto.setBookcode(loanInfo.getBookcode());
+		updateDto.setBook_condition("반납");
+
+		try {
+			int result = adminDAO.loanbookreturn(updateDto);
+			if (result > 0) {
+				System.out.println("🎉 북코드 " + loanInfo.getBookcode() + "번 도서의 반납 처리가 성공적으로 완료되었습니다.");
+
+				if (loanInfo.getOverdue_date() > 0) {
+					System.out.println("❗ 경고: 해당 도서는 " + loanInfo.getOverdue_date() + "일 연체 상태였습니다.");
+				}
+			} else {
+				System.out.println("❌ 반납 처리에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			System.out.println("❌ 오류 발생: 반납 처리 중 문제가 발생했습니다. " + e.getMessage());
+		}
+	}
+
+	public void loanbooksearchbyusername(List<AdminDTO> currentList) {
+		System.out.println("\n🔢 검색할 유저의 이름을 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
+
+		String inputLine = scanner.nextLine().trim();
+
+		if ("0".equals(inputLine)) {
+			return;
+		}
+//
+//		if (Integer.getInteger(inputLine) == 0) {
+//			System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다. \n");
+//			this.showLoanBookandMemberInfo();
+//			return;
+//		}
+
+		List<AdminDTO> list = adminDAO.loanbooksearchbyname(inputLine);
+
+		if (list == null) {
+			System.out.println("⛔ 유효하지 않은 유저입니다. 다시 입력해주세요.");
+			this.loanbooksearchbyusername(currentList);
+			return;
+		}
+
+		String LINE = "============================================================================================================";
+		System.out.println("\n\t\t\t🔎 [ 검색 결과 : 유저이름 ▶ " + inputLine + " ◀  ] \t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.printf("| %-6s | %-5s | %-5s | %-20s| %-10s| %-10s| %-10s| %-8s |\n", "유저이름", "대출번호", "북코드",
+				"         책이름", "대출일", "반납예정일", "도서상태", "연체일수");
+		System.out.println(LINE);
+
+		for (AdminDTO dto : list) {
+			System.out.printf("| %-6s | %-5d | %-5d | %-20s| %-10s | %-10s | %-10s | %-8s |\n", dto.getUsername(),
+					dto.getLoancode(), dto.getBookcode(), adminDAO.truncateString(dto.getBookname(), 10),
+					dto.getCheckout_date(), dto.getDue_date(), dto.getBook_condition(), dto.getOverdue_date());
+		}
+		System.out.println(LINE);
+		System.out.println();
+
+	}
+	
+	
+	public void loanbookbaega() {
+
+		List<AdminDTO> list = adminDAO.returnbooklist();
+
+		final int pageSize = 10;
+		int currentPage = 1;
+
+		int totalItems = list.size();
+		int totalPages = (totalItems + pageSize - 1) / pageSize;
+
+		String LINE = "========================================================================================================================";
+
+		while (true) {
+
+			int startIdx = (currentPage - 1) * pageSize;
+			int endIdx = Math.min(startIdx + pageSize, totalItems);
+
+			System.out.println("\n\t\t\t\t\t\t📚 [ 반납 도서 관리 ] 📚\t\t\t\t\t");
+			System.out.println(LINE);
+			System.out.printf("\t\t\t\t\t\t💡 반납된 도서 수: %d 개\n", list.size());
+			System.out.println(LINE);
+
+			System.out.printf("| %-6s |%-5s| %-5s| %-20s\t| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호",
+					"북코드", "         책이름", "대출일", "실제반납일", "도서상태", "연체일수");
+			System.out.println(LINE);
+
+			if (list.isEmpty()) {
+				System.out.println(String.format("| %-145s |", "     반납된 도서가 없습니다."));
+			} else {
+				for (int i = startIdx; i < endIdx; i++) {
+					AdminDTO dto = list.get(i);
+					String returnDateDisplay = dto.getReturn_date();
+
+					if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
+						returnDateDisplay = "          "; // 10칸 공백
+					}
+
+					System.out.printf("| %-6s | %-5d | %-5d | %-20s\t| %-10s | %-10s | %-8s | %-6d |\n",
+							dto.getUsername(), dto.getLoancode(), dto.getBookcode(),
+							adminDAO.truncateString(dto.getBookname(), 20), dto.getCheckout_date(), 
+							returnDateDisplay, dto.getBook_condition(), dto.getOverdue_date());
+				}
+			}
+			System.out.println(LINE);
+
+			String prevArrow = " ' < ' 이전페이지📚";
+			String s = String.format("페이지 %d / %d", currentPage, totalPages);
+			String nextArrow = "📚다음페이지 ' > '";
+
+			System.out.println("\t" + prevArrow + "\t\t\t\t\t" + s + "\t\t\t\t" + nextArrow);
+			System.out.println("🔎1.일괄배가  \n🔎2.도서별 배가 \n (그 외 입력: 메뉴 종료) ");
+			System.out.print(" 입력 : ");
+			
+			String memberChoice = scanner.nextLine();
+
+			switch (memberChoice) {
+
+			case "<":
+				if (currentPage > 1) {
+					currentPage--; // 이전 페이지로 이동
+				} else {
+					System.out.println("⚠️ 첫 번째 페이지입니다.");
+				}
+				break;
+			case ">":
+				if (currentPage < totalPages) {
+					currentPage++; // 다음 페이지로 이동
+				} else {
+					System.out.println("⚠️ 마지막 페이지입니다.");
+				}
+				break;
+
+			case "1":
+				System.out.println(" 🤖 반납된 모든 도서의 배가를 실시합니다..");
+				System.out.println();
+//				dao.returnbook_baega_all();
+				break;
+			case "2":
+				System.out.println(" 🤖 도서별 배가를 실시합니다..");
+				System.out.println();
+//				dao.returnbook_baega();
+				break;
+			default:
+				System.out.println("📋 메뉴로 돌아갑니다. 📋");
+				System.out.println();
+				return;
+			}
+
+		}
+			
+			
+		}	
+
+	
+
+	public void overdueloanbooklist() {
+
+		List<AdminDTO> list = adminDAO.overdueloanbooklist();
+
+		int itemsPerPage = 10; // 10 개당 1페이지로 할당
+		int totalItems = list.size();
+
+		int totalPages = (totalItems == 0) ? 1 : (int) Math.ceil((double) totalItems / itemsPerPage);
+
+		int currentPage = 1;
+
+		while (true) {
+
+			String LINE = "====================================================================================================";
+
+			System.out.println("\n\t\t\t\t📚 [ 연체도서 관리 메뉴 ] 📚\t\t\t\t\t");
+			System.out.println(LINE);
+			System.out.printf("\t\t\t\t💡 연체중인 도서 수: %d 개\n", list.size());
+			System.out.println(LINE);
+
+			System.out.printf("| %-6s | %-4s | %-4s | %-20s| %-10s| %-10s| %-8s | %-6s |\n", "유저이름", "대출번호", "북코드",
+					"         책이름", "대출일", "반납예정일", "도서상태", "연체일수");
+			System.out.println(LINE);
+
+			if (list.isEmpty()) {
+				System.out.println(String.format("| %-145s |", "     연체중인 도서가 없습니다."));
+			} else {
+
+				int startIndex = (currentPage - 1) * itemsPerPage;
+				int endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+				List<AdminDTO> pageList = list.subList(startIndex, endIndex);
+
+				for (AdminDTO dto : pageList) {
+					System.out.printf("| %-6s | %-5d | %-5d | %-20s| %-10s | %-10s | %-10s| %-6d |\n",
+							dto.getUsername(), dto.getLoancode(), dto.getBookcode(),
+							adminDAO.truncateString(dto.getBookname(), 10), dto.getCheckout_date(), dto.getDue_date(),
+							dto.getBook_condition(), dto.getOverdue_date());
+				}
+			}
+			System.out.println(LINE);
+
+			String s = String.format("페이지 %d / %d", currentPage, totalPages);
+
+			System.out.println(" '<<' 처음으로  ' < ' 이전페이지📚\t   " + s + " \t\t 📚다음페이지 ' > '  마지막 '>>' ( '0' 이전메뉴) ");
+			System.out.println(" 입력 : ");
+
+			String pagechoice = scanner.nextLine().trim();
+
+			switch (pagechoice) {
+			case "<<": // 처음 페이지
+				currentPage = 1;
+				break;
+			case ">>": // 마지막 페이지
+				currentPage = totalPages;
+				break;
+			case "<": // 이전 페이지
+				if (currentPage > 1) {
+					currentPage--;
+				}
+				break;
+			case ">": // 다음 페이지
+				if (currentPage < totalPages) {
+					currentPage++;
+				}
+				break;
+			case "0":
+				return;
+			default:
+				try {
+					int pageNum = Integer.parseInt(pagechoice);
+					if (pageNum >= 1 && pageNum <= totalPages) {
+						currentPage = pageNum;
+					} else {
+						System.out.println("! 유효하지 않은 페이지 번호입니다. 잠시 후 다시 시도하세요.");
+						try {
+							Thread.sleep(1000);
+						} catch (Exception e) {
+						}
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("! 잘못된 입력입니다. <<, <, >, >>, 0 또는 페이지 번호를 입력하세요.");
+					try {
+						Thread.sleep(1000);
+					} catch (Exception e2) {
+					}
+				}
+				break;
+			}
+		}
+
+	}
+
+	public void showsincheongmanage() {
+		List<AdminDTO> list = adminDAO.sinchoengdaegidoseo();
+
+		String LINE = "=========================================================================";
+
+		System.out.println("\n\t\t\t📚 [ 도서 신청 관리 메뉴 ] 📚\t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.printf("\t\t\t💡 현재까지 총 신청 도서 수: %d 건\n", list.size());
+		System.out.println(LINE);
+
+		System.out.println(String.format("|%-4s |\t\t%-20s\t\t| %-4s |", "신청번호", "신청 도서", "상태"));
+		System.out.println(LINE);
+
+		if (list.isEmpty()) {
+			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
+		} else {
+			for (AdminDTO dto : list) {
+				System.out.println(String.format("|  %-4s| %-30s \t| %-4s |", dto.getSincheongcode(),
+						adminDAO.truncateString(dto.getSincheongbook(), 30), dto.getSincheongstatus()));
+			}
+		}
+		System.out.println(LINE);
+
+		this.sujeongsincheongstatus(list);
+
+	}
+
+	public void sujeongsincheongstatus(List<AdminDTO> currentList) {
+		System.out.println("\n🔢 처리할 신청 번호를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
+
+		String inputLine = scanner.nextLine().trim();
+		int s = 0;
+
+		try {
+			s = Integer.parseInt(inputLine);
+		} catch (NumberFormatException e) {
+			System.out.println("\n⛔ 잘못된 입력 형식입니다. 메뉴로 돌아갑니다.\n");
+			this.showMenu();
+			return;
+		}
+		if (s == 0) {
+			System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다. \n");
+			this.showMenu();
+			return;
+		}
+
+		AdminDTO selectedDto = null;
+		for (AdminDTO dto : currentList) {
+			if (s == dto.getSincheongcode()) {
+				selectedDto = dto;
+				break;
+			}
+		}
+
+		if (selectedDto == null) {
+			System.out.println("⛔ 유효하지 않은 신청 번호입니다. 다시 입력해주세요.");
+			this.sujeongsincheongstatus(currentList);
+			return;
+		}
+
+		String newStatus = "";
+
+		System.out.println("\n[신청 도서: " + selectedDto.getSincheongbook() + "]");
+		System.out.print("선택하신 ▶ " + selectedDto.getSincheongbook() + " ◀ 도서의 상태를 변경하시겠습니까? [Y = 승인, N = 반려] => ");
+
+		String confirm = scanner.nextLine().trim();
+
+		if (confirm.equalsIgnoreCase("Y")) {
+			newStatus = "승인";
+		} else if (confirm.equalsIgnoreCase("N")) {
+			newStatus = "반려";
+		} else {
+			System.out.println("⚠️ Y 또는 N만 입력해야 합니다. 상태 변경이 취소되었습니다.");
+			this.sujeongsincheongstatus(currentList);
+			return;
+		}
+
+		AdminDTO updateDto = new AdminDTO();
+		updateDto.setSincheongcode(s);
+		updateDto.setSincheongstatus(newStatus);
+
+		try {
+			int result = adminDAO.sujeongsincheongstatus(updateDto);
+			if (result > 0) {
+				System.out.println("🎉 신청 번호 " + s + "번의 상태가 '" + newStatus + "'(으)로 성공적으로 변경되었습니다.");
+			} else {
+				System.out.println("❌ 상태 변경에 실패했습니다.");
+			}
+		} catch (SQLException e) {
+			System.out.println("❌ 오류 발생: " + e.getMessage().split("\n")[0]);
+		}
+
+		System.out.println("\n🔄 변경된 신청 목록을 다시 표시합니다.");
+		this.showsincheongmanage();
+	}
+
+	public void noticeadmin() {
+		list = adminDAO.notice();
+
+		final int pageSize = 10;
+		int currentPage = 1;
+
+		int totalItems = list.size();
+		int totalPages = (totalItems == 0) ? 1 : (totalItems + pageSize - 1) / pageSize;
+
+		System.out.println();
+		String LINE = "================================================================================";
+
+		while (true) {
+
+			if (currentPage < 1)
+				currentPage = 1;
+			if (currentPage > totalPages)
+				currentPage = totalPages;
+
+			int startIdx = (currentPage - 1) * pageSize;
+			int endIdx = Math.min(startIdx + pageSize, totalItems);
+
+			System.out.printf("\t\t\t\t💡 공지사항 목록\n");
+			System.out.println(LINE);
+			System.out.println(String.format("|%-4s|\t\t%-30s\t\t\t| %-4s|", "번호", "공지사항", "    일자    "));
+			System.out.println("--------------------------------------------------------------------------------");
+
+			if (list.isEmpty()) {
+				System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
+			} else {
+				for (int i = startIdx; i < endIdx; i++) {
+					AdminDTO dto = list.get(i);
+					System.out.println(String.format("| %-3s| %-40s\t| %-4s |", dto.getNoticeId(),
+							adminDAO.truncateString(dto.getNoticeTitle(), 40), dto.getNoticeDate()));
+				}
+			}
+			System.out.println(LINE);
+
+			String prevArrow = " ' < ' 이전페이지📚";
+			String s = String.format("페이지 %d / %d", currentPage, totalPages);
+			String nextArrow = "📚다음페이지 ' > '";
+
+			System.out.println(" " + prevArrow + "\t\t" + s + "\t\t\t" + nextArrow);
+			System.out.println();
+			System.out.println("📔 메뉴 선택: \n[ 등록 ] 공지 등록 \n[ 공지번호 ] 확인 및 수정/삭제 \n[ 0 ] 이전 메뉴로 돌아가기 ");
+			System.out.print(" 입력 : ");
+
+			while (true) {
+
+				String memberChoice = scanner.nextLine().trim();
+				
+				if (memberChoice.equals("<")) {
+	                if (currentPage > 1) {
+	                    currentPage--;
+	                    break; 
+	                } else {
+	                    System.out.println("⚠️ 첫 번째 페이지입니다.");
+	                    continue; 
+	                }
+	            } else if (memberChoice.equals(">")) {
+	                if (currentPage < totalPages) {
+	                    currentPage++;
+	                    break; 
+	                } else {
+	                    System.out.println("⚠️ 마지막 페이지입니다.");
+	                    continue; 
+	                }
+	            } else if (memberChoice.equalsIgnoreCase("등록")) {
+					System.out.println("\n📢 공지사항 등록 화면으로 이동합니다.");
+					this.noticeinsert();
+					
+					list = adminDAO.notice();
+					totalItems = list.size();
+					totalPages = (totalItems == 0) ? 1 : (totalItems + pageSize - 1) / pageSize;					
+					break;
+
+				} else if (memberChoice.equals("0")) {
+					System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다.");
+					System.out.println();
+					return;
+
+				} else {
+					try {
+						int noticeId = Integer.parseInt(memberChoice);
+
+						boolean isValidId = false;
+
+						for (AdminDTO dto : list) {
+							if (dto.getNoticeId() == noticeId) {
+								isValidId = true;
+								break;
+							}
+						}
+						if (isValidId) {
+							System.out.println("\n✏️ 공지 번호 " + noticeId + "번 수정/삭제 화면으로 이동합니다.");
+							this.noticeUpdate(noticeId);
+							break;
+						} else {
+							System.out.println("🚨 유효하지 않은 공지 번호입니다. 다시 입력해주세요.");
+						}
+					} catch (NumberFormatException e) {
+						System.out.println("🚨 잘못된 입력입니다. '등록', 공지번호, 또는 '0'을 입력해주세요.");
+					}
+				}
+			}
+		}
+	}
+
+	public void noticeinsert() { // '등록'으로 들어와 공지사항 등록하기
+
+		System.out.println("등록할 공지 제목을 입력해주세요 \n 제목 : ");
+		String newTitle = scanner.nextLine().trim();
+
+		System.out.println("등록할 공지 내용을 입력해주세요 \n 내용 : ");
+		String newContent = scanner.nextLine().trim();
+
+		if (newTitle.isEmpty() && newContent.isEmpty()) {
+			System.out.println("\n✅ 입력된 내용이 없어 공지사항 등록이 취소되었습니다.");
+			this.noticeadmin();
+			return;
+		}
+
+		AdminDTO insertdto = new AdminDTO();
+		insertdto.setNoticeTitle(newTitle);
+		insertdto.setNoticeContent(newContent);
+
+		try {
+			int result = adminDAO.noticeInsert(insertdto);
+
+			if (result > 0) {
+				System.out.println("🎉 성공적으로 " + insertdto.getNoticeTitle() + " 공지가 \n\t 등록되었습니다.");
+			} else {
+				System.out.println("❌ 공지사항 등록에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			System.out.println("❌ 오류 발생: 공지사항 등록 중 문제가 발생했습니다. " + e.getMessage());
+		} finally {
+			this.noticeadmin();
+		}
+
+	}
+
+	public void noticeUpdate(int noticeId) { // 공지사항 수정 UI진입
+		AdminDTO selectedNotice = adminDAO.selectNoticeById(noticeId);
+
+		if (selectedNotice == null) {
+			System.out.println("🚨 오류: 해당 번호의 공지사항 정보를 찾을 수 없습니다.");
+			return;
+		}
+
+		System.out.println("\n=======================================================");
+		System.out.printf("\t\t📢 공지사항 상세 정보 (No. %d)\n", selectedNotice.getNoticeId());
+		System.out.println("=======================================================");
+		System.out.printf("\t\t\t\t       작성일: %s\n", selectedNotice.getNoticeDate());
+		System.out.println("-------------------------------------------------------");
+		System.out.printf("제목: %s\n", selectedNotice.getNoticeTitle());
+		System.out.println("-------------------------------------------------------");
+		System.out.println("내용:");
+		System.out.println(selectedNotice.getNoticeContent());
+		System.out.println("=======================================================");
+
+		while (true) {
+			System.out.println("✅ 메뉴 선택: [ 1 ] 수정, [ 2 ] 삭제, [ 0 ] 목록으로 돌아가기");
+			System.out.print("선택 입력 > ");
+
+			String choice = scanner.nextLine().trim();
+
+			if (choice.equals("1")) {
+				System.out.println("\n✏️ 공지사항 수정 화면으로 이동합니다.");
+				this.NoticeModify(noticeId);
+				return;
+
+			} else if (choice.equals("2")) {
+				System.out.println("\n❌ 공지사항 삭제를 진행합니다.");
+				this.NoticeDelete(noticeId);
+				return;
+
+			} else if (choice.equals("0")) {
+				System.out.println("\n⬅️ 공지사항 목록으로 돌아갑니다.");
+				return;
+
+			} else {
+				System.out.println("🚨 잘못된 입력입니다. 0, 1, 2 중 하나를 입력해주세요.");
+			}
+		}
+	}
+
+	private void NoticeModify(int noticeId) { // 공지사항 수정
+		AdminDTO selectedNotice = adminDAO.selectNoticeById(noticeId);
+
+		if (selectedNotice == null) {
+			System.out.println("🚨 오류: 해당 번호의 공지사항 정보를 찾을 수 없습니다.");
+		}
+
+		System.out.println("수정할 공지 제목을 입력해주세요");
+		System.out.println("제목 : ");
+		String newTitle = scanner.nextLine().trim();
+
+		System.out.println("수정할 공지 내용을 입력해주세요");
+		System.out.println("내용 : ");
+		String newContent = scanner.nextLine().trim();
+
+		if (newTitle.isEmpty() && newContent.isEmpty()) {
+			System.out.println("\n✅ 입력된 내용이 없어 공지사항 수정이 취소되었습니다.");
+			this.noticeadmin();
+			return;
+		}
+
+		AdminDTO updatedto = new AdminDTO();
+		updatedto.setNoticeId(noticeId);
+
+		if (newTitle.isEmpty()) {
+			updatedto.setNoticeTitle(selectedNotice.getNoticeTitle());
+		} else {
+			updatedto.setNoticeTitle(newTitle);
+		}
+
+		if (newContent.isEmpty()) {
+			updatedto.setNoticeContent(selectedNotice.getNoticeContent());
+		} else {
+			updatedto.setNoticeContent(newContent);
+		}
+
+		try {
+			int result = adminDAO.noticeUpdate(updatedto);
+
+			if (result > 0) {
+				System.out.println("🎉 성공적으로 " + selectedNotice.getNoticeTitle() + " 공지가 \n\t 수정되었습니다.");
+			} else {
+				System.out.println("❌ 공지사항 수정에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			System.out.println("❌ 오류 발생: 공지사항 수정 중 문제가 발생했습니다. " + e.getMessage());
+
+		}
+
+	}
+
+	public void NoticeDelete(int noticeId) { // 공지사항 삭제
+
+		AdminDTO selectedNotice = adminDAO.selectNoticeById(noticeId);
+
+		System.out.println("\n 🚨 정말로 > " + selectedNotice.getNoticeTitle() + " < 공지를 삭제하시겠습니까 ? ⚠️");
+		System.out.print(" 삭제하려면 [Y]를 입력하세요. (다른 키 입력 시 취소) : ");
+
+		String confirmDelete = scanner.nextLine().trim();
+
+		if (!confirmDelete.equalsIgnoreCase("y")) {
+			System.out.println("✅ 공지사항 삭제가 취소되었습니다.");
+			return;
+		}
+
+		try {
+			int result = adminDAO.noticeDelete(noticeId);
+			if (result > 0) {
+				System.out.println("🎉 성공적으로 " + selectedNotice.getNoticeTitle() + " 공지가 삭제되었습니다.");
+			} else {
+				System.out.println("❌ 공지사항 삭제에 실패했습니다.");
+			}
+		} catch (Exception e) {
+			System.out.println("❌ 오류 발생: 공지사항 삭제 중 문제가 발생했습니다. " + e.getMessage());
+		}
+	}
+
 }
