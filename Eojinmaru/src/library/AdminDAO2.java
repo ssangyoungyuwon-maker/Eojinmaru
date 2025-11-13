@@ -18,5 +18,8 @@ public interface AdminDAO2 {
 	public AdminDTO2 loanbooksearchbybookcode(int bookcode);	// 대출한 책 bookcode 로 조회하기
 	public int loanbookreturn(AdminDTO2 dto);	// 강제로 대출중 -> 반납처리
 	public List<AdminDTO2> loanbooksearchbyname(String username) ;	// 이름으로 도서 대여 이력 조회
-	public List<AdminDTO2> overdueloanbooklist()	; // 
+	public List<AdminDTO2> overdueloanbooklist()	; // 연체된 도서 확인하기
+	public List<AdminDTO2> returnbooklist();		// 반납중 도서 리스트 출력
+	public int returnbook_baega(AdminDTO2 dto) ; // 반납 도서들 배가
+	public int returnbook_baega_all(AdminDTO2 dto) ; // 반납 도서들 전체 배가 (대출가능 만 받아짐)
 }
