@@ -2,6 +2,7 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class MainUI {
 
@@ -13,6 +14,7 @@ public class MainUI {
     private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     
     private MemberDAO memberDAO = new MemberDAOImpl();
+    private BookDAO bookDAO = new BookDAOImpl();
     private LoginInfo login = new LoginInfo(); // 로그인 정보 저장
     private AdminUI adminUI = new AdminUI();
     private UserUI userUI = new UserUI(login);
@@ -41,12 +43,10 @@ public class MainUI {
         		// 2. 회원가입
         		case 2: signup(); break;
         		// 3. 도서 검색
-        		case 3:
-        			System.out.println(">> (구현예정) 도서 검색 페이지로 이동합니다.");
-        			break;
-        			// 4. 도서 신청
+        		case 3: bookSearch(); break;
+        		// 4. 도서 신청
         		case 4: bookRequestUI.request(); break;
-        			// 5. 공지사항 조회
+        		// 5. 공지사항 조회
         		case 5: noticeUI.noticeList(); break;
         		default:
         			System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
@@ -134,6 +134,70 @@ public class MainUI {
 			e.printStackTrace();
 		}
     	
+    }
+    
+    // 도서 검색(책 제목 or 저자 이름)
+    private void bookSearch() {
+
+		System.out.println("\n[도서검색]");
+		
+		String search;
+		List<BookInfoDTO> list = null;
+
+		
+		while(true) {
+			try {
+				System.out.print("도서 제목 또는 저자(공백 입력시 이전 메뉴) => ");
+				search = br.readLine();
+				System.out.println();
+				
+				// 공백 입력시 뒤로가기
+				if(search.isBlank()) return;
+				
+				list = bookDAO.listBook(search);
+				
+				// 결과 출력
+				String LINE = "==================================================================================";
+				System.out.println();
+				System.out.println(LINE);				
+				System.out.println(String.format("| %-4s|\t\t%-20s\t| %-10s\t| %-6s\t| %-6s|", "번호", "책 제목", "저자", "출판사", "대출가능여부"));
+				if (list.size() == 0) {
+					System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
+				} else {
+					for (BookInfoDTO dto : list) {
+						System.out.println("----------------------------------------------------------------------------------");
+						System.out.println(String.format("| %-3s| %-20s\t\t| %-10s\t| %-6s\t| %-6s|", dto.getBook_code(), truncateString(dto.getBookName(), 20),
+								truncateString(dto.getAuthor_name(), 10), truncateString(dto.getPublisher_name(), 6) , (dto.getBook_condition() == "대출가능" ? "대출가능":"대출불가" )));						
+					}					
+				}
+				System.out.println(LINE);
+				
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
+    }
+    
+    // 말줄임 함수(책제목, 저자 이름 자르는데 사용)
+    private String truncateString(String text, int maxLength) {
+    	if (text == null) {
+			text = "";
+		}
+		if (text.length() > maxLength) {
+			if (maxLength < 3) {
+				return text.substring(0, maxLength);
+			}
+			return text.substring(0, maxLength - 3) + "...";
+		}
+		if (text.length() < maxLength) {
+			StringBuilder sb = new StringBuilder(text);
+			int paddingLength = maxLength - text.length();
+			for (int i = 0; i < paddingLength; i++) {
+				sb.append(" ");
+			}
+			return sb.toString();
+		}
+		return text;
     }
     
   
