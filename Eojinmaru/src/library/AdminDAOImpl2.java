@@ -60,7 +60,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 			StringBuilder sb = new StringBuilder(text);
 			int paddingLength = maxLength - text.length();
 			for (int i = 0; i < paddingLength; i++) {
-				sb.append(" ");
+				sb.append("　");
 			}
 			return sb.toString();
 		}
@@ -265,11 +265,11 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 					+ "                ELSE 0 " 
 					+ "            END AS 연체일수 " 
 					+ "        FROM loan lon "
-					+ "        JOIN user_info ui ON ui.user_code = lon.user_code "
+					+ "        JOIN userinfo ui ON ui.user_code = lon.user_code "
 					+ "        JOIN book bk ON bk.book_code = lon.book_code "
 					+ "        JOIN bookinfo bi ON bi.isbn = bk.isbn" 
 					+ "    ) T " 
-					+ " WHERE T.도서상태 = '대출중' "; //
+					+ " WHERE T.도서상태 = '대출중'  AND (T.실제반납일 IS NULL OR T.실제반납일 > TO_CHAR(SYSDATE, 'YYYY-MM-DD')) "; //
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
