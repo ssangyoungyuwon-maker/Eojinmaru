@@ -56,45 +56,51 @@ public class UserUI {
 		
 		String search;
 		List<BookInfoDTO> list = null;
-
-		try {
-			System.out.print("도서 제목 또는 저자 ? ");
-			search = br.readLine();
-			System.out.println();
-			
-			list = dao.listBook(search);
-			
-			if (list.size() == 0) {
-				System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
-				return;
-			}
-			
-			for (BookInfoDTO dto : list) {
-				System.out.print(dto.getBook_code() + "\t");
-				System.out.print(dto.getIsbn() + "\t");
-				System.out.print(dto.getBookName() + "\t");
-				System.out.print(dto.getAuthor_name() + "\t");
-				System.out.print(dto.getPublisher_name() + "\t");
-				System.out.println(dto.getPublish_date());
-			}
-			System.out.println();
-			
-			int ch3 = 0;
-			
-			System.out.print("1.대출신청 2.사용자화면  =>  ");
-			ch3 = Integer.parseInt(br.readLine());
-			
-			switch(ch3) {
-			case 1: insertloan(); break;
-			case 2: menu(); break;
-			}
-				
 	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println();
-	}
+			while(true) {
+				try {
+					System.out.print("도서 제목 또는 저자(공백 입력시 이전 메뉴) => ");
+					search = br.readLine();
+					System.out.println();
+					
+					// 공백 입력시 뒤로가기
+					if(search.isBlank()) return;
+					
+					list = dao.listBook(search);
+					
+					// 결과 출력
+					String LINE = "==================================================================================";
+					System.out.println();
+					System.out.println(LINE);				
+					System.out.println(String.format("| %-4s|\t\t%-20s\t| %-10s\t| %-6s\t| %-6s|", "번호", "책 제목", "저자", "출판사", "대출가능여부"));
+					if (list.size() == 0) {
+						System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
+					} else {
+						for (BookInfoDTO dto : list) {
+							System.out.println("----------------------------------------------------------------------------------");
+							System.out.println(String.format("| %-3s| %-20s\t\t| %-10s\t| %-6s\t| %-6s|", dto.getBook_code(), truncateString(dto.getBookName(), 20),
+									truncateString(dto.getAuthor_name(), 10), truncateString(dto.getPublisher_name(), 6) , (dto.getBook_condition() == "대출가능" ? "대출가능":"대출불가" )));						
+						}					
+					}
+					System.out.println(LINE);
+					
+					int ch3 = 0;
+					
+					System.out.print("1.대출신청 2.도서검색 3.사용자화면  =>  ");
+					ch3 = Integer.parseInt(br.readLine());
+					
+					switch(ch3) {
+					case 1: insertloan(); return;
+					case 2: break;
+					case 3: return;
+					}
+					
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			}
+	    }
+
 
 	// 대출 신청 시 연체된 회원이면 대출불가 날짜 출력
 	// 대출 연장 시 연장 가능 회기 출력
@@ -120,7 +126,7 @@ public class UserUI {
 	        if(list.size() == 0) {
 	        	System.out.println("도서코드는 잘못되었습니다. 다시 입력하세요..");
 	        	return;
-           }
+           } 
 	        
 	        LoanDTO dto = new LoanDTO();
 	        dto.setBook_code(bookcode);
@@ -130,6 +136,7 @@ public class UserUI {
 
 	        System.out.println("대출이 완료 되었습니다.");
 
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
@@ -245,4 +252,26 @@ public class UserUI {
 		System.out.println("\n[도서신청]");
 
 	}
+	
+	   // 말줄임 함수(책제목, 저자 이름 자르는데 사용)
+    private String truncateString(String text, int maxLength) {
+    	if (text == null) {
+			text = "";
+		}
+		if (text.length() > maxLength) {
+			if (maxLength < 3) {
+				return text.substring(0, maxLength);
+			}
+			return text.substring(0, maxLength - 3) + "...";
+		}
+		if (text.length() < maxLength) {
+			StringBuilder sb = new StringBuilder(text);
+			int paddingLength = maxLength - text.length();
+			for (int i = 0; i < paddingLength; i++) {
+				sb.append(" ");
+			}
+			return sb.toString();
+		}
+		return text;
+    }
 }
