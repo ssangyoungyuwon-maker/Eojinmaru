@@ -18,7 +18,7 @@ public class BookRequestUI {
     	String sql;
     	
     	try {
-    		System.out.print("신청할 도서 정보를 입력해주세요 \n 도서정보 : ");
+    		System.out.print("신청할 도서 정보를 입력해주세요 \n 도서정보: ");
     		String bookInfo = br.readLine().trim();
     		
     		if (bookInfo.isEmpty()) {
