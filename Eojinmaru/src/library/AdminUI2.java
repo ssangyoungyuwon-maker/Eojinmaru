@@ -7,10 +7,10 @@ import java.util.Scanner;
 public class AdminUI2 {
 
 	private AdminDAO2 dao = new AdminDAOImpl2();
+	private List<AdminDTO> list;
 
 	Scanner sc = new Scanner(System.in);
 
-	private List<AdminDTO2> list;
 
 	public void showAdminmenu() {
 
@@ -83,7 +83,7 @@ public class AdminUI2 {
 	}
 
 	public void showLoanBookandMemberInfo() { // 3.대출/반납 관리
-		List<AdminDTO2> list = dao.loanbooklist();
+		List<AdminDTO> list = dao.loanbooklist();
 
 		String LINE = "====================================================================================================================================================";
 
@@ -101,7 +101,7 @@ public class AdminUI2 {
 			// 테이블 포맷에 맞추어 중앙에 메시지 출력
 			System.out.println(String.format("| %-145s |", "     대출중인 도서가 없습니다."));
 		} else {
-			for (AdminDTO2 dto : list) {
+			for (AdminDTO dto : list) {
 				String returnDateDisplay = dto.getReturn_date();
 				if (returnDateDisplay == null || returnDateDisplay.isEmpty()) {
 					returnDateDisplay = "          "; // 10칸 공백
@@ -152,7 +152,7 @@ public class AdminUI2 {
 //        
 //        System.out.println(childrenWithCart);	
 
-	public void loanbooksearchbybookcode(List<AdminDTO2> currentList) {
+	public void loanbooksearchbybookcode(List<AdminDTO> currentList) {
 		System.out.println("\n🔢 검색할 책번호(bookcode)를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
 
 		String inputLine = sc.nextLine().trim();
@@ -171,7 +171,7 @@ public class AdminUI2 {
 			return;
 		}
 
-		AdminDTO2 selectedDto = dao.loanbooksearchbybookcode(s);
+		AdminDTO selectedDto = dao.loanbooksearchbybookcode(s);
 
 		if (selectedDto == null) {
 			System.out.println("⛔ 유효하지 않은 북코드입니다. 다시 입력해주세요.");
@@ -221,9 +221,9 @@ public class AdminUI2 {
 
 	}
 
-	public void loanbookreturn(AdminDTO2 loanInfo) {
+	public void loanbookreturn(AdminDTO loanInfo) {
 	    
-	    AdminDTO2 updateDto = new AdminDTO2();
+	    AdminDTO updateDto = new AdminDTO();
 	    updateDto.setBookcode(loanInfo.getBookcode());
 	    updateDto.setBook_condition("반납"); 
 	    
@@ -244,7 +244,7 @@ public class AdminUI2 {
 	}
 
 	public void showsincheongmanage() {
-		List<AdminDTO2> list = dao.sinchoengdaegidoseo();
+		List<AdminDTO> list = dao.sinchoengdaegidoseo();
 
 		String LINE = "=========================================================================";
 
@@ -259,7 +259,7 @@ public class AdminUI2 {
 		if (list.isEmpty()) {
 			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
 		} else {
-			for (AdminDTO2 dto : list) {
+			for (AdminDTO dto : list) {
 				System.out.println(String.format("|  %-4s| %-30 \t| %-4s |", dto.getSincheongcode(),
 						dao.truncateString(dto.getSincheongbook(), 10), dto.getSincheongstatus()));
 			}
@@ -270,7 +270,7 @@ public class AdminUI2 {
 
 	}
 
-	public void sujeongsincheongstatus(List<AdminDTO2> currentList) {
+	public void sujeongsincheongstatus(List<AdminDTO> currentList) {
 		System.out.println("\n🔢 처리할 신청 번호를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
 
 		String inputLine = sc.nextLine().trim();
@@ -289,8 +289,8 @@ public class AdminUI2 {
 			return;
 		}
 
-		AdminDTO2 selectedDto = null;
-		for (AdminDTO2 dto : currentList) {
+		AdminDTO selectedDto = null;
+		for (AdminDTO dto : currentList) {
 			if (s == dto.getSincheongcode()) {
 				selectedDto = dto;
 				break;
@@ -320,7 +320,7 @@ public class AdminUI2 {
 			return;
 		}
 
-		AdminDTO2 updateDto = new AdminDTO2();
+		AdminDTO updateDto = new AdminDTO();
 		updateDto.setSincheongcode(s);
 		updateDto.setSincheongstatus(newStatus);
 
@@ -355,7 +355,7 @@ public class AdminUI2 {
 		if (list.isEmpty()) {
 			System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
 		} else {
-			for (AdminDTO2 dto : list) {
+			for (AdminDTO dto : list) {
 				System.out.println(String.format("| %-3s| %-45s\t| %-4s |", dto.getNoticeId(),
 						dao.truncateString(dto.getNoticeTitle(), 25), dto.getNoticeDate()));
 			}
@@ -384,7 +384,7 @@ public class AdminUI2 {
 
 					boolean isValidId = false;
 
-					for (AdminDTO2 dto : list) {
+					for (AdminDTO dto : list) {
 						if (dto.getNoticeId() == noticeId) {
 							isValidId = true;
 							break;
@@ -419,7 +419,7 @@ public class AdminUI2 {
 			return;
 		}
 
-		AdminDTO2 insertdto = new AdminDTO2();
+		AdminDTO insertdto = new AdminDTO();
 		insertdto.setNoticeTitle(newTitle);
 		insertdto.setNoticeContent(newContent);
 
@@ -440,7 +440,7 @@ public class AdminUI2 {
 	}
 
 	public void noticeUpdate(int noticeId) { // 공지사항 수정 UI진입
-		AdminDTO2 selectedNotice = dao.selectNoticeById(noticeId);
+		AdminDTO selectedNotice = dao.selectNoticeById(noticeId);
 
 		if (selectedNotice == null) {
 			System.out.println("🚨 오류: 해당 번호의 공지사항 정보를 찾을 수 없습니다.");
@@ -485,7 +485,7 @@ public class AdminUI2 {
 	}
 
 	private void NoticeModify(int noticeId) { // 공지사항 수정
-		AdminDTO2 selectedNotice = dao.selectNoticeById(noticeId);
+		AdminDTO selectedNotice = dao.selectNoticeById(noticeId);
 
 		if (selectedNotice == null) {
 			System.out.println("🚨 오류: 해당 번호의 공지사항 정보를 찾을 수 없습니다.");
@@ -505,7 +505,7 @@ public class AdminUI2 {
 			return;
 		}
 
-		AdminDTO2 updatedto = new AdminDTO2();
+		AdminDTO updatedto = new AdminDTO();
 		updatedto.setNoticeId(noticeId);
 
 		if (newTitle.isEmpty()) {
@@ -537,7 +537,7 @@ public class AdminUI2 {
 
 	public void NoticeDelete(int noticeId) { // 공지사항 삭제
 
-		AdminDTO2 selectedNotice = dao.selectNoticeById(noticeId);
+		AdminDTO selectedNotice = dao.selectNoticeById(noticeId);
 
 		System.out.println("\n 🚨 정말로 > " + selectedNotice.getNoticeTitle() + " < 공지를 삭제하시겠습니까 ? ⚠️");
 		System.out.print(" 삭제하려면 [Y]를 입력하세요. (다른 키 입력 시 취소) : ");

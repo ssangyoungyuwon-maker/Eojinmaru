@@ -1,6 +1,6 @@
 package library;
 
-public class AdminDTO2 {
+public class AdminDTO {
 	
 	private String bookname;
 	private String loanperiod;
