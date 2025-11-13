@@ -8,11 +8,11 @@ public interface UserDAO1 {
 	// 도서검색
 	public List<BookInfoDTO1> listBook(String search);
 	
-	// 대출 신청 도서검색
-	public List<BookInfoDTO1> loanBook(String bookName);
+	// 대출 신청 도서코드 검색
+	public List<BookInfoDTO1> loanBook(int book_code);
 	
 	// 대출 신청
-	public int insertloan(LoanDTO dto) throws SQLException;
+	public void insertloan(LoanDTO dto) throws SQLException;
 	
 	// 전체 대출 리스트
 	public List<LoanDTO> listloan(String user_code);

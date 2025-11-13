@@ -63,7 +63,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 	@Override
 	// 대출 신청 전 책 리스트 조회
 
-	public List<BookInfoDTO1> loanBook(String bookName) {
+	public List<BookInfoDTO1> loanBook(int bookcode) {
 		List<BookInfoDTO1> list = new ArrayList<BookInfoDTO1>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -73,11 +73,11 @@ public class UserDAOImpl1 implements UserDAO1 {
 			sql = "SELECT b.book_code, bookName, book_condition "
 					+ " FROM book b "
 					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
-					+ " WHERE INSTR(bookName, ?) >= 1";
+					+ " WHERE INSTR(book_code, ?) >= 1";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, bookName);
+			pstmt.setInt(1, bookcode);
 			
 			rs = pstmt.executeQuery();
 			
@@ -107,26 +107,20 @@ public class UserDAOImpl1 implements UserDAO1 {
 	@Override
 	// 대출신청
 	// 대출관리코드, 도서코드, user_code, checkout_date, 
-	public int insertloan(LoanDTO dto) throws SQLException {
+	public void insertloan(LoanDTO dto) throws SQLException {
 		PreparedStatement pstmt = null;
-		int result = 0;
 		String sql;
 		
 		try {
 			// INSERT INTO 테이블명(컬럼명, 컬러명) VALUES (값1, 값2)
 			// INSERT ALL INTO 테이블명1(컬럼, 컬럼) VALUES(값, 값) INTO 테이블명2(컬럼, 컬럼) VALUES(값, 값);
 			sql = "INSERT INTO loan(loan_code, book_code, user_code, checkout_date, due_date, isExtended) "
-					+ " VALUES(?, ?, ?, sysdate, sysdate + 14, 0)";
+					+ " VALUES(loan_seq.nextval, ?, ?, sysdate, sysdate + 14, 0)";
 			
 		    pstmt = conn.prepareStatement(sql);
 		    
-		    
-	        System.out.println("[디버그] user_code=" + dto.getUser_code());
-	        System.out.println("[디버그] book_code=" + dto.getBook_code());
-	        
-		    pstmt.setInt(1, dto.getLoan_code());
-		    pstmt.setInt(2, dto.getBook_code());
-		    pstmt.setInt(3, dto.getUser_code());
+		    pstmt.setInt(1, dto.getBook_code());
+		    pstmt.setInt(2, dto.getUser_code());
 		    
 		    pstmt.executeUpdate();
 		    
@@ -136,7 +130,7 @@ public class UserDAOImpl1 implements UserDAO1 {
 			DBUtil.close(pstmt);
 		}
 		
-		return result;
+		return;
 	}
 
 	@Override
