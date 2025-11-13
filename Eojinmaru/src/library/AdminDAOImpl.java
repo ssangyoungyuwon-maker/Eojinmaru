@@ -17,7 +17,7 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public MemberDTO findUserById(String userId) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
-                     "FROM user_info WHERE user_id = ?";
+                     "FROM userinfo WHERE user_id = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -52,7 +52,7 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public MemberDTO findUserByCode(int userCode) {
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
-                     "FROM user_info WHERE user_code = ?";
+                     "FROM userinfo WHERE user_code = ?";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -89,7 +89,7 @@ public class AdminDAOImpl implements AdminDAO {
         List<MemberDTO> list = new ArrayList<>();
         
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
-                     "FROM user_info WHERE user_name LIKE ? ORDER BY user_name";
+                     "FROM userinfo WHERE user_name LIKE ? ORDER BY user_name";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -123,7 +123,7 @@ public class AdminDAOImpl implements AdminDAO {
 
     @Override
     public boolean deleteUserByCode(int userCode) {
-        String sql = "DELETE FROM user_info WHERE user_code = ?";
+        String sql = "DELETE FROM userinfo WHERE user_code = ?";
         
         PreparedStatement pstmt = null;
 
@@ -149,7 +149,7 @@ public class AdminDAOImpl implements AdminDAO {
     public List<MemberDTO> findAllUsers() {
         List<MemberDTO> list = new ArrayList<>();
         String sql = "SELECT user_code, user_id, user_name, user_birth, user_tel, user_email, user_address " +
-                     "FROM user_info ORDER BY user_code ASC";
+                     "FROM userinfo ORDER BY user_code ASC";
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -361,7 +361,8 @@ public class AdminDAOImpl implements AdminDAO {
     
     // 도서 삭제
     @Override
-    public boolean deleteBookByCode(int bookCode) {
+    public boolean deleteBookByCode(int bookCode) { 
+    // book 의 book_condtition 을 대출 불가로 바꿔버려야함 삭제가 되는건 삭제해버리고 안되는건 대출불가로 바꿔버림
     	
     	 String sqlLoan = "DELETE FROM LOAN WHERE BOOK_CODE = ?"; // 1. 자식 레코드 삭제
          String sqlBook = "DELETE FROM book WHERE BOOK_CODE = ?";  // 2. 부모 레코드 삭제
@@ -413,50 +414,65 @@ public class AdminDAOImpl implements AdminDAO {
             System.err.println(">> (DAO) 폐기 등록 실패: 해당 도서를 찾을 수 없음.");
             return false;
         }
-        String isbn = bookToDispose.getIsbn(); // ISBN 확보
+        String isbn = bookToDispose.getIsbn(); 
         
         String sqlInsert = "INSERT INTO disposedbook (book_code, isbn, dispose_date, dispose_reason) " +
                            "VALUES (?, ?, SYSDATE, ?)"; 
         
-        String sqlDelete = "DELETE FROM book WHERE BOOK_CODE = ?";
+        String sqlDeleteLoan = "DELETE FROM LOAN WHERE BOOK_CODE = ?";
+        
+        String sqlDeleteBook = "DELETE FROM book WHERE BOOK_CODE = ?";;
         
         PreparedStatement pstmtInsert = null;
-        PreparedStatement pstmtDelete = null;
+        PreparedStatement pstmtDeleteBook = null;
+        PreparedStatement pstmtDeleteLoan = null;
         
         try {
+        	conn.setAutoCommit(false); 
         	
             pstmtInsert = conn.prepareStatement(sqlInsert);
             pstmtInsert.setInt(1, bookCode);
             pstmtInsert.setString(2, isbn); 
             pstmtInsert.setString(3, reason);
-            int insertRows = pstmtInsert.executeUpdate();
-
-            if (insertRows == 0) {
+            
+            if (pstmtInsert.executeUpdate() == 0) {
+                conn.rollback();
             	System.err.println(">> (DAO) 폐기 등록 실패: disposedbook 테이블 INSERT 실패.");
-            	
                 return false;
             }
 
-            pstmtDelete = conn.prepareStatement(sqlDelete);
-            pstmtDelete.setInt(1, bookCode);
-            pstmtDelete.executeUpdate();
+            pstmtDeleteLoan = conn.prepareStatement(sqlDeleteLoan);
+            pstmtDeleteLoan.setInt(1, bookCode);
+            pstmtDeleteLoan.executeUpdate(); 
             
+            pstmtDeleteBook = conn.prepareStatement(sqlDeleteBook);
+            pstmtDeleteBook.setInt(1, bookCode);
             
-            return true; 
+            if (pstmtDeleteBook.executeUpdate() == 0) {
+                conn.rollback();
+                System.err.println(">> (DAO) 폐기 등록 실패: book 테이블 DELETE 실패. (이미 삭제되었거나 존재하지 않음)");
+                return false;
+            }
+            
+            conn.commit(); 
+            return true;
 
         } catch (NumberFormatException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); } 
             System.err.println(">> DAO 오류: book_code가 숫자가 아닙니다.");
         } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); } 
             System.err.println(">> 폐기 도서 등록/삭제 중 오류: " + e.getMessage());
         } finally {
             try {
-                if (pstmtInsert != null) pstmtInsert.close();
-                if (pstmtDelete != null) pstmtDelete.close();
+            	if (pstmtDeleteLoan != null) pstmtDeleteLoan.close(); 
+                if (pstmtDeleteBook != null) pstmtDeleteBook.close(); 
+                conn.setAutoCommit(true); 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-		return false;
+        return false;
     }
     
     // 폐기 확인
@@ -484,10 +500,14 @@ public class AdminDAOImpl implements AdminDAO {
                 disposed.setDispose_reason(rs.getString("dispose_reason"));
                 list.add(disposed);
             }
+            
         } catch (SQLException e) {
             System.err.println(">> 폐기 도서 목록 조회 중 오류: " + e.getMessage());
         } finally {
-           
+           try { 
+                if (rs != null) rs.close(); 
+                if (pstmt != null) pstmt.close(); 
+            } catch (SQLException e) { e.printStackTrace(); } 
         }
         return list;
     }
