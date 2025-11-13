@@ -382,14 +382,11 @@ public class AdminUI {
                             boolean isDeleted = adminDAO.deleteBookByCode(deleteBookCode);
                             if (isDeleted) {
                                 System.out.println(">> 재고 도서 정보가 성공적으로 삭제되었습니다.");
-                                break;
                             } else {
                                 System.out.println(">> 재고 도서 삭제에 실패하였습니다.");
-                                return;
                             }
                         } else {
                             System.out.println(">> 도서 삭제를 취소하였습니다.");
-                            return;
                         }
                     
                     } else if (disposedToDelete != null) {
@@ -415,12 +412,26 @@ public class AdminUI {
                         // 3. 재고에도, 폐기 기록에도 없는 경우
                         System.out.println(">> 해당 도서 코드(" + deleteBookCode + ")의 도서 (재고/폐기 기록)가 존재하지 않습니다.");
                     }
-                	break; }
+                	break; 
+                	}
                  
                 	
-                case "7": {
-                	isBookMenuRunning = false; 
-                	break; }
+                case "7":
+                    System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");       
+                    
+                    while (true) {
+                        String s = scanner.nextLine(); 
+                        
+                        if (s.equalsIgnoreCase("y")) {
+                            System.out.println("🤖 시스템을 종료하겠습니다 ... ");
+                            System.exit(0);                		
+                        }  else if (s.equalsIgnoreCase("n")){ 
+                            System.out.println("메인화면으로 돌아갑니다.");
+                            break;
+                        } else {  
+                            System.out.println(" 🚨 [Y 또는 N 만 입력해주세요] -> ");
+                        }
+                    } break;
                     
                 default: {
                 	System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요."); 
