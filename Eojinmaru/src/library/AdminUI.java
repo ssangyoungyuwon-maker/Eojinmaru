@@ -229,7 +229,7 @@ public class AdminUI {
             
             	// 도서 전체 리스트
              case "1": {
-                    List<BookInfoDTO1> allBooks = adminDAO.findAllBooks();
+                    List<BookInfoDTO> allBooks = adminDAO.findAllBooks();
                     if (allBooks.isEmpty()) {
                         System.out.println(">> 등록된 도서가 없습니다.");
                     } else {
@@ -242,7 +242,7 @@ public class AdminUI {
                 case "2": {
                     System.out.print(">> 검색할 도서명(전체 또는 일부)을 입력하세요: ");
                     String bookName = scanner.nextLine();
-                    List<BookInfoDTO1> bookList = adminDAO.findBooksByName(bookName);
+                    List<BookInfoDTO> bookList = adminDAO.findBooksByName(bookName);
                     if (bookList.isEmpty()) {
                         System.out.println(">> 해당 도서명의 도서를 찾을 수 없습니다.");
                     } else {
@@ -277,7 +277,7 @@ public class AdminUI {
                     } 
                     
                     // 폐기 등록 전, 도서가 book (재고) 테이블에 존재하는지 확인
-                    BookInfoDTO1 bookToDispose = adminDAO.findBookByCode(disposeBookCode);
+                    BookInfoDTO bookToDispose = adminDAO.findBookByCode(disposeBookCode);
                     
                     if (bookToDispose == null) {
                         System.out.println(">> 해당 도서 코드(" + disposeCodeInput + ")의 도서가 'book' 테이블에 존재하지 않습니다.");
@@ -307,7 +307,7 @@ public class AdminUI {
                 // 신상 도서 등록
                 case "5": {
                 	System.out.println("\n--- [5. 신상 도서 등록] ---");
-                    BookInfoDTO1 newBook = new BookInfoDTO1();
+                    BookInfoDTO newBook = new BookInfoDTO();
                    
                     System.out.print("ISBN (예: 123-45-678-9123-4): ");
                     String isbnInput = scanner.nextLine();
@@ -366,7 +366,7 @@ public class AdminUI {
                     }
                     
                     // 1. 재고 테이블(book)에서 검색
-                    BookInfoDTO1 bookToDelete = adminDAO.findBookByCode(deleteBookCode);
+                    BookInfoDTO bookToDelete = adminDAO.findBookByCode(deleteBookCode);
                     
 				
                     // 2. 폐기 기록 테이블(disposedbook)에서 검색
@@ -444,7 +444,7 @@ public class AdminUI {
     
     
     
-    private void printBookList(List<BookInfoDTO1> books) {
+    private void printBookList(List<BookInfoDTO> books) {
         if (books == null || books.isEmpty()) {
             return;
         }
@@ -454,7 +454,7 @@ public class AdminUI {
                             "ISBN", "BookCode", "Cat_ID", "Pub_ID", "도서명", "출판일");
         System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
 
-        for (BookInfoDTO1 book : books) {
+        for (BookInfoDTO book : books) {
             System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n",
             		book.getIsbn(), 
                    (book.getBook_code() == 0 ? "-" : String.valueOf(book.getBook_code())),

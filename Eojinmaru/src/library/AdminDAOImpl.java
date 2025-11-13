@@ -182,8 +182,8 @@ public class AdminDAOImpl implements AdminDAO {
 
     // 도서 관리 메서드
 	@Override
-	public List<BookInfoDTO1> findAllBooks() {
-		List<BookInfoDTO1> list = new ArrayList<>();
+	public List<BookInfoDTO> findAllBooks() {
+		List<BookInfoDTO> list = new ArrayList<>();
        
 		String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM bookinfo bi " +
@@ -198,7 +198,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                BookInfoDTO1 book = new BookInfoDTO1();
+                BookInfoDTO book = new BookInfoDTO();
                 book.setIsbn(rs.getString("ISBN"));
                 book.setCategory_id(rs.getInt("category_id"));
                 book.setPublisher_id(rs.getString("publisher_id"));
@@ -219,8 +219,8 @@ public class AdminDAOImpl implements AdminDAO {
 	}
 
 	@Override
-	public List<BookInfoDTO1> findBooksByName(String bookName) {
-		List<BookInfoDTO1> list = new ArrayList<>();
+	public List<BookInfoDTO> findBooksByName(String bookName) {
+		List<BookInfoDTO> list = new ArrayList<>();
 		String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM bookinfo bi " +
                 "LEFT JOIN book b ON bi.ISBN = b.ISBN " +
@@ -235,7 +235,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                BookInfoDTO1 book = new BookInfoDTO1();
+                BookInfoDTO book = new BookInfoDTO();
                 book.setIsbn(rs.getString("ISBN"));
                 book.setCategory_id(rs.getInt("category_id"));
                 book.setPublisher_id(rs.getString("publisher_id"));
@@ -257,7 +257,7 @@ public class AdminDAOImpl implements AdminDAO {
 	
     // 도서 코드 검색 구현
     @Override
-    public BookInfoDTO1 findBookByCode(int bookCode) {
+    public BookInfoDTO findBookByCode(int bookCode) {
         
     	String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM book b " +
@@ -266,7 +266,7 @@ public class AdminDAOImpl implements AdminDAO {
         
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        BookInfoDTO1 book = null;
+        BookInfoDTO book = null;
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -274,7 +274,7 @@ public class AdminDAOImpl implements AdminDAO {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                book = new BookInfoDTO1();
+                book = new BookInfoDTO();
                 book.setIsbn(rs.getString("ISBN"));
                 book.setCategory_id(rs.getInt("category_id"));
                 book.setPublisher_id(rs.getString("publisher_id"));
@@ -296,7 +296,7 @@ public class AdminDAOImpl implements AdminDAO {
     }
 	
     @Override
-    public boolean insertBook(BookInfoDTO1 book) {
+    public boolean insertBook(BookInfoDTO book) {
         
         String sqlInfo = "INSERT INTO bookInfo (ISBN, category_id, publisher_id, bookname, publish_date) " +
                      "VALUES (?, ?, ?, ?, ?)";
@@ -409,7 +409,7 @@ public class AdminDAOImpl implements AdminDAO {
     public boolean registerDisposedBook(int bookCode, String reason) {
         
     	
-        BookInfoDTO1 bookToDispose = findBookByCode(bookCode); 
+        BookInfoDTO bookToDispose = findBookByCode(bookCode); 
         if (bookToDispose == null) {
             System.err.println(">> (DAO) 폐기 등록 실패: 해당 도서를 찾을 수 없음.");
             return false;

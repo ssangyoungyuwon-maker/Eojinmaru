@@ -11,10 +11,10 @@ public interface AdminDAO {
     public boolean deleteUserByCode(int userCode);
     public List<MemberDTO> findUserByName(String name);
     public List<MemberDTO> findAllUsers();
-    public List<BookInfoDTO1> findAllBooks();
-    public List<BookInfoDTO1> findBooksByName(String bookName);
-    public boolean insertBook(BookInfoDTO1 newBook);
-    public BookInfoDTO1 findBookByCode(int bookCode);
+    public List<BookInfoDTO> findAllBooks();
+    public List<BookInfoDTO> findBooksByName(String bookName);
+    public boolean insertBook(BookInfoDTO newBook);
+    public BookInfoDTO findBookByCode(int bookCode);
     public boolean deleteBookByCode(int bookCode);
     public boolean registerDisposedBook(int bookCode, String reason);
     public boolean deleteDisposedBook(int bookCode);
