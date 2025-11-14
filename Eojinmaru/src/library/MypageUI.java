@@ -10,7 +10,7 @@ public class MypageUI {
 	private LoginInfo login = null;
 	private UserDAO dao = new UserDAO();
 	private ReturnUI returnUI;
-	private MainUI mainUI;
+
 	
 
 	public MypageUI(LoginInfo login) {
@@ -22,9 +22,16 @@ public class MypageUI {
 		int ch;
 		while (true) {
 			try {
+				
 				MemberDTO loginUser = login.loginUser();
+				System.out.println("\n===== [마이 페이지] =====");
 				System.out.println(loginUser.getUser_name() + "님 아래 메뉴를 선택하세요.");
-				System.out.print("\n1.내정보확인 2.내정보수정 3.탈퇴 4.이전화면 ");
+				System.out.println("1.내정보확인");
+				System.out.println("2.내정보수정");
+				System.out.println("3.탈퇴");
+				System.out.println("4.이전화면");
+				System.out.println("--------------------");
+				System.out.print("마이페이지 메뉴 선택: ");
 				ch = Integer.parseInt(br.readLine());
 
 
@@ -50,31 +57,35 @@ public class MypageUI {
 
 	public void chkmyinfo() {
 		System.out.println("\n[내정보확인]");
+		
+		String LINE = "======================================================================================================================";
 		try {
 			MemberDTO dto = login.loginUser();
 			String pwd;
 
 			for (int i = 1; i <= 3; i++) {
-				System.out.println("내 정보 확인을 위해 기존 비밀번호를 입력하세요.");
+				System.out.println("🔐내 정보 확인을 위해 기존 비밀번호를 입력하세요.");
 				pwd = br.readLine();
 
 				if (dto.getUser_pwd().equals(pwd)) {
-					System.out.println("아이디\t비밀번호\t이름\t생년월일\t전화번호\t이메일\t주소");
-					System.out.println("------------------------------------------");
 
-					System.out.print(dto.getUser_Id() + "\t");
-					System.out.print(dto.getUser_pwd() + "\t");
-					System.out.print(dto.getUser_name() + "\t");
-					System.out.print(dto.getUser_birth() + "\t");
-					System.out.print(dto.getUser_tel() + "\t");
-					System.out.print(dto.getUser_email() + "\t");
-					System.out.println(dto.getUser_address());
-
+					System.out.println(LINE);
+			        System.out.printf("%-15s | %-8s | %-12s\t | %-13s\t | %-20s\t | %-15s\n",
+			                "아이디", "이름", "생년월일", "전화번호", "이메일", "주소");
+			        System.out.println(LINE);
+			        
+			        System.out.printf("%-15s\t | %-8s | %-12s\t | %-13s\t | %-20s\t | %-15s\n",
+			        		dto.getUser_Id(),
+			        		dto.getUser_name(),
+			        		dto.getUser_birth(),
+			        		dto.getUser_tel(),
+			        		dto.getUser_email(),
+			        		dto.getUser_address());
 					System.out.println("\n이전 화면으로 이동합니다.");
 
 					return;
 				} else {
-					System.out.println("비밀번호가 틀렸습니다. 남은 로그인 횟수: " + (3 - i));
+					System.out.println(">> 비밀번호가 틀렸습니다. 남은 로그인 횟수: " + (3 - i));
 				}
 			}
 			System.out.println("비밀번호 3회 초과! 마이페이지로 돌아갑니다.");
@@ -128,7 +139,7 @@ public class MypageUI {
 			MemberDTO dto = login.loginUser();
 			List<LoanDTO> list = returnUI.showbooksonloan(dto.getUser_code());
 
-			System.out.println("비밀번호를 입력하세요.");
+			System.out.println("🔐비밀번호를 입력하세요.");
 			String pwd = br.readLine();
 			
 			if (!dto.getUser_pwd().equals(pwd)) {

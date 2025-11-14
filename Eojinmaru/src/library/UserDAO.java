@@ -70,7 +70,7 @@ public class UserDAO {
 		String sql;
 
 		try {
-			sql = "SELECT user_Id, user_pwd, user_name, user_birth, user_tel,user_email,user_address"
+			sql = "SELECT user_Id, user_name, user_birth, user_tel, user_email,user_address"
 					+ " FROM UserInfo WHERE user_id=?";
 
 			pstmt = conn.prepareStatement(sql);
@@ -82,7 +82,6 @@ public class UserDAO {
 				dto = new MemberDTO();
 
 				dto.setUser_Id(rs.getString("user_Id"));
-				dto.setUser_pwd(rs.getString("user_pwd"));
 				dto.setUser_name(rs.getString("user_name"));
 				dto.setUser_pwd(rs.getString("user_birth"));
 				dto.setUser_pwd(rs.getString("user_tel"));

@@ -7,64 +7,58 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import DBUtil.DBConn;
+import DBUtil.DBUtil;
 
 public class SincheongUI {
-	private Connection conn = DBConn.getConnection();
+	
 	
 	public void sincheongUI() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		SincheongDTO dto = new SincheongDTO();
-	
 		String request;
 
 		while (true) {
 			try {
+				System.out.println("\n[도서신청]");
 				System.out.print("신청할 도서의 제목과 저자를 입력하세요.[종료:q]");
-				request = dto.setRequest(br.readLine());
+				request = br.readLine();
 				
 
 				if (request.equalsIgnoreCase("q")) {
-					System.out.println("이전 화면으로 돌아갑니다.");
+					System.out.println("❌ 종료되어 이전 화면으로 돌아갑니다.");
 					return;
 				}
-				
-				System.out.println(request + "이 신청되었습니다.");
+				request(request);
+				System.out.println("✔ ["+request +"] 신청이 완료 되었습니다.");
+				return;
 
-			} catch (Exception e) {
+			} catch (SQLException e) {
+				System.out.println("오류가 발생하여 도서 신청에 실패했습니다.");
+			}catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+	
 	// DAO
-
-	public void insertSincheong(String request) throws SQLException {
-		
+	public void request(String request) throws SQLException {
+		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql;
 		
+		
 		try {
-			sql = "INSERT INTO sincheong (sincheong_name,sincheong_status) VALUES (?,'대기')";
-			pstmt.setString(1, request);
+			conn = DBConn.getConnection();
+			sql = "INSERT INTO sincheong (sincheong_code, sincheong_name, sincheong_status) VALUES (sincheong_seq.NEXTVAL,?,'대기')";
 			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, request);
 			
 			pstmt.executeUpdate();
 			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+		} catch (SQLException e) {
+			throw e;
+		}finally {
+			DBUtil.close(pstmt);
 
-	// DTO
-	public class SincheongDTO {
-
-		private String request;
-
-		public String getRequest() {
-			return request;
-		}
-
-		public String setRequest(String request) {
-			return this.request = request;
 		}
 	}
 }
