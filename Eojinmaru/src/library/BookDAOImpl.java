@@ -101,8 +101,57 @@ public class BookDAOImpl implements BookDAO {
 		
 		return list;
 	}
+	
+	@Override
+	// 대출가능 도서 검색
+	public List<LoanDTO> loanlistbook(int bookcode) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
 
+		try {
+			sql = "SELECT b.book_code, bookName, book_condition "
+					+ " FROM book b "
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ " WHERE book_code = ? AND book_condition = '대출가능'";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, bookcode);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				LoanDTO dto = new LoanDTO();
+				
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookName"));
+				dto.setBook_condition(rs.getString("book_condition"));
+				
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		
+		return list;
+	}
 
+	@Override
+	// 대출 예약 신청
+	public LoanDTO bookLoaning(int user_code) {
+		
+		return null;
+	}
+
+// ----------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	// 대출신청
 	// 대출관리코드, 도서코드, user_code, checkout_date, 
@@ -142,6 +191,26 @@ public class BookDAOImpl implements BookDAO {
 		return;
 	}
 
+	@Override
+	// 대출연장
+	public void extendloan(int loan_code) throws SQLException {
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "UPDATE loan SET isExtended = 1, due_date = due_date + 7 WHERE loan_code = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, loan_code);
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			DBUtil.close(pstmt);
+		}
+		
+	}
+	
 	@Override
 	// 전체 대출리스트
 	// 회원번호, 회원이름, 도서번호, 도서제목, 대출일짜, 반납예정일짜, 실제반납일짜, 대출연장남은회기, 연체대출불가날짜
@@ -244,121 +313,46 @@ public class BookDAOImpl implements BookDAO {
 		return list;
 	}
 
-	
-	
-	@Override
-	// 도서상태(대출중) 리스트 -- 사용확인 후 삭제
-	public List<LoanDTO> exloan(int loan_code) {
-		List<LoanDTO> list = new ArrayList<LoanDTO>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql;
-		
-		try {
-			sql = "SELECT b.book_code, bi.bookName, b.book_condition, TO_CHAR(l.due_date, 'YYYY-MM-DD') "
-					+ " FROM book b "
-					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
-					+ " JOIN loan l ON b.book_code = l.book_code "
-					+ " WHERE b.book_condition = '대출중'";
-			
-			pstmt = conn.prepareStatement(sql);
-			
-			rs = pstmt.executeQuery();
-			
-			while(true) {
-				LoanDTO dto = new LoanDTO();
-				
-				dto.setBook_code(rs.getInt("book_code"));
-				dto.setBookname(rs.getString("bookName"));
-				dto.setBook_condition(rs.getString("book_condition"));
-				dto.setDue_date(rs.getString("due_date"));
-				
-				list.add(dto);
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBUtil.close(rs);
-			DBUtil.close(pstmt);
-		}
-		return list;
-	}
+// ---------------------------------------------------------------------------------------------------------------------------------		
 	
 	@Override
 	// 도서상태(대출 중인 도서) 예약 신청
 	public void loanreservation(LoanDTO dto) throws SQLException {
-		
-	}
-
-	@Override
-	// 대출연장
-	public void extendloan(int loan_code) throws SQLException {
 		PreparedStatement pstmt = null;
 		String sql;
 		
 		try {
-			sql = "UPDATE loan SET isExtended = 1, due_date = due_date + 7 WHERE loan_code = ?";
+			sql = " SELECT l.loan_code, l.book_code, bi.bookname, l.user_code, b.book_condition, "
+				   + " TO_CHAR(l.due_date, 'YYYY-MM-DD') due_date, "
+				   + " TO_CHAR(lr.reservation_date, 'YYYY-MM-DD') reservation_date "
+				   + " FROM loan l "
+				   + " JOIN book b ON b.book_code = l.book_code "
+				   + " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
+				   + " LEFT JOIN loanreservation lr ON lr.book_code = l.book_code "
+				   + " WHERE l.user_code = ? AND b.book_condition = '대출중' ";
+			
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, loan_code);
+			
+			pstmt.setInt(1, dto.getUser_code());
+			
 			pstmt.executeUpdate();
-			
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			DBUtil.close(pstmt);
-		}
-		
-	}
+			pstmt.close();
+						
+			sql = "UPDATE loanreservation SET reservation_date = due_date + 1 WHERE book_code = ? AND book_condition = '대출중'";
 
-	@Override
-	// 대출가능 도서 검색
-	public List<LoanDTO> loanlistbook(int bookcode) {
-		List<LoanDTO> list = new ArrayList<LoanDTO>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql;
-
-		try {
-			sql = "SELECT b.book_code, bookName, book_condition "
-					+ " FROM book b "
-					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
-					+ " WHERE book_code = ? AND book_condition = '대출가능'";
-			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, bookcode);
+			pstmt.setInt(1, dto.getBook_code());
 			
-			rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
-				LoanDTO dto = new LoanDTO();
-				
-				dto.setBook_code(rs.getInt("book_code"));
-				dto.setBookname(rs.getString("bookName"));
-				dto.setBook_condition(rs.getString("book_condition"));
-				
-				list.add(dto);
-			}
+			pstmt.executeUpdate();
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DBUtil.close(rs);
 			DBUtil.close(pstmt);
 		}
-		
-		return list;
+		return;
 	}
-
-	@Override
-	// 대출 예약 신청
-	public LoanDTO bookLoaning(int user_code) {
-		
-		return null;
 	}
-}
