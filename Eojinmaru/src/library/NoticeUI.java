@@ -10,6 +10,22 @@ import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
 public class NoticeUI {
+	
+	public static final String ANSI_RESET = "\u001B[0m"; // 스타일 초기화
+
+	// 텍스트 색상
+	public static final String ANSI_BLUE = "\u001B[34m"; // 파란색
+	public static final String ANSI_YELLOW = "\u001B[33m"; // 노란색
+
+	// 스타일
+	public static final String ANSI_BOLD = "\u001B[1m"; // 굵게
+	public static final String ANSI_UNDERLINE = "\u001B[4m"; // 밑줄
+
+	public static final String ANSI_ITALIC = "\u001B[3m";  // 이탤릭체
+
+	// 배경색
+	public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m"; // 노란색 배경
+	
 	private boolean isAdmin = false;
 
 	private Connection conn = DBConn.getConnection();
@@ -36,9 +52,9 @@ public class NoticeUI {
 		        rs = pstmt.executeQuery();
 		        
 		        // 출력 라인 길이를 통일
-		        String LINE = "=====================================================================================";
+		        String LINE = "==============================================================================================";
 		        System.out.println(LINE);
-		        System.out.println("\t\t\t\t    🔔 최신 공지 사항 🔔");
+		        System.out.println(ANSI_BOLD+"\t\t\t\t\t      🔔 최신 공지 사항 🔔"+ANSI_RESET);
 		        System.out.println(LINE);
 
 		        if (rs.next()) {
@@ -46,7 +62,7 @@ public class NoticeUI {
 		            String date = rs.getString("NOTICE_DATE_FMT");
 		            
 		            // 1. 공지 제목 출력 (왼쪽 정렬)
-		            System.out.printf("| %-4s| %-40s\t|%-3s| %12s |", "제목", truncateString(title, 35), "날짜", date);
+		            System.out.printf("| %-4s| %-45s\t|%-3s| %12s |", "제목", truncateString(title, 35), "날짜", date);
 		            System.out.println();
 		            
 		        } else {
@@ -83,28 +99,25 @@ public class NoticeUI {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 
-			String LINE = "=====================================================================================";
+			String LINE = "==============================================================================================";
 			System.out.println(LINE);
-			System.out.println("\t\t\t\t🌟 이달의 대출 인기 도서 TOP 3 🌟");
+			System.out.println(ANSI_BOLD+"\t\t\t\t\t  🌟 이달의 대출 인기 도서 TOP 3 🌟"+ANSI_RESET);
 			System.out.println(LINE);
 
 			boolean hasResult = false;
-			int rank = 1; // 순위 카운터
+			int rank = 1; 
 
-			// while 루프를 사용하여 결과 셋의 모든 행(최대 3개)을 반복하며 출력
 			while (rs.next()) {
 				String bookName = rs.getString("bookname");
 				int totalLoans = rs.getInt("total_loans");
 
-				// 포맷팅을 개선하여 순위, 도서명, 대출 건수를 모두 표시
-				System.out.printf("| %-4s | %-42s\t  | 대출 건수: %-4d 건 |\n", "TOP " + rank++, truncateString(bookName, 25), // 도서명을
+				System.out.printf("|  %-5s  |   %-46s\t  | 대출 건수: %-3d 건 |\n", "TOP " + rank++, truncateString(bookName, 25), // 도서명을
 																														// 적절히
 																														// 자름
 						totalLoans);
 				hasResult = true;
 			}
 
-			// 결과가 한 건도 없을 경우 처리 (rs.next()가 한 번도 실행되지 않은 경우)
 			if (!hasResult) {
 				System.out.println(
 						"|                                                                                   |");
@@ -135,15 +148,13 @@ public class NoticeUI {
 
 		while (true) {
 			try {
-				// 게시글 갯수 확인하고 최대 페이지 계산
 				sql = "SELECT COUNT(*) cnt FROM notice";
 				pstmt = conn.prepareStatement(sql);
 				rs = pstmt.executeQuery();
 				rs.next();
 				int noticeNum = rs.getInt("cnt");
 				int maxPage = (int) Math.ceil(noticeNum / (double) MaxNumInPage);
-
-				// 해당하는 페이지의 공지글 목록 가져오기
+				
 				sql = "SELECT notice_id, notice_title, TO_CHAR(notice_date, 'YY-MM-DD') notice_date FROM notice ORDER BY notice_id DESC OFFSET ? ROWS FETCH FIRST ? ROWS ONLY";
 
 				pstmt = conn.prepareStatement(sql);
@@ -151,28 +162,28 @@ public class NoticeUI {
 				pstmt.setInt(2, MaxNumInPage);
 				rs = pstmt.executeQuery();
 
-				// 출력
-				String LINE = "================================================================================";
+				String LINE = "==============================================================================================";
 				System.out.println();
 
-				System.out.printf("\t\t\t\t💡 공지사항 목록(%d/%d)\n", pages, maxPage);
+				System.out.printf("\t\t\t\t\t" + ANSI_BOLD + ANSI_ITALIC+ "💡 Notice List\n" + ANSI_RESET);
 
 				System.out.println(LINE);
 
-				System.out.println(String.format("|%-4s|\t\t\t%-25s\t\t| %-4s|", " 번호", "    공지사항", "    일자    "));
-				System.out.println("--------------------------------------------------------------------------------");
+				System.out.println(String.format("|%-4s|\t\t %-55s\t| %-4s|", " 번호", "                        공지사항", "   일자    "));
+				System.out.println(LINE);
 				if (noticeNum == 0) {
 					System.out.println(String.format("|%-26s\t\t|", "\t\t\t등록된 공지사항이 없습니다.\t\t\t"));
 				} else {
 					while (rs.next()) {
-						System.out.println(String.format("| %-3s| %-45s\t| %-4s |", rs.getInt("notice_id"),
-								truncateString(rs.getString("notice_title"), 25), rs.getString("notice_date")));
+						System.out.println(String.format("| %-3s| %-55s\t| %-4s |", rs.getInt("notice_id"),
+								truncateString(rs.getString("notice_title"), 40), rs.getString("notice_date")));
 					}
 				}
 				System.out.println(LINE);
 
 				if (isAdmin) {
-					System.out.println("📔 메뉴: [<]이전장, [>]다음장, [등록]공지 등록, [공지번호]보기 및 수정/삭제, [0]이전 메뉴");
+					System.out.println("📔 메뉴: [<]이전페이지 \t"+  pages + maxPage + "[>]다음 페이지 ");
+				    System.out.println("[등록]공지 등록, [공지번호]보기 및 수정/삭제, [0]이전 메뉴");
 					System.out.print("선택 입력 >> ");
 
 					String ch = br.readLine();
@@ -197,8 +208,10 @@ public class NoticeUI {
 					}
 
 				} else {
-					System.out.println("📔 메뉴: [<]이전장, [>]다음장, [공지번호]보기, [0]이전 메뉴");
-					System.out.print("선택 입력 >> ");
+					System.out.println("     [<]이전페이지 \t\t\t"+  pages + "/"+ maxPage +" 페이지" +"\t\t\t  [>]다음 페이지 ");
+					System.out.println(" 📔 메뉴: ");
+				    System.out.println(" [등록]공지 등록, \n [공지번호]보기, \n [0]이전 메뉴");
+					System.out.print(" 선택 입력 >> ");
 
 					String ch = br.readLine();
 
