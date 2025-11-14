@@ -1111,7 +1111,7 @@ public class AdminDAOImpl implements AdminDAO {
 	}
 
 	@Override
-	public int returnbook_baega(AdminDTO dto) {
+	public int returnbook_baega(int bookCode) {
 
 		int result = 0;
 		CallableStatement cstmt = null;
@@ -1122,8 +1122,8 @@ public class AdminDAOImpl implements AdminDAO {
 
 			cstmt = conn.prepareCall(sql);
 
-			cstmt.setInt(1, dto.getBookcode());
-			cstmt.setString(2, dto.getBook_condition());
+			cstmt.setInt(1, bookCode);
+			cstmt.setString(2, "대출가능");
 
 			cstmt.executeUpdate();
 

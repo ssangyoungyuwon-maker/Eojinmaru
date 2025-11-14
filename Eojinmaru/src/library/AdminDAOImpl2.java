@@ -269,7 +269,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 					+ "        JOIN book bk ON bk.book_code = lon.book_code "
 					+ "        JOIN bookinfo bi ON bi.isbn = bk.isbn" 
 					+ "    ) T " 
-					+ " WHERE T.도서상태 = '대출중'  AND (T.실제반납일 IS NULL OR T.실제반납일 > TO_CHAR(SYSDATE, 'YYYY-MM-DD')) "; //
+					+ " WHERE T.도서상태 = '대출중'  AND (T.실제반납일 IS NULL)  " ;
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
@@ -320,7 +320,7 @@ public class AdminDAOImpl2 implements AdminDAO2 {
 					+ "        JOIN userinfo ui ON ui.user_code = lon.user_code"
 					+ "        JOIN book bk ON bk.book_code = lon.book_code"
 					+ "        JOIN bookinfo bi ON bi.isbn = bk.isbn" + "    ) T " 
-					+ " WHERE 북코드 = ? ";
+					+ " WHERE 북코드 = ? and ( 실제반납일 is null )";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, bookcode);
