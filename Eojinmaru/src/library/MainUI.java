@@ -34,15 +34,15 @@ public class MainUI {
         		noticeUI.Printrecomendbook();
         		System.out.println();
         		noticeUI.PrintlastestNoticeTitle();
-        		
-        		System.out.println("\n===== [메인 화면] =====");
-        		System.out.println("1. 로그인");
-        		System.out.println("2. 회원가입");
-        		System.out.println("3. 도서 검색");
-        		System.out.println("4. 도서 신청");
-        		System.out.println("5. 공지사항");
-        		System.out.println("=========================");
-        		System.out.print("메뉴를 선택하세요: ");
+
+            	System.out.println("\n========================================  [메 인 화 면] ========================================");
+        		System.out.println("\t\t\t\t\t 1. 로그인");
+        		System.out.println("\t\t\t\t\t 2. 회원가입");
+        		System.out.println("\t\t\t\t\t 4. 도서 검색");
+        		System.out.println("\t\t\t\t\t 4. 도서 신청");
+        		System.out.println("\t\t\t\t\t 5. 공지사항");
+        		System.out.println("==============================================================================================");
+        		System.out.print("\t\t\t\t   ➡️ 메뉴를 선택하세요: ");
         		
         		int mainChoice = Integer.parseInt(br.readLine());
         		
@@ -113,23 +113,24 @@ public class MainUI {
     
     // 회원 가입
     private void signup() {
-    	System.out.println("\n--- [회원가입] ---");
+    	String LINE = "==================================================================================================";
+    	System.out.println("\n======================================== 📋[회 원 가 입] ========================================");
     	
     	try {
     		MemberDTO newUser = new MemberDTO();
-    		System.out.print("🆔 아이디 : ");
+    		System.out.print("\t\t\t\t🆔 아이디 : ");
     		newUser.setUser_Id(br.readLine());
-    		System.out.print("🗝️ 비밀번호 : ");
+    		System.out.print("\t\t\t\t🗝️ 비밀번호 : ");
     		newUser.setUser_pwd(br.readLine());
-    		System.out.print("🤖 이름 : ");
+    		System.out.print("\t\t\t\t🤖 이름 : ");
     		newUser.setUser_name(br.readLine());
-    		System.out.print("🎉 생년월일 (YYYY-MM-DD): ");
+    		System.out.print("\t\t\t\t🎉 생년월일 (YYYY-MM-DD): ");
     		newUser.setUser_birth(br.readLine());
-    		System.out.print("📱 전화번호 (010-XXXX-XXXX) : ");
+    		System.out.print("\t\t\t\t📱 전화번호 (010-XXXX-XXXX) : ");
     		newUser.setUser_tel(br.readLine());
-    		System.out.print("📨 이메일 : ");
+    		System.out.print("\t\t\t\t📨 이메일 : ");
     		newUser.setUser_email(br.readLine());
-    		System.out.print("🏠 주소 : ");
+    		System.out.print("\t\t\t\t🏠 주소 : ");
     		newUser.setUser_address(br.readLine());
     		boolean isSuccess = memberDAO.signUpUser(newUser);
     		if (isSuccess) {
