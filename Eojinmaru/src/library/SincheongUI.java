@@ -16,11 +16,9 @@ public class SincheongUI {
 		SincheongDTO dto = new SincheongDTO();
 	
 		String request;
-		
 
 		while (true) {
 			try {
-				
 				System.out.print("신청할 도서의 제목과 저자를 입력하세요.[종료:q]");
 				request = dto.setRequest(br.readLine());
 				
