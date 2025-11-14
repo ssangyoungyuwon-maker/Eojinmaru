@@ -264,7 +264,7 @@ public class AdminUI {
                     if (allBooks.isEmpty()) {
                         System.out.println(">> 등록된 도서가 없습니다.");
                     } else {
-                    	System.out.println("\n\t\t\t🔎 [ 검색 결과 : 도서 전체 리스트 : " + allBooks.size() + "건 ] \t\t\t\t\t");
+                    	System.out.println("\n\t\t\t\t\t🔎 [ 전체 도서 권수 : " + allBooks.size() + "건 ] \t\t\t\t\t");
                     	
                         printBookList(allBooks);
                     }
@@ -278,7 +278,7 @@ public class AdminUI {
                     if (bookList.isEmpty()) {
                         System.out.println(">> 해당 도서명의 도서를 찾을 수 없습니다.");
                     } else {
-                    	System.out.println("\n\t\t\t🔎 [ 검색 결과 : 도서 검색 결과 : "  + bookList.size() + "건 ] \t\t\t\t\t");
+                    	System.out.println("\n\t\t\t\t\t🔎 [ 도서 검색 결과 : "  + bookList.size() + "건 ] \t\t\t\t\t");
                         printBookList(bookList);
                     }
                     break; }
@@ -458,9 +458,6 @@ public class AdminUI {
             }
         }
     }
-    
-    
-    
     
     private void printBookList(List<BookInfoDTO> books) {
         if (books == null || books.isEmpty()) {
