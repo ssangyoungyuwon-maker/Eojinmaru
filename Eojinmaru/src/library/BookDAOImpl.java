@@ -143,12 +143,16 @@ public class BookDAOImpl implements BookDAO {
 		String sql;
 		
 		try {
-			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, isExtended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
+			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, "
+					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
+					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
+					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, "
+					+ " book_condition "
 					+ " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
-					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE l.user_code = ?";
+					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " 
+					+ " WHERE l.user_code = ? " ;
 					
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, user_code);
@@ -165,8 +169,7 @@ public class BookDAOImpl implements BookDAO {
 				dto.setCheckout_date(rs.getString("checkout_date"));
 				dto.setDue_date(rs.getString("due_date"));
 				dto.setReservation_date(rs.getString("return_date"));
-				dto.setIsExtended(rs.getInt("isExtended"));
-				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
+				dto.setBook_condition(rs.getString("book_condition"));
 					
 				list.add(dto);
 			}
@@ -182,25 +185,27 @@ public class BookDAOImpl implements BookDAO {
 		return list;
 	}
 	
-	// 대출리스트
-	public List<LoanDTO> listloaning(int Loan_code) {
+	// 회원이 대출중인 리스트
+	public List<LoanDTO> listloaning(int user_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
 		
 		try {
-			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
-					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, TO_CHAR(return_date, 'YYYY-MM-DD') return_date, isExtended, "
-					+ " TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
+			sql = " SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, "
+					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
+					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
+					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, "
+					+ " isExtended "
 					+ " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code "
 					+ " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE Loan_code = ?";
+					+ " WHERE l.user_code = ? AND return_date is null";
 					
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, Loan_code);
+			pstmt.setInt(1, user_code);
 			rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
@@ -213,9 +218,8 @@ public class BookDAOImpl implements BookDAO {
 				dto.setBookname(rs.getString("bookname"));
 				dto.setCheckout_date(rs.getString("checkout_date"));
 				dto.setDue_date(rs.getString("due_date"));
-				dto.setReservation_date(rs.getString("return_date"));
+				dto.setReturn_date(rs.getString("return_date"));
 				dto.setIsExtended(rs.getInt("isExtended"));
-				dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));			
 				
 				list.add(dto);
 			}
@@ -233,7 +237,7 @@ public class BookDAOImpl implements BookDAO {
 
 	@Override
 	// 도서상태(대출중) 리스트
-	public List<LoanDTO> loaning(String book_condition) {
+	public List<LoanDTO> exloan(int loan_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -293,28 +297,22 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-	// 대출연장 
-	public void updatloan(LoanDTO dto) throws SQLException {
+	// 대출연장
+	public void extendloan(int loan_code) throws SQLException {
 		PreparedStatement pstmt = null;
 		String sql;
 		
 		try {
-			//  UPDATE 테이블명 SET 컬럼=값, 컬럼=값 WHERE 조건;
-			sql = "UPDATE loan SET loan_code = 1 WHERE loan_code";
-			
+			sql = "UPDATE loan SET isExtended = 1, due_date = due_date + 7 WHERE loan_code = ?";
 			pstmt = conn.prepareStatement(sql);
-			
+			pstmt.setInt(1, loan_code);
 			pstmt.executeUpdate();
 			
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e;
 		} finally {
 			DBUtil.close(pstmt);
 		}
-		return;
+		
 	}
-
-	
 }

@@ -709,21 +709,69 @@ public class AdminUI {
 			this.loanbooksearchbyusername(currentList);
 			return;
 		}
+		
+		final int pageSize = 10;
+		int currentPage = 1;
+
+		int totalItems = list.size();
+		int totalPages = (totalItems + pageSize - 1) / pageSize;
+		
+		while (true) {
+
+			int startIdx = (currentPage - 1) * pageSize;
+			int endIdx = Math.min(startIdx + pageSize, totalItems);
 
 		String LINE = "============================================================================================================";
 		System.out.println("\n\t\t\t🔎 [ 검색 결과 : 유저이름 ▶ " + inputLine + " ◀  ] \t\t\t\t\t");
 		System.out.println(LINE);
-		System.out.printf("| %-6s| %-5s| %-5s| %-20s | %-10s| %-10s| %-10s| %-8s |\n", "유저이름", "대출번호", "북코드",
+		System.out.printf("| %-6s| %-5s| %-5s| %-20s\t| %-10s| %-8s| %-10s| %-8s|\n", "유저이름", "대출번호", "북코드",
 				"         책이름", "대출일", "반납예정일", "도서상태", "연체일수");
 		System.out.println(LINE);
 
-		for (AdminDTO dto : list) {
+		for (int i = startIdx; i < endIdx; i++) {
+			AdminDTO dto = list.get(i);
 			System.out.printf("| %-6s | %-5d | %-5d | %-20s\t| %-10s | %-10s | %-8s\t| %-8s |\n", dto.getUsername(),
 					dto.getLoancode(), dto.getBookcode(), adminDAO.truncateString(dto.getBookname(), 10),
 					dto.getCheckout_date(), dto.getDue_date(), dto.getBook_condition(), dto.getOverdue_date());
 		}
 		System.out.println(LINE);
 		System.out.println();
+		
+		System.out.println(LINE);
+
+		String prevArrow = " ' < ' 이전페이지📚";
+		String s = String.format("페이지 %d / %d", currentPage, totalPages);
+		String nextArrow = "📚다음페이지 ' > '";
+
+		System.out.println("\t" + prevArrow + "\t\t\t\t\t" + s + "\t\t\t\t" + nextArrow);
+		System.out.println("🔎1.대출된 도서검색  \n🔎2.회원별 대출도서검색  \n🔎3.연체된도서검색 \n🔎4.도서반납관리(배가) \n (그 외 입력: 메뉴 종료) ");
+		System.out.print(" 입력 : ");
+
+		String memberChoice = scanner.nextLine();
+
+		switch (memberChoice) {
+
+		case "<":
+			if (currentPage > 1) {
+				currentPage--; // 이전 페이지로 이동
+			} else {
+				System.out.println("⚠️ 첫 번째 페이지입니다.");
+			}
+			break;
+		case ">":
+			if (currentPage < totalPages) {
+				currentPage++; // 다음 페이지로 이동
+			} else {
+				System.out.println("⚠️ 마지막 페이지입니다.");
+			}
+			break;
+		default:
+			System.out.println("📋 메뉴로 돌아갑니다. 📋");
+			System.out.println();
+			return;
+		}
+		}
+		
 
 	}
 	
