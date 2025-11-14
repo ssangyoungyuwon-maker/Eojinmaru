@@ -18,47 +18,54 @@ public class AdminUI {
         boolean isAdminRunning = true; 
 
         while (isAdminRunning) {
-           
-            System.out.println("\n===== [관리자 화면] =====");
-            System.out.println("1. 회원관리");
-            System.out.println("2. 도서관리");
-			System.out.println("3. 대출 및 반납 관리");
-			System.out.println("4. 신청 도서 관리");
-			System.out.println("5. 공지사항 등록");
-			System.out.println("6. 관리자 로그아웃");
-			System.out.println("7. 시스템 종료");
-			System.out.println("--------------------");
+        	
+        	System.out.println("\n\t\t\t\t\t🔒 [ 관 리 자 ] \t\t\t\t\t");
+        	System.out.println("====================================================================================================");
+            System.out.println("\t\t\t\t\t 1. 회원 관리");
+            System.out.println("\t\t\t\t\t 2. 도서 관리");
+			System.out.println("\t\t\t\t\t 3. 대출 및 반납 관리");
+			System.out.println("\t\t\t\t\t 4. 신청 도서 관리");
+			System.out.println("\t\t\t\t\t 5. 공지사항 관리");
+			System.out.println("\t\t\t\t\t 6. 관리자 로그아웃");
+			System.out.println("\t\t\t\t\t 7. 시스템 종료");
+        	System.out.println("====================================================================================================\n");
+
+
 			System.out.print("회원 관리 메뉴 선택: ");
 
             String adminChoice = scanner.nextLine();
 
             switch (adminChoice) {
                 case "1":
+                	System.out.println(" 🤖 [회원 관리] 페이지로 이동합니다.");
+    				System.out.println();
                     this.showMemberMenu();
                     break;
 
                 case "2":
+                	System.out.println(" 🤖 [도서 관리] 페이지로 이동합니다.");
+    				System.out.println();
                     this.showBookMenu(); 
                     break;
                     
     			case "3":
-    				System.out.println(" 🤖 도서 대출/반납 관리 페이지로 이동합니다.");
+    				System.out.println(" 🤖 [대출 및 반납 관리] 페이지로 이동합니다.");
     				System.out.println();
     				this.showLoanBookandMemberInfo();
     				break;
     			case "4":
-    				System.out.println(" 📚 신청 도서 목록으로 이동합니다.");
+    				System.out.println(" 📚 [신청 도서 관리] 페이지로 이동합니다.");
     				System.out.println();
     				this.showsincheongmanage();
     				break;
     			case "5":
     				System.out.println();
-    				System.out.println("📢 공지사항 관리 페이지로 이동합니다.");
+    				System.out.println("📢 [공지사항 관리] 페이지로 이동합니다.");
     				System.out.println();
     				this.noticeadmin();
     				break;
     			case "6":
-    				System.out.println(" 📋 메인 화면으로 돌아갑니다. ");
+    				System.out.println(" 📋 [메인 화면] 으로 돌아갑니다. ");
     				isAdminRunning = false;
     				break;
     			case "7": // 시스템 종료
@@ -98,14 +105,15 @@ public class AdminUI {
     private void showMemberMenu() {
         boolean isMemberMenuRunning = true;
         while (isMemberMenuRunning) {
-            System.out.println("\n--- [1. 회원 관리] ---");
-            System.out.println("1. 아이디 검색");
-            System.out.println("2. 이름 검색");
-            System.out.println("3. 회원 삭제");
-            System.out.println("4. 연체 회원");
-            System.out.println("5. 전체 리스트");
-            System.out.println("6. 뒤로가기"); 
-            System.out.println("--------------------");
+        	System.out.println("\n\t\t\t\t\t🔒 [ 회원 관리 ] \t\t\t\t\t");
+        	System.out.println("====================================================================================================");
+            System.out.println("\t\t\t\t\t1. 아이디 검색");
+            System.out.println("\t\t\t\t\t2. 이름 검색");
+            System.out.println("\t\t\t\t\t3. 회원 삭제");
+            System.out.println("\t\t\t\t\t4. 연체 회원");
+            System.out.println("\t\t\t\t\t5. 전체 리스트");
+            System.out.println("\t\t\t\t\t6. 뒤로가기"); 
+        	System.out.println("====================================================================================================\n");
             System.out.print("회원 관리 메뉴 선택: ");
             
             String memberChoice = scanner.nextLine();
@@ -117,7 +125,8 @@ public class AdminUI {
                 String id = scanner.nextLine();
                 MemberDTO user = adminDAO.findUserById(id);
                 if (user != null) {
-                    System.out.println("--- 검색 결과 (1건) ---");
+                	
+                	System.out.println("\n\t\t\t\t\t🔎 [ 검색 결과 ] \t\t\t\t\t");
                     List<MemberDTO> resultList = new ArrayList<>();
                     resultList.add(user);
                     printUserList(resultList);
@@ -205,14 +214,27 @@ public class AdminUI {
         if (users == null || users.isEmpty()) {
             return; 
         }
-
-        System.out.println("--------------------------------------------------------------------------------------------------");
-        System.out.printf("%-5s | %-12s | %-8s | %-12s | %-13s | %-20s | %-15s\n",
-                "코드", "아이디", "이름", "생년월일", "전화번호", "이메일", "주소");
-        System.out.println("--------------------------------------------------------------------------------------------------");
+        
+        /*
+         * 
+    	System.out.println("\n\t\t\t🔎 [ 검색 결과 : Bookcode " + s + "  ] \t\t\t\t\t");
+		System.out.println(LINE);
+		System.out.printf("| %-6s | %-4s | %-4s | %-28s\t| %-10s| %-8s| %-8s| %-8s | %-6s |\n", "유저이름", "대출번호", "북코드",
+				"         책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
+				
+        */
+        String Line = "==================================================================================================================";
+        
+    	System.out.println(Line);
+    	
+        System.out.printf("| %-4s | %-10s\t | %-4s | %-10s\t | %-10s | %-15s\t | %-15s\t |\n",
+                           "유저코드", "아이디", "이름", "생년월일", "전화번호", "이메일", "주소");
+        
+    	System.out.println(Line);
 
         for (MemberDTO user : users) {
-            System.out.printf("%-5d | %-12s | %-8s | %-12s | %-13s | %-20s | %-15s\n",
+            System.out.printf("| %-4s  | %-10s\t | %-4s | %-10s\t| %-12s\t| %-15s | %-15s\t |\n",
+            			//     "유저코드", "아이디", "이름", "생년월일", "전화번호", "이메일", "주소"
                     user.getUser_code(),
                     user.getUser_Id(),
                     user.getUser_name(),
@@ -221,33 +243,36 @@ public class AdminUI {
                     user.getUser_email(),
                     user.getUser_address());
         }
-        System.out.println("--------------------------------------------------------------------------------------------------");
+    	System.out.println(Line);
     }
     
     private void showBookMenu() {
         boolean isBookMenuRunning = true;
         while (isBookMenuRunning) {
-            System.out.println("\n--- [2. 도서 관리] ---");
-            System.out.println("1. 도서 전체 리스트");
-            System.out.println("2. 도서 검색");
-            System.out.println("3. 폐기 도서 확인");
-            System.out.println("4. 폐기 도서 등록");
-            System.out.println("5. 신상 도서 등록"); 
-            System.out.println("6. 도서 삭제"); 
-            System.out.println("7. 뒤로가기");
-            System.out.println("--------------------");
+        	
+        	System.out.println("\n\t\t\t\t\t🔒 [ 도서 관리 ] \t\t\t\t\t");
+        	System.out.println("====================================================================================================");
+            System.out.println("\t\t\t\t\t1. 도서 전체 리스트");
+            System.out.println("\t\t\t\t\t2. 도서 검색");
+            System.out.println("\t\t\t\t\t3. 폐기 도서 확인");
+            System.out.println("\t\t\t\t\t4. 폐기 도서 등록");
+            System.out.println("\t\t\t\t\t5. 신상 도서 등록"); 
+            System.out.println("\t\t\t\t\t6. 도서 삭제"); 
+            System.out.println("\t\t\t\t\t7. 뒤로가기");         
+        	System.out.println("====================================================================================================\n");
             System.out.print("도서 관리 메뉴 선택: ");
 
             String bookChoice = scanner.nextLine();
             switch (bookChoice) {
             
-            	// 도서 전체 리스트
+            // 도서 전체 리스트
              case "1": {
                     List<BookInfoDTO> allBooks = adminDAO.findAllBooks();
                     if (allBooks.isEmpty()) {
                         System.out.println(">> 등록된 도서가 없습니다.");
                     } else {
-                        System.out.println("--- 전체 도서 목록 (" + allBooks.size() + "건) ---");
+                    	System.out.println("\n\t\t\t🔎 [ 검색 결과 : 도서 전체 리스트 : " + + allBooks.size() + "건 ] \t\t\t\t\t");
+                    	
                         printBookList(allBooks);
                     }
                     break; }
@@ -429,24 +454,10 @@ public class AdminUI {
                 	break; 
                 	}
                  
+                case "7":	
+                	isBookMenuRunning = false;
+                	break;
                 	
-                case "7":
-                    System.out.println("❗ 시스템을 종료 하시겠습니까 ? [ Y / N ] ");       
-                    
-                    while (true) {
-                        String s = scanner.nextLine(); 
-                        
-                        if (s.equalsIgnoreCase("y")) {
-                            System.out.println("🤖 시스템을 종료하겠습니다 ... ");
-                            System.exit(0);                		
-                        }  else if (s.equalsIgnoreCase("n")){ 
-                            System.out.println("메인화면으로 돌아갑니다.");
-                            break;
-                        } else {  
-                            System.out.println(" 🚨 [Y 또는 N 만 입력해주세요] -> ");
-                        }
-                    } break;
-                    
                 default: {
                 	System.out.println(">> 잘못된 입력입니다. 1~7 사이의 숫자를 입력해주세요."); 
                 	break; }
@@ -462,12 +473,12 @@ public class AdminUI {
         if (books == null || books.isEmpty()) {
             return;
         }
-
-        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+        
+    	System.out.println("====================================================================================================");
         System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n", 
                             "ISBN", "BookCode", "Cat_ID", "Pub_ID", "도서명", "출판일");
-        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
-
+        
+        System.out.println("====================================================================================================\n");
         for (BookInfoDTO book : books) {
             System.out.printf("%-19s | %-8s | %-8s | %-8s | %-30s | %-12s\n",
             		book.getIsbn(), 
@@ -477,7 +488,8 @@ public class AdminUI {
                     book.getBookName(),
                     book.getPublish_date());
         }
-        System.out.println("-----------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("====================================================================================================\n");
+
     }
     
     private void printDisposedBookList(List<DisposedBookDTO> books) {
@@ -485,10 +497,10 @@ public class AdminUI {
             return;
         }
 
-        System.out.println("--------------------------------------------------------------------");
+    	System.out.println("====================================================================================================");
         System.out.printf("%-10s | %-30s | %-12s | %-30s\n", 
                             "BookCode", "책 제목", "폐기일자", "폐기 사유");
-        System.out.println("--------------------------------------------------------------------");
+    	System.out.println("====================================================================================================\n");
 
         for (DisposedBookDTO book : books) {
             System.out.printf("%-10d | %-30s | %-12s | %-30s\n",
@@ -497,7 +509,7 @@ public class AdminUI {
                     book.getDispose_date(),
                     book.getDispose_reason());
         }
-        System.out.println("--------------------------------------------------------------------");
+    	System.out.println("====================================================================================================\n");
     }
     
 
