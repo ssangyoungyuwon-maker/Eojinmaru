@@ -15,7 +15,7 @@ public class MainUI {
 	// 스타일
 	public static final String ANSI_BOLD = "\u001B[1m"; // 굵게
 	public static final String ANSI_ITALIC = "\u001B[3m";  // 이탤릭체
-	public static final String ANSI_UNDERLINE = "\u001B[4m"; // 밑줄
+	public static final String ANSI_UNDERLINE = "\u001B[4m"; // 밑줄 
 
 	// 배경색
 	public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m"; // 노란색 배경
