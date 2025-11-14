@@ -62,7 +62,6 @@ public class BookDAOImpl implements BookDAO {
 	
 	@Override
 	// 대출 신청 전 책 리스트 조회
-
 	public List<BookInfoDTO> loanBook(int bookcode) {
 		List<BookInfoDTO> list = new ArrayList<BookInfoDTO>();
 		PreparedStatement pstmt = null;
@@ -123,6 +122,16 @@ public class BookDAOImpl implements BookDAO {
 		    pstmt.setInt(2, dto.getUser_code());
 		    
 		    pstmt.executeUpdate();
+		    pstmt.close();
+		    
+		    sql = "UPDATE book set book_condition = '대출중' where book_code = ?";
+		    
+		    pstmt = conn.prepareStatement(sql);
+		    
+		    pstmt.setInt(1, dto.getBook_code());
+		    
+		    pstmt.executeUpdate();
+		    
 		    
 		} catch (SQLException e) {
 			throw e;
@@ -235,8 +244,10 @@ public class BookDAOImpl implements BookDAO {
 		return list;
 	}
 
+	
+	
 	@Override
-	// 도서상태(대출중) 리스트
+	// 도서상태(대출중) 리스트 -- 사용확인 후 삭제
 	public List<LoanDTO> exloan(int loan_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
@@ -283,20 +294,6 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-	public LoanDTO bookLoaning(int user_code) {
-		LoanDTO dto = null;
-		
-		// 연체여부 확인
-		try {
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		return dto;
-	}
-
-	@Override
 	// 대출연장
 	public void extendloan(int loan_code) throws SQLException {
 		PreparedStatement pstmt = null;
@@ -314,5 +311,54 @@ public class BookDAOImpl implements BookDAO {
 			DBUtil.close(pstmt);
 		}
 		
+	}
+
+	@Override
+	// 대출가능 도서 검색
+	public List<LoanDTO> loanlistbook(int bookcode) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+
+		try {
+			sql = "SELECT b.book_code, bookName, book_condition "
+					+ " FROM book b "
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ " WHERE book_code = ? AND book_condition = '대출가능'";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, bookcode);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				LoanDTO dto = new LoanDTO();
+				
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookName"));
+				dto.setBook_condition(rs.getString("book_condition"));
+				
+				list.add(dto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		
+		return list;
+	}
+
+	@Override
+	// 대출 예약 신청
+	public LoanDTO bookLoaning(int user_code) {
+		
+		return null;
 	}
 }
