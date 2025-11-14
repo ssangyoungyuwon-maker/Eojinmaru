@@ -13,8 +13,9 @@ import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
 public class ReturnUI {
+	
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	Connection conn = DBConn.getConnection();
+	
 
 	private LoginInfo login = null;
 
@@ -73,7 +74,9 @@ public class ReturnUI {
 	}
 
 	// DAO
+
 	public List<LoanDTO> showbooksonloan(int user_code) throws SQLException {
+		Connection conn = DBConn.getConnection();
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -115,6 +118,7 @@ public class ReturnUI {
 	}
 
 	public void returnbook(int user_code, int book_code) throws SQLException {
+		Connection conn = DBConn.getConnection();
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null;
 		String sql;

@@ -1,46 +1,73 @@
 package library;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import DBUtil.DBConn;
 
 public class SincheongUI {
-
-	public void sincheong() {
+	private Connection conn = DBConn.getConnection();
+	
+	public void sincheongUI() {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		List<SincheongDTO> list = new ArrayList<SincheongDTO>();
-		String title;
-		String author;
+		SincheongDTO dto = new SincheongDTO();
+	
+		String request;
+		
 
 		while (true) {
 			try {
-				System.out.print("신청할 도서의 제목을 입력하세요.[종료:q]");
-				title = br.readLine();
+				
+				System.out.print("신청할 도서의 제목과 저자를 입력하세요.[종료:q]");
+				request = dto.setRequest(br.readLine());
+				
 
-				if (title.equalsIgnoreCase("q")) {
+				if (request.equalsIgnoreCase("q")) {
 					System.out.println("이전 화면으로 돌아갑니다.");
 					return;
-
-				//System.out.print("신청할 도서의 저자이름을 입력하세요. ");
-				//author = br.readLine();
-				
-				//SincheongDTO dto = new SincheongDTO(title,author);
-				//list.add(dto);
-				
-				//System.out.println(title+"이 신청되었습니다.");
-
-					
-
 				}
+				
+				System.out.println(request + "이 신청되었습니다.");
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
 
-}
+	// DAO
 
-	
-	//DAO
+	public void insertSincheong(String request) throws SQLException {
+		
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "INSERT INTO sincheong (sincheong_name,sincheong_status) VALUES (?,'대기')";
+			pstmt.setString(1, request);
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// DTO
+	public class SincheongDTO {
+
+		private String request;
+
+		public String getRequest() {
+			return request;
+		}
+
+		public String setRequest(String request) {
+			return this.request = request;
+		}
+	}
 }
