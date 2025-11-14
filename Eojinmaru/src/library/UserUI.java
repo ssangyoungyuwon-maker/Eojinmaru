@@ -40,7 +40,7 @@ public class UserUI {
 				case 1: findBybook(); break;
 				case 2: loan(); break;
 				case 3: returnUI.start(); break;
-				case 4: sincheong(); break;
+				case 4: sincheong.sincheongUI(); break;
 				case 5: mypageUI.menu(); break;
 				}
 			} catch (NumberFormatException e) {
