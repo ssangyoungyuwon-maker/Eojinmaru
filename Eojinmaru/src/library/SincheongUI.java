@@ -32,7 +32,7 @@ public class SincheongUI {
 				return;
 
 			} catch (SQLException e) {
-				System.out.println("오류가 발생하여 도서 신청에 실패했습니다.");
+				System.out.println("❌ 오류 발생 : 도서 신청에 실패했습니다.");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
