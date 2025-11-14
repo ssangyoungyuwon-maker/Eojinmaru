@@ -27,9 +27,6 @@ public interface BookDAO {
 	// 회원의 대출 리스트
 	public List<LoanDTO> listloaning(int book_code);	
 	
-	// 대출 중인 도서 연장신청
-	public List<LoanDTO> exloan(int loan_code);
-	
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
 

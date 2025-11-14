@@ -239,6 +239,36 @@ public class UserUI {
 	protected void loanreservation() {
 		System.out.println("\n[대출 예약 신청]");
 		
+		int bookcode;
+		
+		try {
+			System.out.print("예약신청할 도서 번호 ? ");
+			bookcode = Integer.parseInt(br.readLine());
+			
+			List<LoanDTO> list = dao.loanlistbook(bookcode);
+			
+			if(list.size() == 0) {
+				System.out.println("대출 중인 도서가 없습니다.");
+				return;
+			} 
+			for(LoanDTO dto : list) {
+				if(dto.getBook_code() == bookcode) {
+					
+					LoanDTO dto1 = new LoanDTO();
+	    	        dto1.setBook_code(bookcode);
+	    	        dto1.setUser_code(login.loginUser().getUser_code());
+	    	        
+	    	        dao.loanreservation(dto1);
+	    	        
+	    	        System.out.println("대출 예약이 완료 되었습니다.");
+	    	        
+	    	        return;
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
