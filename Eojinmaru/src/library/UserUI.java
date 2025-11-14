@@ -11,6 +11,7 @@ public class UserUI {
 	private LoginInfo login = null;
 	private ReturnUI returnUI = null;
 	private MypageUI mypageUI = null;
+	private SincheongUI sincheong = null;
 
 	public UserUI(LoginInfo login) {
 		this.login = login;
@@ -116,18 +117,23 @@ public class UserUI {
 	    	
 	    	// 도서 대출 개수(5이하)
 	    	
-	    	
-	    	
 	        System.out.print("도서 코드 ? ");
 	        bookcode = Integer.parseInt(br.readLine());
 	        	        
 	        List<BookInfoDTO> list = dao.loanBook(bookcode);
-	        
+
+
 	        if(list.size() == 0) {
 	        	System.out.println("도서코드는 잘못되었습니다. 다시 입력하세요..");
 	        	return;
-           } 
-	        
+           } else {
+      	        for(BookInfoDTO dto : list) {
+    	        	if(dto.getBook_code() == dto.getBook_code()) {
+    	        		System.out.println("이미 대출 중인 도서입니다.");
+    	        		break;
+	        	} 
+	        }
+        	   
 	        LoanDTO dto = new LoanDTO();
 	        dto.setBook_code(bookcode);
 	        dto.setUser_code(login.loginUser().getUser_code());
@@ -135,7 +141,7 @@ public class UserUI {
 	        dao.insertloan(dto);
 
 	        System.out.println("대출이 완료 되었습니다.");
-
+           }
 	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -148,38 +154,35 @@ public class UserUI {
 	// 2. 대출
 	public void loan() {
 		System.out.println("\n[대출 리스트]");
-		
 		int usercode;
 
 		try {
 			System.out.print("회원 번호 ? ");
 			usercode = Integer.parseInt(br.readLine());
 			
-			List<LoanDTO> list = dao.listloan(usercode);
+			List<LoanDTO> list = dao.listloaning(usercode);
 
 			if (list.size() == 0) {
 				System.out.println("대출신청한 도서가 없습니다.");
 			}
 			
-			System.out.println("대출번호     도서제목     도서코드     대출일자    반납예정일자    실제반납일자");
-			for (LoanDTO dto : list) {
-				System.out.print(dto.getLoan_code() + "\t");
-				System.out.print(dto.getBookname() + "\t");
-				System.out.print(dto.getBook_code() + "\t");
-				System.out.print(dto.getCheckout_date() + "\t");
-				System.out.print(dto.getDue_date() + "\t");
-				System.out.println(dto.getDue_date() + "\t");
-			}
+		    System.out.println("[회원님의 대출 중인 도서 목록입니다.]");
+			String LINE = "========================================================================================================";
 			System.out.println();
-		    System.out.println("[회원님이 대출 중인 도서 목록입니다.]");
+			System.out.println(LINE);
+		    System.out.println(String.format("| %-4s|%-4s\t|\t\t%-11s\t| %-11s\t| %-10s|", "대출번호", "도서코드", "책 제목","대출일자", "반납예정일자"));
+			for (LoanDTO dto : list) {
+				System.out.println("-----------------------------------------------------------------------------------------------");
+				System.out.println(String.format("| %-5s| %-6s | %-10s\t | %-10s\t| %-12s|", dto.getLoan_code(), dto.getBook_code(), truncateString(dto.getBookname(), 20),
+						 truncateString(dto.getCheckout_date(), 10), truncateString (dto.getDue_date(), 10)));	
+			}
 		    System.out.println();
 
 		    int ch2 = 0;
 
-		       System.out.println("1.대출연장 2.대출예약");
+		       System.out.print("1.대출연장 2.대출예약  =>  ");
 		       ch2 = Integer.parseInt(br.readLine());
 		       
-		       /*
 		       if(ch2 == 1) {
 		    	   System.out.print("연장할 대출 번호 ? ");
 		    	   int loan_code = Integer.parseInt(br.readLine());
@@ -193,53 +196,24 @@ public class UserUI {
 		    	   }
 		    	
 		    	   if(b) {
-		    		   
+		    		   dao.extendloan(loan_code);
+		    		   System.out.println("신청하신 도서가 연장되었습니다.");
 		    	   } else {
-		    		   System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
+		    		   for(LoanDTO dto : list) {
+		    			   if(dto.getIsExtended() == 1) {
+			    			   System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다."); 
+		    			   }
+		    		   }
 		    	   }
-		    	   
-		       } else {
-		    	   renewloan(); 
+		        } else if(ch2 == 2) {
+		        	loanreservation(); 
+		        }
 		       }
-		       */
-		       
-		      switch (ch2) {
-		      case 1: renewloan(); break;
-		      case 2: loanreservation(); break;
-		      }
-		   
-		      } catch (Exception e) {
-			  e.printStackTrace();
+		      catch (Exception e) {
+		    	  e.printStackTrace();
      	   }
-	      }
-	
-	protected void renewloan() {
-		System.out.println("\n[대출연장 신청]");
-		
-		int loancode;
-
-		try {
-			System.out.print("대출 번호 ? ");
-			loancode = Integer.parseInt(br.readLine());
-			
-			List<LoanDTO> list = dao.listloaning(loancode);
-
-			if (list.size() == 0) {
-				System.out.println("대출신청한 도서가 없습니다.");
-			} 
-			
-			LoanDTO dto = new LoanDTO();
-			dto.setLoan_code(loancode);
-			dto.setUser_code(login.loginUser().getUser_code());
-			
-			System.out.println("대출 연장 신청이 완료되었습니다.");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("");
 	}
-
+	
 	// 대출 예약(대출 중인 도서)
 	protected void loanreservation() {
 		System.out.println("\n[대출 예약 신청]");
@@ -259,10 +233,10 @@ public class UserUI {
 			text = "";
 		}
 		if (text.length() > maxLength) {
-			if (maxLength < 3) {
+			if (maxLength < 10) {
 				return text.substring(0, maxLength);
 			}
-			return text.substring(0, maxLength - 3) + "...";
+			return text.substring(0, maxLength - 10) + "...";
 		}
 		if (text.length() < maxLength) {
 			StringBuilder sb = new StringBuilder(text);

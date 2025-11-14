@@ -15,16 +15,17 @@ public interface BookDAO {
 	public void insertloan(LoanDTO dto) throws SQLException;
 	
 	// 대출 연장
-	public void updatloan(LoanDTO dto) throws SQLException;
+	public void extendloan(int loan_code) throws SQLException;
 	
+
 	// 전체 대출 리스트
 	public List<LoanDTO> listloan(int user_code);
 	
-	// 대출 중 리스트
+	// 회원의 대출 리스트
 	public List<LoanDTO> listloaning(int book_code);	
 	
-	// 대출 중인 도서 리스트
-	public List<LoanDTO> loaning(String book_condition);
+	// 대출 중인 도서 연장신청
+	public List<LoanDTO> exloan(int loan_code);
 	
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
