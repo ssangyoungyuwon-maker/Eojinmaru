@@ -9,6 +9,21 @@ import DBUtil.DBConn;
 import DBUtil.DBUtil;
 
 public class BookRequestUI {
+	
+	public static final String ANSI_RESET = "\u001B[0m"; // 스타일 초기화
+
+	// 텍스트 색상
+	public static final String ANSI_BLUE = "\u001B[34m"; // 파란색
+	public static final String ANSI_YELLOW = "\u001B[33m"; // 노란색
+
+	// 스타일
+	public static final String ANSI_BOLD = "\u001B[1m"; // 굵게
+	public static final String ANSI_ITALIC = "\u001B[3m";  // 이탤릭체
+	public static final String ANSI_UNDERLINE = "\u001B[4m"; // 밑줄
+
+	// 배경색
+	public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m"; // 노란색 배경
+	
 	private Connection conn = DBConn.getConnection();
 	private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	
@@ -18,7 +33,13 @@ public class BookRequestUI {
     	String sql;
     	
     	try {
-    		System.out.print("신청할 도서 정보를 입력해주세요 \n 도서정보: ");
+    		
+    		String LINE = "=====================================================================================";
+    		System.out.print(LINE);
+    		System.out.println("\n\t\t\t\t" +ANSI_BOLD + ANSI_ITALIC + "📝 [  Book Request  ] " + ANSI_RESET);
+    		System.out.println(LINE);
+    		
+    		System.out.print(" 신청할 도서 정보를 입력해주세요 \n 도 서 정 보 ➡️ ");
     		String bookInfo = br.readLine().trim();
     		
     		if (bookInfo.isEmpty()) {
