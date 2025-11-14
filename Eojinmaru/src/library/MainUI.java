@@ -4,7 +4,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
+
 public class MainUI {
+	
+	public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String BOLD = "\u001B[1m";
 
     private static final String ADMIN_ID = "admin";
     private static final String ADMIN_PW = "admin";
@@ -24,6 +31,8 @@ public class MainUI {
     public void menu() {
         while (true) {
         	try {
+        		noticeUI.Printrecomendbook();
+        		System.out.println();
         		noticeUI.PrintlastestNoticeTitle();
         		
         		System.out.println("\n===== [메인 화면] =====");
@@ -63,16 +72,20 @@ public class MainUI {
     
     // 로그인
     private void signin() {
+    	String LINE = "==================================================================================================";
     	try {
-    		System.out.println("\n--- [로그인] ---");
-    		System.out.print("아이디: ");
+    		
+    		System.out.println("\n=========================================== [로  그  인] ===========================================");
+    		System.out.print("                                        🆔 아이디: ");
     		String inputId = br.readLine();
-    		System.out.print("비밀번호: ");
+    		System.out.print("                                        🗝️ 비밀번호: ");
     		String inputPw = br.readLine();
+    		System.out.println(LINE);
+    		
     		
     		// 1. 관리자 로그인 확인 및 관리자 메뉴 호출
     		if (ADMIN_ID.equals(inputId) && ADMIN_PW.equals(inputPw)) {
-    			System.out.println(">> 관리자님, 환영합니다. [관리자 화면]으로 이동합니다.");
+    			System.out.println("\t\t\t     >> 관리자님, 환영합니다. [관리자 화면]으로 이동합니다.");
     			adminUI.showMenu();
     		}
     		// 2. 관리자가 아니면, 사용자 로그인 시도
@@ -104,19 +117,19 @@ public class MainUI {
     	
     	try {
     		MemberDTO newUser = new MemberDTO();
-    		System.out.print("아이디: ");
+    		System.out.print("🆔 아이디 : ");
     		newUser.setUser_Id(br.readLine());
-    		System.out.print("비밀번호: ");
+    		System.out.print("🗝️ 비밀번호 : ");
     		newUser.setUser_pwd(br.readLine());
-    		System.out.print("이름: ");
+    		System.out.print("🤖 이름 : ");
     		newUser.setUser_name(br.readLine());
-    		System.out.print("생년월일 (YYYY-MM-DD): ");
+    		System.out.print("🎉 생년월일 (YYYY-MM-DD): ");
     		newUser.setUser_birth(br.readLine());
-    		System.out.print("전화번호 (010-XXXX-XXXX): ");
+    		System.out.print("📱 전화번호 (010-XXXX-XXXX) : ");
     		newUser.setUser_tel(br.readLine());
-    		System.out.print("이메일: ");
+    		System.out.print("📨 이메일 : ");
     		newUser.setUser_email(br.readLine());
-    		System.out.print("주소: ");
+    		System.out.print("🏠 주소 : ");
     		newUser.setUser_address(br.readLine());
     		boolean isSuccess = memberDAO.signUpUser(newUser);
     		if (isSuccess) {
@@ -128,18 +141,20 @@ public class MainUI {
 				// 사용자 메뉴 호출
 				userUI.menu();
     		} else {
-    			System.out.println(">> 회원가입에 실패하였습니다.");
+    			System.out.println(">> 회원가입에 실패하였습니다. "); 
+    			System.out.println("메인 화면으로 돌아갑니다.");
     		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-    	
     }
     
     // 도서 검색(책 제목 or 저자 이름)
     private void bookSearch() {
-
-		System.out.println("\n[도서검색]");
+    	String LINE = "=====================================================================================";
+    	System.out.print(LINE);
+		System.out.println("\n\t\t\t\t🔎 [  도서검색  ] 🔎");
+		System.out.println(LINE);
 		
 		String search;
 		List<BookInfoDTO> list = null;
@@ -147,8 +162,9 @@ public class MainUI {
 		
 		while(true) {
 			try {
-				System.out.print("도서 제목 또는 저자(공백 입력시 이전 메뉴) => ");
-				search = br.readLine();
+				System.out.print("📋 도서명 또는 저자를 입력해주세요.\n");
+				System.out.print(" 입력 [뒤로가기 : 공백] =>");
+				search = br.readLine().trim();
 				System.out.println();
 				
 				// 공백 입력시 뒤로가기
@@ -157,16 +173,17 @@ public class MainUI {
 				list = bookDAO.listBook(search);
 				
 				// 결과 출력
-				String LINE = "==================================================================================";
 				System.out.println();
 				System.out.println(LINE);				
-				System.out.println(String.format("| %-4s|\t\t%-20s\t| %-10s\t| %-6s\t| %-6s|", "번호", "책 제목", "저자", "출판사", "대출가능여부"));
+				System.out.println("\t\t\t\t😎 [  검색 결과  ] 😎");
+				System.out.println(LINE);				
+				System.out.println(String.format("| %-4s|%-23s\t| %-10s\t| %-6s\t| %-6s|", "번호", "              책 제목", "저자", "출판사", "대출여부"));
+				System.out.println(LINE);
 				if (list.size() == 0) {
-					System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
+					System.out.println("🚨 해당 도서는 📚어진마루📚에 등록된 도서가 아닙니다.");
 				} else {
 					for (BookInfoDTO dto : list) {
-						System.out.println("----------------------------------------------------------------------------------");
-						System.out.println(String.format("| %-3s| %-20s\t\t| %-10s\t| %-6s\t| %-6s|", dto.getBook_code(), truncateString(dto.getBookName(), 20),
+												System.out.println(String.format("| %-4s | %-23s\t| %-10s\t| %-6s\t| %-6s|", dto.getBook_code(), truncateString(dto.getBookName(), 20),
 								truncateString(dto.getAuthor_name(), 10), truncateString(dto.getPublisher_name(), 6) , (dto.getBook_condition() == "대출가능" ? "대출가능":"대출불가" )));						
 					}					
 				}
