@@ -35,7 +35,6 @@ public class SincheongUI {
 			}
 		}
 	}
-
 	// DAO
 
 	public void insertSincheong(String request) throws SQLException {
