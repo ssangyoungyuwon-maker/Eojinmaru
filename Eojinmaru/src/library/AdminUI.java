@@ -1156,8 +1156,8 @@ public class AdminUI {
 			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
 		} else {
 			for (AdminDTO dto : list) {
-				System.out.println(String.format("|  %-4s| %-30s \t| %-4s |", dto.getSincheongcode(),
-						adminDAO.truncateString(dto.getSincheongbook(), 30), dto.getSincheongstatus()));
+				System.out.println(String.format("|  %-4s| %-30s\t| %-4s |", dto.getSincheongcode(),
+						adminDAO.truncateString(dto.getSincheongbook(), 35), dto.getSincheongstatus()));
 			}
 		}
 		System.out.println(LINE);
