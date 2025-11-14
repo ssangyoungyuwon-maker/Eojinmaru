@@ -192,11 +192,62 @@ public class AdminUI {
                 List<MemberDTO> allList = adminDAO.findAllUsers();
                 if (allList.isEmpty()) {
                     System.out.println(">> 등록된 회원이 없습니다.");
-                } else {
+                    break;
+                } 
+                
+             
+                final int pageSize = 10;
+                int currentPage = 1;
+                int totalItems = allList.size();
+                int totalPages = (totalItems + pageSize - 1) / pageSize; // 전체 페이지 수 계산
+                
+              
+                while (true) {
+                    int startIdx = (currentPage - 1) * pageSize;
+                    int endIdx = Math.min(startIdx + pageSize, totalItems);
+                    
+                    
+                    List<MemberDTO> pageList = allList.subList(startIdx, endIdx);
+                    
                     System.out.println("\n\t\t\t\t\t🔎 [ 전체 유저수 : " + allList.size() + "건 ] \t\t\t\t\t");
-                    printUserList(allList);
+                    printUserList(pageList); // 현재 페이지 리스트 출력
+
+                   
+                    String s = String.format("페이지 %d / %d", currentPage, totalPages);
+                    System.out.println("\t'<' 이전 페이지\t\t\t" + s + "\t\t\t' >' 다음 페이지");
+                    System.out.println("0. 뒤로가기 / 페이지 번호 입력: ");
+                    
+                    String pageChoice = scanner.nextLine().trim();
+
+                   
+                    if (pageChoice.equals("0")) {
+                        break; 
+                    } else if (pageChoice.equals("<")) {
+                        if (currentPage > 1) {
+                            currentPage--;
+                        } else {
+                            System.out.println("⚠️ 첫 번째 페이지입니다.");
+                        }
+                    } else if (pageChoice.equals(">")) {
+                        if (currentPage < totalPages) {
+                            currentPage++;
+                        } else {
+                            System.out.println("⚠️ 마지막 페이지입니다.");
+                        }
+                    } else {
+                        try {
+                            int pageNum = Integer.parseInt(pageChoice);
+                            if (pageNum >= 1 && pageNum <= totalPages) {
+                                currentPage = pageNum;
+                            } else {
+                                System.out.println("🚨 유효하지 않은 페이지 번호입니다.");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("🚨 잘못된 입력입니다. '<', '>', '0', 또는 페이지 번호를 입력해주세요.");
+                        }
+                    }
                 }
-                break;
+                break; 
                 
             // 뒤로가기
             case "6":
@@ -210,35 +261,6 @@ public class AdminUI {
         }
     }
 
-    private void printUserList(List<MemberDTO> users) {
-        if (users == null || users.isEmpty()) {
-            return; 
-        }
-        
-        String Line = "==================================================================================================================================";
-        
-        
-    	System.out.println(Line);
-    	
-        System.out.printf("| %-4s | %-15s\t | %-4s | %-10s\t | %-10s | %-22s\t | %-15s\t |\n",
-                           "유저코드", "아이디", "이름", "생년월일", "전화번호", "이메일", "주소");
-        
-    	System.out.println(Line);
-
-        for (MemberDTO user : users) {
-            System.out.printf("| %-4s  | %-15s\t | %-4s | %-10s\t| %-12s\t| %-22s\t | %-15s\t |\n",
-            			//     "유저코드", "아이디",  "이름", "생년월일", "전화번호", "이메일",  "주소"
-                    user.getUser_code(),
-                    user.getUser_Id(),
-                    adminDAOImpl.truncateString(user.getUser_name(), 4),
-                    user.getUser_birth(), 
-                    user.getUser_tel(),
-                    user.getUser_email(),
-                    user.getUser_address());
-        }
-    	System.out.println(Line);
-    }
-    
     private void showBookMenu() {
         boolean isBookMenuRunning = true;
         while (isBookMenuRunning) {
@@ -263,11 +285,63 @@ public class AdminUI {
                     List<BookInfoDTO> allBooks = adminDAO.findAllBooks();
                     if (allBooks.isEmpty()) {
                         System.out.println(">> 등록된 도서가 없습니다.");
-                    } else {
-                    	System.out.println("\n\t\t\t\t\t🔎 [ 전체 도서 권수 : " + allBooks.size() + "건 ] \t\t\t\t\t");
-                    	
-                        printBookList(allBooks);
-                    }
+                        break;
+                    } 
+                    
+                
+                    final int pageSize = 10;
+                    int currentPage = 1;
+                    int totalItems = allBooks.size();
+                    int totalPages = (totalItems + pageSize - 1) / pageSize;
+                    
+                    
+                    while (true) {
+                        int startIdx = (currentPage - 1) * pageSize;
+                        int endIdx = Math.min(startIdx + pageSize, totalItems);
+                        
+                       
+                        List<BookInfoDTO> pageList = allBooks.subList(startIdx, endIdx);
+                        
+                        System.out.println("\n\t\t\t\t\t🔎 [ 전체 도서 권수 : " + allBooks.size() + "건 ] \t\t\t\t\t");
+                        
+                        
+                        printBookList(pageList); 
+
+                       
+                        String s = String.format("페이지 %d / %d", currentPage, totalPages);
+                        System.out.println("\t'<' 이전 페이지\t\t\t" + s + "\t\t\t' >' 다음 페이지");
+                        System.out.println("0. 뒤로가기 / 페이지 번호 입력: ");
+                        
+                        String pageChoice = scanner.nextLine().trim();
+
+                        // 사용자 입력 처리
+                        if (pageChoice.equals("0")) {
+                            break; 
+                        } else if (pageChoice.equals("<")) {
+                            if (currentPage > 1) {
+                                currentPage--;
+                            } else {
+                                System.out.println("⚠️ 첫 번째 페이지입니다.");
+                            }
+                        } else if (pageChoice.equals(">")) {
+                            if (currentPage < totalPages) {
+                                currentPage++;
+                            } else {
+                                System.out.println("⚠️ 마지막 페이지입니다.");
+                            }
+                        } else {
+                            try {
+                                int pageNum = Integer.parseInt(pageChoice);
+                                if (pageNum >= 1 && pageNum <= totalPages) {
+                                    currentPage = pageNum;
+                                } else {
+                                    System.out.println("🚨 유효하지 않은 페이지 번호입니다.");
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("🚨 잘못된 입력입니다. '<', '>', '0', 또는 페이지 번호를 입력해주세요.");
+                            }
+                        }
+                    } 
                     break; }
                 	
                 // 도서 검색
@@ -457,6 +531,35 @@ public class AdminUI {
             
             }
         }
+    }
+    
+    private void printUserList(List<MemberDTO> users) {
+        if (users == null || users.isEmpty()) {
+            return; 
+        }
+        
+        String Line = "==================================================================================================================================";
+        
+        
+    	System.out.println(Line);
+    	
+        System.out.printf("| %-4s | %-15s\t | %-4s | %-10s\t | %-10s | %-22s\t | %-15s\t |\n",
+                           "유저코드", "아이디", "이름", "생년월일", "전화번호", "이메일", "주소");
+        
+    	System.out.println(Line);
+
+        for (MemberDTO user : users) {
+            System.out.printf("| %-4s  | %-15s\t | %-4s | %-10s\t| %-12s\t| %-22s\t | %-15s\t |\n",
+            			//     "유저코드", "아이디",  "이름", "생년월일", "전화번호", "이메일",  "주소"
+                    user.getUser_code(),
+                    user.getUser_Id(),
+                    adminDAOImpl.truncateString(user.getUser_name(), 4),
+                    user.getUser_birth(), 
+                    user.getUser_tel(),
+                    user.getUser_email(),
+                    user.getUser_address());
+        }
+    	System.out.println(Line);
     }
     
     private void printBookList(List<BookInfoDTO> books) {
