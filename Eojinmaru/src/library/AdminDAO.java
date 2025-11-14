@@ -35,6 +35,6 @@ public interface AdminDAO {
 	public List<AdminDTO> loanbooksearchbyname(String username) ;	// 이름으로 도서 대여 이력 조회
 	public List<AdminDTO> overdueloanbooklist()	; // 연체된 도서 확인하기
 	public List<AdminDTO> returnbooklist();		// 반납중 도서 리스트 출력
-	public int returnbook_baega(AdminDTO dto) ; // 반납 도서들 배가
+	public int returnbook_baega(int bookCode) ; // 반납 도서들 배가
 	public int returnbook_baega_all(AdminDTO dto) ; // 반납 도서들 전체 배가 (대출가능 만 받아짐)
 }
