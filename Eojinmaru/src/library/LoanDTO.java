@@ -13,6 +13,7 @@ public class LoanDTO {
 	private String reservation_date; // 대출예약
 	private String loan_renewaldate; // 연체 대출불가날짜
 	private String book_condition; // 도서대출? 현황 상태(대출중, 대충가능, 반납 등)
+	public int setloancount;
 	
 	public int getLoan_code() {
 		return loan_code;
@@ -85,6 +86,12 @@ public class LoanDTO {
 	}
 	public void setBook_condition(String book_condition) {
 		this.book_condition = book_condition;
+	}
+	public int getSetloancount() {
+		return setloancount;
+	}
+	public void setSetloancount(int setloancount) {
+		this.setloancount = setloancount;
 	}
 	
 

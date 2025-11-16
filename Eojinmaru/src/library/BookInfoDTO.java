@@ -13,7 +13,6 @@ public class BookInfoDTO {
 	private String publisher_code;
 	private String publisher_name;
 	
-	
 	public String getIsbn() {
 		return isbn;
 	}
@@ -80,8 +79,7 @@ public class BookInfoDTO {
 	public void setPublisher_name(String publisher_name) {
 		this.publisher_name = publisher_name;
 	}
+
 	
 
-
-		
 }

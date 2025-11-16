@@ -20,7 +20,9 @@ public interface BookDAO {
 	// 대출 연장
 	public void extendloan(int loan_code) throws SQLException;
 	
-
+	// 대출중인 모든 도서 리스트
+	public List<LoanDTO> loanlistall(int book_code);
+	
 	// 전체 대출 리스트
 	public List<LoanDTO> listloan(int user_code);
 	
@@ -29,9 +31,21 @@ public interface BookDAO {
 	
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
+	
+	// 대출 신청 시 패널티
+	 // 연체 회원
+	    public List<LoanDTO> overdue(int user_code);
+	 // 대출불가 날짜가 존재하는 회원
+	    public List<LoanDTO> renwaldate(int user_code);
+	 // 도서 대출 5개가 존재하는 회원
+	    public int loancount(int user_code);
+	    
+     // 대출 예약 중인 도서 
+	    public List<LoanDTO> loanreservationbook(int book_code);
+	    
+	 // 멤버 정보 가져오기
+	    public List<MemberDTO> searchuser(int user_code);
 
-	// 연체 여부
-	public LoanDTO bookLoaning(int user_code);
 
 	
 }
