@@ -42,10 +42,5 @@ public interface BookDAO {
 	    
      // 대출 예약 중인 도서 
 	    public List<LoanDTO> loanreservationbook(int book_code);
-	    
-	 // 멤버 정보 가져오기
-	    public List<MemberDTO> searchuser(int user_code);
-
-
-	
+	    	
 }

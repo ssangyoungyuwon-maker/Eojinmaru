@@ -12,7 +12,6 @@ import DBUtil.DBUtil;
 
 public class BookDAOImpl implements BookDAO {
 	private Connection conn = DBConn.getConnection();
-	private int loancount;
 
 
 	@Override
@@ -398,7 +397,7 @@ public class BookDAOImpl implements BookDAO {
 					+ " isExtended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate " + " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE l.user_code = ? AND TO_CHAR(due_date, 'YYYY-MM-DD') > TO_CHAR(SYSDATE, 'YYYY-MM-DD')";
+					+ " WHERE l.user_code = ? AND return_date IS null AND TO_CHAR(due_date, 'YYYY-MM-DD') < TO_CHAR(SYSDATE, 'YYYY-MM-DD')";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, user_code);
@@ -446,7 +445,7 @@ public class BookDAOImpl implements BookDAO {
 					+ " TO_CHAR(lr.reservation_date, 'YYYY-MM-DD') reservation_date " + " FROM loan l "
 					+ " JOIN book b ON b.book_code = l.book_code " + " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
 					+ " LEFT JOIN loanreservation lr ON lr.book_code = l.book_code "
-					+ " WHERE l.book_code = ? AND reservation_date IS NOT null AND TO_CHAR(reservation_date, 'YYYY-MM-DD') > TO_CHAR(SYSDATE, 'YYYY-MM-DD')";
+					+ " WHERE l.book_code = ? AND reservation_date IS NOT null AND TO_CHAR(reservation_date, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -478,50 +477,6 @@ public class BookDAOImpl implements BookDAO {
 		return list;
 	}
 
-	@Override
-	// 대출불가 회원 조회용
-	public List<MemberDTO> searchuser(int user_code) {
-			List<MemberDTO> list = new ArrayList<MemberDTO>();
-			PreparedStatement pstmt = null;
-			ResultSet rs = null;
-			String sql;
-			
-			try {
-				sql = " SELECT user_code, user_id, user_pwd, user_name, TO_CHAR(user_birth, 'YYYY-MM-DD') user_birth, user_tel, user_email, user_address, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate "
-						+ " FROM UserInfo WHERE user_id = ?";
-				
-				pstmt = conn.prepareStatement(sql);
-				
-				pstmt.setInt(1, user_code);
-				
-				rs = pstmt.executeQuery();
-				
-				while(rs.next()) {
-					MemberDTO dto = new MemberDTO();
-	                dto.setUser_code(rs.getInt("user_code"));
-	                dto.setUser_Id(rs.getString("user_id"));
-	                dto.setUser_pwd(rs.getString("user_pwd"));
-	                dto.setUser_name(rs.getString("user_name"));
-	                dto.setUser_birth(rs.getString("user_birth"));
-	                dto.setUser_tel(rs.getString("user_tel"));
-	                dto.setUser_email(rs.getString("user_email"));
-	                dto.setUser_address(rs.getString("user_address"));
-	                dto.setLoan_renewaldate(rs.getString("loan_renewaldate"));
-	                
-	                list.add(dto);					
-				}				
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				DBUtil.close(rs);
-				DBUtil.close(pstmt);
-			}
-		
-		return list;
-	}
 
 	@Override
 	// 대출불가 날짜가 존재하고 오늘 이후 날짜를 가지고 있는 회원
@@ -574,6 +529,7 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
+	// 대출도서 개수 5권 이상 대출 불가
 	public int loancount(int user_code) {
 		int count = 0;
 		PreparedStatement pstmt = null;
@@ -590,9 +546,8 @@ public class BookDAOImpl implements BookDAO {
 			
 			rs = pstmt.executeQuery();
 			
-			while(rs.next()) {
-				loancount = rs.getInt(count);
-				
+			if(rs.next()) {
+				count = rs.getInt(1);
 			}
 			
 		} catch (SQLException e) {
