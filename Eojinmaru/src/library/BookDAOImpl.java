@@ -200,30 +200,32 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-	// 전체 대출리스트
+	/*
+	// 전체 대출리스트(대출예약용)
 	// 회원번호, 회원이름, 도서번호, 도서제목, 대출일짜, 반납예정일짜, 실제반납일짜, 대출연장남은회기, 연체대출불가날짜
-	public List<LoanDTO> listloan(int user_code) {
+	public List<LoanDTO> listloan(int book_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		String sql;
 
 		try {
-			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, "
+			sql = "SELECT loan_code, l.user_code, user_name, b.book_code, bookname, "
 					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
 					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
 					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, " + " book_condition " + " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
-					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " + " WHERE l.user_code = ? ";
+					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
+				    + " WHERE l.book_code = ? ";
 
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, user_code);
+			pstmt.setInt(1, book_code);
 			rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 				LoanDTO dto = new LoanDTO();
 
-				dto.setLoan_code(rs.getInt("Loan_code"));
+				dto.setLoan_code(rs.getInt("loan_code"));
 				dto.setUser_code(rs.getInt("user_code"));
 				dto.setUser_name(rs.getString("user_name"));
 				dto.setBook_code(rs.getInt("book_code"));
@@ -246,8 +248,9 @@ public class BookDAOImpl implements BookDAO {
 		}
 		return list;
 	}
+	*/
 
-	// 회원이 대출중인 리스트
+	// 회원이 대출중인 리스트(대출연장용)
 	public List<LoanDTO> listloaning(int user_code) {
 		List<LoanDTO> list = new ArrayList<LoanDTO>();
 		PreparedStatement pstmt = null;
@@ -301,13 +304,15 @@ public class BookDAOImpl implements BookDAO {
 		PreparedStatement pstmt = null;
 		String sql;
 
-		try {
-			sql = " SELECT l.loan_code, l.book_code, bi.bookname, l.user_code, b.book_condition, "
-					+ " TO_CHAR(l.due_date, 'YYYY-MM-DD') due_date, "
-					+ " TO_CHAR(lr.reservation_date, 'YYYY-MM-DD') reservation_date " + " FROM loan l "
-					+ " JOIN book b ON b.book_code = l.book_code " + " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " LEFT JOIN loanreservation lr ON lr.book_code = l.book_code "
-					+ " WHERE l.user_code = ? AND b.book_condition = '대출중' ";
+			try {
+				sql = " SELECT l.loan_code, l.book_code, bi.bookname, l.user_code, b.book_condition, "
+					   + " TO_CHAR(l.due_date, 'YYYY-MM-DD') due_date, "
+					   + " TO_CHAR(lr.reservation_date, 'YYYY-MM-DD') reservation_date "
+					   + " FROM loan l "
+					   + " JOIN book b ON b.book_code = l.book_code "
+					   + " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
+					   + " LEFT JOIN loanreservation lr ON lr.book_code = l.book_code "
+					   + " WHERE l.user_code = ? AND b.book_condition = '대출중' ";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -334,52 +339,6 @@ public class BookDAOImpl implements BookDAO {
 		return;
 	}
 
-	@Override
-	// 대출 중인 모든 도서리스트(도서 대출 예약 용)
-	public List<LoanDTO> loanlistall(int book_code) {
-		List<LoanDTO> list = new ArrayList<LoanDTO>();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql;
-
-		try {
-			sql = "SELECT Loan_code, l.user_code, user_name, b.book_code, bookname, "
-					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
-					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
-					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, " + " book_condition " + " FROM loan l "
-					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
-					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " + " WHERE book_condition = '대출중' ";
-
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, book_code);
-			rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				LoanDTO dto = new LoanDTO();
-
-				dto.setLoan_code(rs.getInt("Loan_code"));
-				dto.setUser_code(rs.getInt("user_code"));
-				dto.setUser_name(rs.getString("user_name"));
-				dto.setBook_code(rs.getInt("book_code"));
-				dto.setBookname(rs.getString("bookname"));
-				dto.setCheckout_date(rs.getString("checkout_date"));
-				dto.setDue_date(rs.getString("due_date"));
-				dto.setReservation_date(rs.getString("return_date"));
-				dto.setBook_condition(rs.getString("book_condition"));
-
-				list.add(dto);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBUtil.close(rs);
-			DBUtil.close(pstmt);
-		}
-		return list;
-	}
 
 	@Override
 	// 대출 신청시 패널티(연체 중 회원)
@@ -562,5 +521,52 @@ public class BookDAOImpl implements BookDAO {
 		return count;
 	}
 
+	@Override
+	public List<LoanDTO> loanlistall(String bookname) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
 
+		try {
+			sql = "SELECT loan_code, l.user_code, user_name, b.book_code, bookname, "
+					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
+					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
+					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, " + " book_condition " + " FROM loan l "
+					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
+					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " 
+					+ " WHERE bookname = ? AND checkout_date IS NOT null AND book_condition = '대출중' ";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, bookname);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				LoanDTO dto = new LoanDTO();
+
+				dto.setLoan_code(rs.getInt("loan_code"));
+				dto.setUser_code(rs.getInt("user_code"));
+				dto.setUser_name(rs.getString("user_name"));
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookname"));
+				dto.setCheckout_date(rs.getString("checkout_date"));
+				dto.setDue_date(rs.getString("due_date"));
+				dto.setReservation_date(rs.getString("return_date"));
+				dto.setBook_condition(rs.getString("book_condition"));
+
+				list.add(dto);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		return list;
+	}
 }
+
+

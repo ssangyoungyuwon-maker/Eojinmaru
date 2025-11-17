@@ -130,6 +130,8 @@ public class UserUI {
 	// * 대출연장 신청 -> 반납 예정일 + 7일 날짜 출력(완)
 	// * 대출 연장 시 연장 사용했을시 사용 불가 함 출력(완)
 	
+	// * 대출 예약
+	// 
 	protected void insertloan() {
 		System.out.println("\n[대출 신청]");
 		
@@ -145,6 +147,14 @@ public class UserUI {
 				System.out.println("아직 반납하지 않은 도서가 존재하여 대출 불가합니다.");
 				return;
 			}
+			
+			List<LoanDTO> renwallist = dao.renwaldate(usercode);
+			for(LoanDTO dto : renwallist) {
+			if(renwallist.size() != 0) {
+				System.out.println("\n전에 연체된 기록이 있어 " + dto.getLoan_renewaldate() + "까지 대출이 불가합니다.");
+				return;
+			}
+			
 
 			System.out.print("도서 코드 ? ");
 			bookcode = Integer.parseInt(br.readLine());
@@ -164,7 +174,7 @@ public class UserUI {
 			}
 			
 			int countlist = dao.loancount(usercode); // 도서권수 5개
-			System.out.println("회원 대출 도서 권수 : " + countlist);
+			System.out.println("\n회원 대출 도서 권수 : " + countlist);
 			if(countlist >= 5) {
 				System.out.println("대출 가능한 권수를 초과하여 대출이 불가합니다.");
 				return;
@@ -173,12 +183,12 @@ public class UserUI {
 			for (LoanDTO dto1 : loanlist) {
 				if (dto1.getBook_code() == bookcode) {
 
-					LoanDTO dto = new LoanDTO();
+					LoanDTO dto2 = new LoanDTO();
 					dto.setBook_code(bookcode);
 					dto.setUser_code(login.loginUser().getUser_code());
 
 					// 대출저장 및 해당책은 대출중으로 변경
-					dao.insertloan(dto);
+					dao.insertloan(dto2);
 
 					System.out.println("대출이 완료 되었습니다.");
 
@@ -188,6 +198,7 @@ public class UserUI {
 			}
 			System.out.println("대출 중인 도서이므로 대출이 불가능합니다.");
 
+		}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -197,65 +208,65 @@ public class UserUI {
 
 	// 2. 대출
 	public void loan() {
-		System.out.println("\n[대출 리스트]");
+		System.out.println("\n[대출]");
 		
 		int usercode = login.loginUser().getUser_code();
 		
 		try {
-			List<LoanDTO> list = dao.listloaning(usercode);
-
-			if (list.size() == 0) {
-				System.out.println("대출신청한 도서가 없습니다.");
-			} else
-				System.out.println("\n[회원님의 대출 중인 도서 목록입니다.]");
-				String LINE = "=====================================================================================";
-				System.out.println(LINE);
-				System.out.println(String.format("| %-4s|%-4s\t|\t\t%-11s\t| %-11s\t| %-10s|", "대출번호", "도서코드", "책 제목",
-						"대출일자", "반납예정일자"));
-				for (LoanDTO dto : list) {
-					System.out.println("----------------------------------------------------------------------------");
-					System.out.println(String.format("| %-5s| %-6s | %-10s\t | %-10s\t| %-12s|", dto.getLoan_code(),
-							dto.getBook_code(), truncateString(dto.getBookname(), 20),
-							truncateString(dto.getCheckout_date(), 10), truncateString(dto.getDue_date(), 10)));
-				}
-				System.out.println(LINE);
-				System.out.println();
-			
-
 			int ch2 = 0;
 
-			System.out.print("1.대출연장 2.대출예약 3.사용자화면 =>  ");
+			System.out.print("1.대출연장 2.대출예약 3.반납 4.사용자화면 =>  ");
 			ch2 = Integer.parseInt(br.readLine());
 
 			if (ch2 == 1) {
-				System.out.println();
-				System.out.print("연장할 대출 번호 ? ");
-				int loan_code = Integer.parseInt(br.readLine());
-				boolean b = false;
-
-				for (LoanDTO dto : list) {
-					if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
-						b = true;
-						break;
+				List<LoanDTO> myextendlist = dao.listloaning(usercode);
+				
+				if (myextendlist.size() == 0) {
+					System.out.println("회원님이 대출신청한 도서가 없습니다.");
+				} else
+					System.out.println("\n[회원님의 대출 중인 도서 목록입니다.]");
+					String LINE = "=====================================================================================";
+					System.out.println(LINE);
+					System.out.println(String.format("| %-4s|%-4s\t|\t\t%-11s\t| %-11s\t| %-10s|", "대출번호", "도서코드", "책 제목",
+							"대출일자", "반납예정일자"));
+					for (LoanDTO dto : myextendlist) {
+						System.out.println("----------------------------------------------------------------------------");
+						System.out.println(String.format("| %-5s| %-6s | %-10s\t | %-10s\t| %-12s|", dto.getLoan_code(),
+								dto.getBook_code(), truncateString(dto.getBookname(), 20),
+								truncateString(dto.getCheckout_date(), 10), truncateString(dto.getDue_date(), 10)));
 					}
-				}
+					System.out.println(LINE);
+					System.out.println();
 
-				if (b) {
-					dao.extendloan(loan_code);
-					System.out.println("신청하신 도서가 연장되었습니다.");
-				} else {
-					for (LoanDTO dto : list) {
-						if (dto.getIsExtended() == 1) {
-							System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
+					System.out.print("연장할 대출 번호 ? ");
+					int loan_code = Integer.parseInt(br.readLine());
+					boolean b = false;
+
+					for (LoanDTO dto : myextendlist) {
+						if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
+							b = true;
+							break;
+						}
+						if(b) {
+							dao.extendloan(loan_code);
+							System.out.println("신청하신 도서가 연장되었습니다.");
+						} else {
+							for (LoanDTO dto1 : myextendlist) {
+								if (dto1.getIsExtended() == 1) {
+									System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
+								}
+							}
 						}
 					}
-				}
 			}
 			switch (ch2) {
 			case 2:
 				loanreservation();
 				break;
 			case 3:
+				returnUI.start(); 
+				break;
+			case 4:
 				menu();
 				break;
 			}
@@ -266,31 +277,33 @@ public class UserUI {
 
 	// 대출 예약(대출 중인 도서)
 	protected void loanreservation() {
-		System.out.println("\n[대출 예약 신청]");
-
-		int bookcode;
-
+		
+		String bookname;
+		
 		try {
-			System.out.print("예약신청할 도서 번호 ? ");
-			bookcode = Integer.parseInt(br.readLine());
-
-			List<LoanDTO> list = dao.loanlistall(bookcode);
-
-			if (list.size() == 0) {
-				System.out.println("대출 중인 도서가 없습니다.");
-				return;
-			}
-			for (LoanDTO dto : list) {
-				if (dto.getBook_code() == bookcode) {
+			System.out.print("예약신청하고 싶은 도서 제목 ? ");
+			bookname = br.readLine();
+			
+			List<LoanDTO> loanlist = dao.loanlistall(bookname);
+				
+				if(loanlist.size() == 0) {
+					System.out.println("\n현재 도서관 내 대출 중인 도서가 존재하지 않습니다.");
+					return;
+					
+				} else {
+					System.out.println("\n[현재 도서관 대출 중인 도서입니다.]");
+				}
+				
+			for (LoanDTO dto : loanlist) {
+				if (dto.getBookname() == bookname) {
 
 					LoanDTO dto1 = new LoanDTO();
-					dto1.setBook_code(bookcode);
+					dto1.setBookname(bookname);
 					dto1.setUser_code(login.loginUser().getUser_code());
 
 					dao.loanreservation(dto1);
 
 					System.out.println("\n대출 예약이 완료 되었습니다. 대출예약은 되었지만 대여된 도서가 반납되지 않은 상황 등의 경우로 상황이 변동될 수 있음을 미리 알려드립니다.");
-
 					return;
 				}
 			}

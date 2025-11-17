@@ -21,10 +21,7 @@ public interface BookDAO {
 	public void extendloan(int loan_code) throws SQLException;
 	
 	// 대출중인 모든 도서 리스트
-	public List<LoanDTO> loanlistall(int book_code);
-	
-	// 전체 대출 리스트
-	public List<LoanDTO> listloan(int user_code);
+	public List<LoanDTO> loanlistall(String bookname);
 	
 	// 회원의 대출 리스트
 	public List<LoanDTO> listloaning(int book_code);	
