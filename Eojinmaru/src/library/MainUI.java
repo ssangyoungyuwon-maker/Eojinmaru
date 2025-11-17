@@ -54,7 +54,7 @@ public class MainUI {
 				System.out.println("\t\t\t\t\t 4. Book Request");
 				System.out.println("\t\t\t\t\t 5. Notice");
 				System.out.println(
-						"==============================================================================================");
+						"===============================================================================================");
 				System.out.print("\t\t\t   ➡️ Select menu(num) : " + ANSI_RESET);
 
 				int mainChoice = Integer.parseInt(br.readLine());
