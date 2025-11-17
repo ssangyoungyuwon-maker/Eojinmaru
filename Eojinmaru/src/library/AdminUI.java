@@ -185,7 +185,6 @@ public class AdminUI {
 				}
 				break;
 
-			
 			// 전체 리스트
 			case "4":
 				List<MemberDTO> allList = adminDAO.findAllUsers();
@@ -1121,99 +1120,143 @@ public class AdminUI {
 	}
 
 	public void showsincheongmanage() {
-		List<AdminDTO> list = adminDAO.sinchoengdaegidoseo();
+		final int pageSize = 10;
+		int currentPage = 1;
 
-		String LINE = "=========================================================================";
+		while (true) {
 
-		System.out.println("\n\t\t\t📚 [ 도서 신청 관리 메뉴 ] 📚\t\t\t\t\t");
-		System.out.println(LINE);
-		System.out.printf("\t\t\t💡 현재까지 총 신청 도서 수: %d 건\n", list.size());
-		System.out.println(LINE);
+			// 1. 매 루프마다 목록을 DB에서 새로고침합니다. (상태 수정 반영을 위해 필수)
+			List<AdminDTO> list = adminDAO.sinchoengdaegidoseo();
 
-		System.out.println(String.format("|%-4s |\t\t       %-30s\t| %-4s |", "신청번호", "신청 도서", "상태"));
-		System.out.println(LINE);
+			int totalItems = list.size();
+			int totalPages = (totalItems + pageSize - 1) / pageSize;
 
-		if (list.isEmpty()) {
-			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
-		} else {
-			for (AdminDTO dto : list) {
-				System.out.println(String.format("|  %-4s| %-35s \t| %-4s |", dto.getSincheongcode(),
-						adminDAO.truncateString(dto.getSincheongbook(), 40), dto.getSincheongstatus()));
+			// 목록이 비어 있으면 페이지는 1/1로 표시
+			if (totalPages == 0) {
+				totalPages = 1;
 			}
-		}
-		System.out.println(LINE);
 
-		this.sujeongsincheongstatus(list);
-
-	}
-
-	public void sujeongsincheongstatus(List<AdminDTO> currentList) {
-		System.out.println("\n🔢 처리할 신청 번호를 입력하세요. ('0' 입력 시 이전 메뉴로 돌아갑니다.) => ");
-
-		String inputLine = scanner.nextLine().trim();
-		int s = 0;
-
-		try {
-			s = Integer.parseInt(inputLine);
-		} catch (NumberFormatException e) {
-			System.out.println("\n⛔ 잘못된 입력 형식입니다. 메뉴로 돌아갑니다.\n");
-			this.showMenu();
-			return;
-		}
-		if (s == 0) {
-			System.out.println("\n⬅️ 이전 메뉴로 돌아갑니다. \n");
-			this.showMenu();
-			return;
-		}
-
-		AdminDTO selectedDto = null;
-		for (AdminDTO dto : currentList) {
-			if (s == dto.getSincheongcode()) {
-				selectedDto = dto;
-				break;
+			// 현재 페이지가 유효한 범위 내에 있도록 조정
+			if (currentPage < 1) {
+				currentPage = 1;
+			} else if (currentPage > totalPages) {
+				currentPage = totalPages;
 			}
-		}
 
-		if (selectedDto == null) {
-			System.out.println("⛔ 유효하지 않은 신청 번호입니다. 다시 입력해주세요.");
-			this.sujeongsincheongstatus(currentList);
-			return;
-		}
+			// 2. 현재 페이지의 시작 및 끝 인덱스 계산
+			int startIdx = (currentPage - 1) * pageSize;
+			int endIdx = Math.min(startIdx + pageSize, totalItems);
 
-		String newStatus = "";
+			// 3. 목록 출력 시작
+			String LINE = "=========================================================================";
 
-		System.out.println("\n[신청 도서: " + selectedDto.getSincheongbook() + "]");
-		System.out.print("선택하신 ▶ " + selectedDto.getSincheongbook() + " ◀ 도서의 상태를 변경하시겠습니까? [Y = 승인, N = 반려] => ");
+			System.out.println("\n\t\t\t📚 [ 도서 신청 관리 메뉴 ] 📚\t\t\t\t\t");
+			System.out.println(LINE);
+			System.out.printf("\t\t\t💡 현재까지 총 신청 도서 수: %d 건\n", list.size());
+			System.out.println(LINE);
 
-		String confirm = scanner.nextLine().trim();
+			System.out.println(String.format("|%-4s |\t\t       %-35s\t| %-4s |", "번호", "신청 도서명", "상태"));
+			System.out.println(LINE);
 
-		if (confirm.equalsIgnoreCase("Y")) {
-			newStatus = "승인";
-		} else if (confirm.equalsIgnoreCase("N")) {
-			newStatus = "반려";
-		} else {
-			System.out.println("⚠️ Y 또는 N만 입력해야 합니다. 상태 변경이 취소되었습니다.");
-			this.sujeongsincheongstatus(currentList);
-			return;
-		}
-
-		AdminDTO updateDto = new AdminDTO();
-		updateDto.setSincheongcode(s);
-		updateDto.setSincheongstatus(newStatus);
-
-		try {
-			int result = adminDAO.sujeongsincheongstatus(updateDto);
-			if (result > 0) {
-				System.out.println("🎉 신청 번호 " + s + "번의 상태가 '" + newStatus + "'(으)로 성공적으로 변경되었습니다.");
+			if (list.isEmpty()) {
+				System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
 			} else {
-				System.out.println("❌ 상태 변경에 실패했습니다.");
-			}
-		} catch (SQLException e) {
-			System.out.println("❌ 오류 발생: " + e.getMessage().split("\n")[0]);
-		}
 
-		System.out.println("\n🔄 변경된 신청 목록을 다시 표시합니다.");
-		this.showsincheongmanage();
+				for (int i = startIdx; i < endIdx; i++) {
+					AdminDTO dto = list.get(i);
+					System.out.println(String.format("|  %-4s| %-35s \t| %-4s |", dto.getSincheongcode(),
+							adminDAO.truncateString(dto.getSincheongbook(), 40), dto.getSincheongstatus()));
+				}
+			}
+			System.out.println(LINE);
+			String pageInfo = String.format("\t   [페이지 %d / %d]   ", currentPage, totalPages);
+			
+			System.out.printf("    '<' 이전페이지\t   %s  \t  다음페이지 '>' \n", pageInfo);
+			System.out.println(" [0] 이전메뉴 ");
+			System.out.print("➡️ 신청 번호를 입력해주세요 : ");
+
+			String input = scanner.nextLine().trim(); 
+			System.out.println(); 
+			if (input.equals("<") && currentPage > 1) {
+				currentPage--;
+			} else if (input.equals(">") && currentPage < totalPages) {
+				currentPage++;
+			} else if (input.equalsIgnoreCase("0")) {
+				System.out.println("\n⬅️ 메인 관리 메뉴로 돌아갑니다.");
+				break; 
+			} else {
+				try {
+					int sincheongCode = Integer.parseInt(input);
+					if (sincheongCode == 0) {
+						System.out.println("\n⬅️ 이전 목록 화면으로 돌아갑니다. (현재 화면 유지)");
+						continue;
+					}
+
+					// 1. 선택된 DTO 찾기
+					AdminDTO selectedDto = null;
+					for (AdminDTO dto : list) {
+						if (sincheongCode == dto.getSincheongcode()) {
+							selectedDto = dto;
+							break;
+						}
+					}
+					if (selectedDto == null) {
+						System.out.println("⛔ 유효하지 않은 신청 번호입니다. 다시 입력해주세요.");
+						continue;
+					}
+
+					String newStatus = "";
+					boolean statusConfirmed = false;
+
+					while (!statusConfirmed) {
+						System.out.println("\n[신청 도서: " + selectedDto.getSincheongbook() + ", 현재 상태: "
+								+ selectedDto.getSincheongstatus() + "]");
+						System.out.print("선택하신 ▶ " + selectedDto.getSincheongbook()
+								+ " ◀ 도서의 상태를 변경하시겠습니까? [Y = 승인, N = 반려] => ");
+
+						String confirm = scanner.nextLine().trim();
+
+						if (confirm.equalsIgnoreCase("Y")) {
+							newStatus = "승인";
+							statusConfirmed = true;
+						} else if (confirm.equalsIgnoreCase("N")) {
+							newStatus = "반려";
+							statusConfirmed = true;
+						} else if (confirm.equalsIgnoreCase("0")) {
+							System.out.println("⚠️ 상태 변경을 취소하고 목록으로 돌아갑니다.");
+							throw new Exception("CancelStatusUpdate"); 
+						} else {
+							System.out.println("⚠️ Y, N 또는 0(취소)만 입력해야 합니다.");
+						}
+					}
+
+					AdminDTO updateDto = new AdminDTO();
+					updateDto.setSincheongcode(sincheongCode);
+					updateDto.setSincheongstatus(newStatus);
+
+					try {
+						int result = adminDAO.sujeongsincheongstatus(updateDto);
+						if (result > 0) {
+							System.out.println(
+									"🎉 신청 번호 " + sincheongCode + "번의 상태가 '" + newStatus + "'(으)로 성공적으로 변경되었습니다.");
+						} else {
+							System.out.println("❌ 상태 변경에 실패했습니다. (DB 오류)");
+						}
+					} catch (SQLException e) {
+						System.out.println("❌ 오류 발생: DB 연결 또는 쿼리 오류");
+					}
+
+					System.out.println("\n🔄 상태 변경이 완료되었습니다. 목록 화면을 새로고침합니다.");
+
+				} catch (NumberFormatException e) {
+					System.out.println("⚠️ 유효하지 않은 입력입니다. 다시 입력해주세요. (페이지 이동/나가기/번호 입력 중 선택)");
+				} catch (Exception e) {
+					if (!"CancelStatusUpdate".equals(e.getMessage())) {
+						System.out.println("❌ 처리 중 알 수 없는 오류가 발생했습니다.");
+					}
+				}
+			}
+		}
 	}
 
 	public void noticeadmin() {
