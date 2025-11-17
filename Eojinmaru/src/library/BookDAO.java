@@ -23,11 +23,14 @@ public interface BookDAO {
 	// 대출중인 모든 도서 리스트
 	public List<LoanDTO> loanlistall(String bookname);
 	
+	public List<LoanDTO> loanlistcode(int book_code);
+	
 	// 회원의 대출 리스트
 	public List<LoanDTO> listloaning(int book_code);	
 	
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
+
 	
 	// 대출 신청 시 패널티
 	 // 연체 회원

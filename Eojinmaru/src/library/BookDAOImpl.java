@@ -535,7 +535,7 @@ public class BookDAOImpl implements BookDAO {
 					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, " + " book_condition " + " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " 
-					+ " WHERE bookname = ? AND checkout_date IS NOT null AND book_condition = '대출중' ";
+					+ " WHERE INSTR(bookName, ?) >= 1 AND checkout_date IS NOT null AND book_condition = '대출중' ";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, bookname);
@@ -567,6 +567,54 @@ public class BookDAOImpl implements BookDAO {
 		}
 		return list;
 	}
+
+	@Override
+	public List<LoanDTO> loanlistcode(int book_code) {
+		List<LoanDTO> list = new ArrayList<LoanDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+
+		try {
+			sql = "SELECT loan_code, l.user_code, user_name, b.book_code, bookname, "
+					+ " TO_CHAR(checkout_date, 'YYYY-MM-DD') checkout_date, "
+					+ " TO_CHAR(due_date, 'YYYY-MM-DD') due_date, "
+					+ " TO_CHAR(return_date, 'YYYY-MM-DD') return_date, " + " book_condition " + " FROM loan l "
+					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
+					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN " 
+					+ " WHERE INSTR(b.book_code, ?) >= 1 AND checkout_date IS NOT null AND book_condition = '대출중' ";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, book_code);
+			rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				LoanDTO dto = new LoanDTO();
+
+				dto.setLoan_code(rs.getInt("loan_code"));
+				dto.setUser_code(rs.getInt("user_code"));
+				dto.setUser_name(rs.getString("user_name"));
+				dto.setBook_code(rs.getInt("book_code"));
+				dto.setBookname(rs.getString("bookname"));
+				dto.setCheckout_date(rs.getString("checkout_date"));
+				dto.setDue_date(rs.getString("due_date"));
+				dto.setReservation_date(rs.getString("return_date"));
+				dto.setBook_condition(rs.getString("book_condition"));
+
+				list.add(dto);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(rs);
+			DBUtil.close(pstmt);
+		}
+		return list;
+	}
+
 }
 
 
