@@ -112,9 +112,8 @@ public class AdminUI {
 			System.out.println("\t\t\t\t\t1. 아이디 검색");
 			System.out.println("\t\t\t\t\t2. 이름 검색");
 			System.out.println("\t\t\t\t\t3. 회원 삭제");
-			System.out.println("\t\t\t\t\t4. 연체 회원");
-			System.out.println("\t\t\t\t\t5. 전체 리스트");
-			System.out.println("\t\t\t\t\t6. 뒤로가기");
+			System.out.println("\t\t\t\t\t4. 전체 리스트");
+			System.out.println("\t\t\t\t\t5. 뒤로가기");
 			System.out.println(
 					"====================================================================================================\n");
 			System.out.print("회원 관리 메뉴 선택: ");
@@ -186,13 +185,9 @@ public class AdminUI {
 				}
 				break;
 
-			// 연체 회원
-			case "4":
-				System.out.println(">> (구현예정) 연체 회원 목록을 조회합니다.");
-				break;
-
+			
 			// 전체 리스트
-			case "5":
+			case "4":
 				List<MemberDTO> allList = adminDAO.findAllUsers();
 				if (allList.isEmpty()) {
 					System.out.println(">> 등록된 회원이 없습니다.");
@@ -249,12 +244,12 @@ public class AdminUI {
 				break;
 
 			// 뒤로가기
-			case "6":
+			case "5":
 				isMemberMenuRunning = false;
 				break;
 
 			default:
-				System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
+				System.out.println(">> 잘못된 입력입니다. 1~5 사이의 숫자를 입력해주세요.");
 				break;
 			}
 		}

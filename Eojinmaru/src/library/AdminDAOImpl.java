@@ -1165,6 +1165,5 @@ public class AdminDAOImpl implements AdminDAO {
 		}
 		return result;
 	}
-    
 	
 }
