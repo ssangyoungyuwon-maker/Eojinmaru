@@ -620,7 +620,7 @@ public class AdminUI {
 			System.out.printf("\t\t\t\t\t\t💡 대출중인 도서 수: %d 개\n", list.size());
 			System.out.println(LINE);
 
-			System.out.printf("| %-2s\t|%-5s| %-5s| %-15s\t\t|    %-7s|   %-4s  |  %-8s |  %-5s| %-5s |\n", "유저이름",
+			System.out.printf("| %-2s\t|%-5s| %-5s| %-15s\t\t|    %-7s|   %-4s  |  %-8s |  %-2s\t| %-5s |\n", "유저이름",
 					"대출번호", "북코드", "\t  책이름", "대출일", "반납예정일", "실제반납일", "도서상태", "연체일수");
 			System.out.println(LINE);
 
@@ -635,7 +635,7 @@ public class AdminUI {
 						returnDateDisplay = "          "; // 10칸 공백
 					}
 
-					System.out.printf("| %-2s\t| %-5d | %-5d | %-20s\t| %-10s | %-10s | %-10s | %-8s | %-6d |\n",
+					System.out.printf("| %-2s\t| %-5d | %-5d | %-20s\t| %-10s | %-10s | %-10s | %-2s\t| %-6d |\n",
 							dto.getUsername(), dto.getLoancode(), dto.getBookcode(),
 							adminDAO.truncateString(dto.getBookname(), 15), dto.getCheckout_date(), dto.getDue_date(),
 							returnDateDisplay, dto.getBook_condition(), dto.getOverdue_date());

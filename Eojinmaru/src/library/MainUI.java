@@ -201,7 +201,7 @@ public class MainUI {
 				System.out.println(LINE);
 				System.out.println("\t\t\t\t" +ANSI_BOLD + ANSI_ITALIC + "😎 [  Search Result  ] 😎"+ ANSI_RESET);
 				System.out.println(LINE);
-				System.out.println(String.format("| %-4s|%-23s\t| %-10s\t| %-6s\t| %-6s|", "번호", "              책 제목",
+				System.out.println(String.format("| %-4s| %-23s\t| %-10s\t| %-6s\t| %-6s|", "번호", "              책 제목",
 						"저자", "출판사", "대출여부"));
 				System.out.println(LINE);
 				if (list.size() == 0) {
