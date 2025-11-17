@@ -62,7 +62,7 @@ public class NoticeUI {
 		            String date = rs.getString("NOTICE_DATE_FMT");
 		            
 		            // 1. 공지 제목 출력 (왼쪽 정렬)
-		            System.out.printf("| %-4s| %-45s\t\t |%-3s| %10s |", "제목", truncateString(title, 35), "게시날짜", date);
+		            System.out.printf("| %-4s| %-45s \t\t |%-3s| %10s |", "제목", truncateString(title, 35), "게시날짜", date);
 		            System.out.println();
 		            
 		        } else {
@@ -139,7 +139,7 @@ public class NoticeUI {
 
 	// 공지사항 목록 보기
 	public void noticeList() {
-		final int MaxNumInPage = 5;
+		final int MaxNumInPage = 10;
 		int pages = 1;
 
 		PreparedStatement pstmt = null;
@@ -162,7 +162,7 @@ public class NoticeUI {
 				pstmt.setInt(2, MaxNumInPage);
 				rs = pstmt.executeQuery();
 
-				String LINE = "==============================================================================================";
+				String LINE = "=============================================================================================";
 				System.out.println();
 
 				System.out.printf("\t\t\t\t\t" + ANSI_BOLD + ANSI_ITALIC+ "💡 Notice List\n" + ANSI_RESET);
@@ -176,15 +176,15 @@ public class NoticeUI {
 				} else {
 					while (rs.next()) {
 						System.out.println(String.format("| %-3s| %-55s\t| %-4s |", rs.getInt("notice_id"),
-								truncateString(rs.getString("notice_title"), 40), rs.getString("notice_date")));
+								truncateString(rs.getString("notice_title"), 55), rs.getString("notice_date")));
 					}
 				}
 				System.out.println(LINE);
 
 				if (isAdmin) {
 					System.out.println("📔 메뉴: [<]이전페이지 \t"+  pages + maxPage + "[>]다음 페이지 ");
-				    System.out.println("[등록]공지 등록, [공지번호]보기 및 수정/삭제, [0]이전 메뉴");
-					System.out.print("선택 입력 >> ");
+				    System.out.println("[등록]공지 등록 [공지번호]보기 및 수정/삭제 [0]이전 메뉴");
+					System.out.print("➡️ 메뉴를 입력해주세요  : ");
 
 					String ch = br.readLine();
 
@@ -209,9 +209,10 @@ public class NoticeUI {
 
 				} else {
 					System.out.println("     [<]이전페이지 \t\t\t"+  pages + "/"+ maxPage +" 페이지" +"\t\t\t  [>]다음 페이지 ");
+					System.out.println();
 					System.out.println(" 📔 메뉴: ");
-				    System.out.println(" [등록]공지 등록, \n [공지번호]보기, \n [0]이전 메뉴");
-					System.out.print(" 선택 입력 >> ");
+				    System.out.println(" [공지번호] 보기 \n [0] 이전 메뉴");
+				    System.out.print(" ➡️ 메뉴를 입력해주세요  : ");
 
 					String ch = br.readLine();
 
