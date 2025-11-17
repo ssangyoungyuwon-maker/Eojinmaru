@@ -31,6 +31,7 @@ public interface BookDAO {
 	// 대출 중인 도서 예약
 	public void loanreservation(LoanDTO dto) throws SQLException;
 
+	public List<LoanDTO> listloan(int book_code);
 	
 	// 대출 신청 시 패널티
 	 // 연체 회원

@@ -200,7 +200,7 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-	/*
+
 	// 전체 대출리스트(대출예약용)
 	// 회원번호, 회원이름, 도서번호, 도서제목, 대출일짜, 반납예정일짜, 실제반납일짜, 대출연장남은회기, 연체대출불가날짜
 	public List<LoanDTO> listloan(int book_code) {
@@ -248,7 +248,6 @@ public class BookDAOImpl implements BookDAO {
 		}
 		return list;
 	}
-	*/
 
 	// 회원이 대출중인 리스트(대출연장용)
 	public List<LoanDTO> listloaning(int user_code) {
@@ -305,27 +304,13 @@ public class BookDAOImpl implements BookDAO {
 		String sql;
 
 			try {
-				sql = " SELECT l.loan_code, l.book_code, bi.bookname, l.user_code, b.book_condition, "
-					   + " TO_CHAR(l.due_date, 'YYYY-MM-DD') due_date, "
-					   + " TO_CHAR(lr.reservation_date, 'YYYY-MM-DD') reservation_date "
-					   + " FROM loan l "
-					   + " JOIN book b ON b.book_code = l.book_code "
-					   + " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					   + " LEFT JOIN loanreservation lr ON lr.book_code = l.book_code "
-					   + " WHERE l.user_code = ? AND b.book_condition = '대출중' ";
+				
+			sql = "UPDATE loanreservation SET reservation_date = ? WHERE book_code = ?";
 
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setInt(1, dto.getUser_code());
-
-			pstmt.executeUpdate();
-			pstmt.close();
-
-			sql = "UPDATE loanreservation SET reservation_date = due_date + 1 WHERE book_code = ? AND book_condition = '대출중'";
-
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setInt(1, dto.getBook_code());
+			pstmt.setString(1, dto.getDue_date());
+			pstmt.setInt(2, dto.getBook_code());
 
 			pstmt.executeUpdate();
 
