@@ -1130,15 +1130,15 @@ public class AdminUI {
 		System.out.printf("\t\t\t💡 현재까지 총 신청 도서 수: %d 건\n", list.size());
 		System.out.println(LINE);
 
-		System.out.println(String.format("|%-4s |\t\t%-20s\t\t| %-4s |", "신청번호", "신청 도서", "상태"));
+		System.out.println(String.format("|%-4s |\t\t       %-30s\t| %-4s |", "신청번호", "신청 도서", "상태"));
 		System.out.println(LINE);
 
 		if (list.isEmpty()) {
 			System.out.println(String.format("| %-79s |", "     신청 내역이 없습니다."));
 		} else {
 			for (AdminDTO dto : list) {
-				System.out.println(String.format("|  %-4s| %-30s\t| %-4s |", dto.getSincheongcode(),
-						adminDAO.truncateString(dto.getSincheongbook(), 35), dto.getSincheongstatus()));
+				System.out.println(String.format("|  %-4s| %-35s \t| %-4s |", dto.getSincheongcode(),
+						adminDAO.truncateString(dto.getSincheongbook(), 40), dto.getSincheongstatus()));
 			}
 		}
 		System.out.println(LINE);

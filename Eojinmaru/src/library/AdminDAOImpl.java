@@ -578,7 +578,7 @@ public class AdminDAOImpl implements AdminDAO {
 		String sql;
 
 		try {
-			sql = "SELECT sincheong_code, sincheong_name, sincheong_status FROM sincheong WHERE sincheong_status = '대기'";
+			sql = "SELECT sincheong_code, sincheong_name, sincheong_status FROM sincheong WHERE sincheong_status = '대기' order by sincheong_code";
 
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();

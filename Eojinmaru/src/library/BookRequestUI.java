@@ -53,6 +53,9 @@ public class BookRequestUI {
     		
     		if(pstmt.executeUpdate() <= 0) {
     			throw new Exception("❌ 도서 신청에 실패했습니다.");
+    		} else {
+    			System.out.println("🎉 도서 신청이 완료되었습니다.");
+    			System.out.println();
     		}
 		} catch (Exception e) {
 			throw e;
