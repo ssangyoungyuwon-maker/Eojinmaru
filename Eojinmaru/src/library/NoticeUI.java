@@ -62,7 +62,7 @@ public class NoticeUI {
 		            String date = rs.getString("NOTICE_DATE_FMT");
 		            
 		            // 1. 공지 제목 출력 (왼쪽 정렬)
-		            System.out.printf("| %-4s| %-45s\t|%-3s| %12s |", "제목", truncateString(title, 35), "날짜", date);
+		            System.out.printf("| %-4s| %-45s\t\t |%-3s| %10s |", "제목", truncateString(title, 35), "게시날짜", date);
 		            System.out.println();
 		            
 		        } else {

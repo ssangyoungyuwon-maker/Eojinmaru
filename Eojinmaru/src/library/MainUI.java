@@ -95,7 +95,7 @@ public class MainUI {
 
 	// 로그인
 	private void signin() {
-		String LINE = "=============================================================================================";
+		String LINE = "==============================================================================================";
 		try {
 
 			System.out.println(
@@ -124,7 +124,8 @@ public class MainUI {
 					userUI.menu();
 				} else {
 					// 로그인 실패
-					System.out.println(">> 아이디 또는 비밀번호가 일치하지 않습니다.");
+					System.out.println(" ❎ 아이디 또는 비밀번호가 일치하지 않습니다.");
+					System.out.println();
 				}
 			}
 
