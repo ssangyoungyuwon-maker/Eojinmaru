@@ -1493,6 +1493,8 @@ public class AdminUI {
 		} catch (Exception e) {
 			System.out.println("❌ 오류 발생: 공지사항 수정 중 문제가 발생했습니다. " + e.getMessage());
 
+		} finally {
+			this.noticeadmin();
 		}
 
 	}
@@ -1520,7 +1522,10 @@ public class AdminUI {
 			}
 		} catch (Exception e) {
 			System.out.println("❌ 오류 발생: 공지사항 삭제 중 문제가 발생했습니다. " + e.getMessage());
+		} finally {
+			this.noticeadmin();
 		}
+		
 	}
 
 }
