@@ -136,23 +136,26 @@ public class MypageUI {
 				System.out.print("🚨 정말로 탈퇴하시겠습니까? [Y/N]");
 				String rs = br.readLine();
 				
+			
 				if (rs.equalsIgnoreCase("y")) {
 					if (list.size() != 0) {
 						System.out.println("⛔ 현재 대출중인 도서가 있어 탈퇴가 불가합니다.");
 						return;
 					} else {
 						dao.deleteUser(login.loginUser().getUser_Id());
-						System.out.println("✅ 탈퇴가 완료되었습니다.");
+						System.out.println("✅ 탈퇴가 완료되었습니다.\n");
 						login.logout();
 						new MainUI().menu();
 					}
 			}else if (rs.equalsIgnoreCase("n")) {
 				System.out.println("✅ 탈퇴가 취소되었습니다. 이전 화면으로 돌아갑니다.");
 				return;
-			}} else {
+			}else {
+				System.out.println("🚫Y나 N만 입력 가능합니다. 이전 화면으로 돌아갑니다."); return;
+			}
+				} else if(!dto.getUser_pwd().equals(pwd)) {
 				System.out.print("\n>>⚠️ 비밀번호가 틀렸습니다. 남은 로그인 횟수: " + (3 - i) + "\n");
 			}
-			
 				}	
 				System.out.println("\n❌ 비밀번호 3회 초과! 마이페이지로 돌아갑니다.");
 				return;

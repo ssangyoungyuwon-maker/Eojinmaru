@@ -34,7 +34,8 @@ public class ReturnUI {
 				return;
 			}
 			System.out.println("\n\t\t\t\t\t📚 [ 대출 리스트 ] \t\t\t\t\t");
-			System.out.println("|회원번호\t|책번호\t|책이름\t|\t\t대출일자\t|\t반납예정일\t|\t대출연장여부|");
+			System.out.println("=================================================================================");
+			System.out.println("|회원번호\t|책번호\t|책이름\t\t|\t대출일자\t|\t반납예정일\t|\t대출연장여부|");
 			System.out.println("=================================================================================");
 
 			for (LoanDTO dto : list) {
@@ -56,6 +57,7 @@ public class ReturnUI {
 					break;
 				}
 			}
+			
 			if (b == false) {
 				System.out.println("대출 책이 아닙니다.");
 				return;
@@ -132,7 +134,7 @@ public class ReturnUI {
 			pstmt2.setInt(1, book_code);
 			pstmt2.executeUpdate();
 
-			sql = "UPDATE userinfo SET loan_renewaldate=sysdate+(SELECT NVL(MAX(DECODE(SIGN(return_date - due_date), 1, return_date - due_date, 0)), 0) "
+			sql = "UPDATE userinfo SET loan_renewaldate=sysdate+(SELECT CASE WHEN(return_date-due_date)>0 THEN return_date-due_date ELSE 0 END "
 					+ " FROM loan WHERE book_code=? AND user_code=? ) WHERE user_code = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, book_code);
