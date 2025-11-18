@@ -93,7 +93,7 @@ public class MemberDAOImpl implements MemberDAO {
             return (resultRows > 0); 
 
         } catch (SQLException e) {
-            System.err.println(">> DB 연결 또는 SQL 실행 중 오류 발생: " + e.getMessage());
+            System.err.println(">> 중복된 ID 또는 잘못된 입력 형식입니다. 다시 시도해주세요.");
         } catch (IllegalArgumentException e) {
             System.err.println(">> 날짜 형식이 잘못되었습니다. (YYYY-MM-DD 형식으로 입력하세요)");
         } finally {
