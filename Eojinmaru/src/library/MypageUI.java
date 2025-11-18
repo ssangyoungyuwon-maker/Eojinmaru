@@ -27,7 +27,7 @@ public class MypageUI {
 				System.out.println("2.내정보수정");
 				System.out.println("3.탈퇴");
 				System.out.println("4.이전화면");
-				System.out.println("--------------------");
+				System.out.println("======================");
 				System.out.print("마이페이지 메뉴 선택: ");
 				ch = Integer.parseInt(br.readLine());
 
@@ -60,7 +60,7 @@ public class MypageUI {
 				if (dto.getUser_pwd().equals(pwd)) {
 
 					System.out.println(LINE);
-					System.out.printf("%-15s | %-8s | %-12s\t | %-13s\t | %-20s\t | %-15s\n", "아이디", "이름", "생년월일",
+					System.out.printf("%-15s | %-8s | %-12s\t | %-13s\t | %-20s | %-15s\n", "아이디", "이름", "생년월일",
 							"전화번호", "이메일", "주소");
 					System.out.println(LINE);
 
@@ -111,6 +111,7 @@ public class MypageUI {
 					dao.updateUser(dto);
 
 					System.out.println("✅ 회원정보가 수정되었습니다.");
+					return;
 				} else {
 					System.out.println(">> ⚠️ 비밀번호가 틀렸습니다. 남은 로그인 횟수: " + (3 - i) + "\n");
 				}

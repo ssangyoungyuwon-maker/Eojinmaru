@@ -19,7 +19,7 @@ public class SincheongUI {
 		while (true) {
 			try {
 				System.out.println("\n[도서신청]");
-				System.out.print("신청할 도서의 제목과 저자를 입력하세요.[종료:q]");
+				System.out.println("신청할 도서의 제목과 저자를 입력하세요.[종료:q]");
 				request = br.readLine();
 				
 

@@ -117,7 +117,6 @@ public class ReturnUI {
 	public void returnbook(int user_code, int book_code) throws SQLException {
 		Connection conn = DBConn.getConnection();
 		PreparedStatement pstmt = null;
-		PreparedStatement pstmt2 = null;
 		String sql;
 
 		conn.setAutoCommit(false);
@@ -130,9 +129,9 @@ public class ReturnUI {
 			pstmt.executeUpdate();
 
 			sql = "UPDATE book SET book_condition='반납' WHERE book_code=?";
-			pstmt2 = conn.prepareStatement(sql);
-			pstmt2.setInt(1, book_code);
-			pstmt2.executeUpdate();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, book_code);
+			pstmt.executeUpdate();
 
 			sql = "UPDATE userinfo SET loan_renewaldate=sysdate+(SELECT CASE WHEN(return_date-due_date)>0 THEN return_date-due_date ELSE 0 END "
 					+ " FROM loan WHERE book_code=? AND user_code=? ) WHERE user_code = ?";
@@ -148,7 +147,6 @@ public class ReturnUI {
 			throw e;
 		} finally {
 			DBUtil.close(pstmt);
-			DBUtil.close(pstmt2);
 			try {
 				conn.setAutoCommit(true);
 			} catch (Exception e2) {
