@@ -280,7 +280,7 @@ public class AdminUI {
 					System.out.println(">> 등록된 도서가 없습니다.");
 					break;
 				}
-
+				
 				final int pageSize = 10;
 				int currentPage = 1;
 				int totalItems = allBooks.size();
@@ -340,11 +340,61 @@ public class AdminUI {
 				List<BookInfoDTO> bookList = adminDAO.findBooksByName(bookName);
 				if (bookList.isEmpty()) {
 					System.out.println(">> 해당 도서명의 도서를 찾을 수 없습니다.");
-				} else {
+					break;
+				}
+				
+				
+				final int pageSize = 10;
+				int currentPage = 1;
+				int totalItems = bookList.size();
+				int totalPages = (totalItems + pageSize - 1) / pageSize;
+
+				while (true) {
+					int startIdx = (currentPage - 1) * pageSize;
+					int endIdx = Math.min(startIdx + pageSize, totalItems);
+
+					List<BookInfoDTO> pageList = bookList.subList(startIdx, endIdx);
+
 					System.out.println("\n\t\t\t\t\t🔎 [ 도서 검색 결과 : " + bookList.size() + "건 ] \t\t\t\t\t");
-					printBookList(bookList);
+
+					printBookList(pageList);
+
+					String s = String.format("페이지 %d / %d", currentPage, totalPages);
+					System.out.println("\t'<' 이전 페이지\t\t\t" + s + "\t\t\t' >' 다음 페이지");
+					System.out.println("0. 뒤로가기 / 페이지 번호 입력: ");
+
+					String pageChoice = scanner.nextLine().trim();
+
+					// 사용자 입력 처리
+					if (pageChoice.equals("0")) {
+						break;
+					} else if (pageChoice.equals("<")) {
+						if (currentPage > 1) {
+							currentPage--;
+						} else {
+							System.out.println("⚠️ 첫 번째 페이지입니다.");
+						}
+					} else if (pageChoice.equals(">")) {
+						if (currentPage < totalPages) {
+							currentPage++;
+						} else {
+							System.out.println("⚠️ 마지막 페이지입니다.");
+						}
+					} else {
+						try {
+							int pageNum = Integer.parseInt(pageChoice);
+							if (pageNum >= 1 && pageNum <= totalPages) {
+								currentPage = pageNum;
+							} else {
+								System.out.println("🚨 유효하지 않은 페이지 번호입니다.");
+							}
+						} catch (NumberFormatException e) {
+							System.out.println("🚨 잘못된 입력입니다. '<', '>', '0', 또는 페이지 번호를 입력해주세요.");
+						}
+					}
 				}
 				break;
+				
 			}
 
 			// 폐기 도서 확인
