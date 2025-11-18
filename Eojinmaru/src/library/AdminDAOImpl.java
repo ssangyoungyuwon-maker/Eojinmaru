@@ -485,6 +485,7 @@ public class AdminDAOImpl implements AdminDAO {
         String sql = "SELECT d.book_code, bi.bookname, d.dispose_date, d.dispose_reason " +
                 "FROM disposedbook d " +
                 "LEFT JOIN bookinfo bi ON d.ISBN = bi.ISBN " + 
+                "WHERE bi.bookname IS NOT NULL " +
                 "ORDER BY d.dispose_date DESC ";
         
         PreparedStatement pstmt = null;
