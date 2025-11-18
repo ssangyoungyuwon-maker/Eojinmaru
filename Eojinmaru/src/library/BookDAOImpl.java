@@ -25,11 +25,16 @@ public class BookDAOImpl implements BookDAO {
 		try {
 			// 도서번호, isbn, 도서이름, 저자, 출판사, 발행일를 출력
 
-			sql = "SELECT b.book_code, bi.isbn, bookName, author_name, publisher_name, TO_CHAR(publish_date, 'YYYY-MM-DD') publish_date, book_condition "
-					+ " FROM book b" + " left outer JOIN bookinfo bi ON b.isbn = bi.isbn "
-					+ " left outer JOIN author a ON bi.isbn = a.isbn "
-					+ " left outer JOIN publisher p ON bi.publisher_id = p.publisher_id "
-					+ " WHERE INSTR(bookName, ?) >= 1 OR INSTR(author_name, ?) >= 1 ";
+			sql = "SELECT b.book_code, bi.isbn, bi.bookName, "
+					+ "LISTAGG(a.author_name, ', ') WITHIN GROUP (ORDER BY a.author_name) AS author_list, "
+					+ "p.publisher_name, TO_CHAR(bi.publish_date, 'YYYY-MM-DD') publish_date, b.book_condition "
+					+ "FROM book b "
+					+ "LEFT OUTER JOIN bookinfo bi ON b.isbn = bi.isbn "
+					+ "LEFT OUTER JOIN author a ON bi.isbn = a.isbn "
+					+ "LEFT OUTER JOIN publisher p ON bi.publisher_id = p.publisher_id "
+					+ "WHERE INSTR(bi.bookName, ?) >= 1 OR INSTR(a.author_name, ?) >= 1 "
+					+ "GROUP BY b.book_code, bi.isbn, bi.bookName, p.publisher_name, bi.publish_date, b.book_condition "
+					+ "ORDER BY b.book_code ";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -42,8 +47,9 @@ public class BookDAOImpl implements BookDAO {
 				BookInfoDTO dto = new BookInfoDTO();
 
 				dto.setBook_code(rs.getInt("book_code"));
+				dto.setIsbn(rs.getString("isbn"));
 				dto.setBookName(rs.getString("bookname"));
-				dto.setAuthor_name(rs.getString("author_name"));
+				dto.setAuthor_name(rs.getString("author_list"));
 				dto.setPublisher_name(rs.getString("publisher_name"));
 				dto.setPublish_date(rs.getString("publish_date"));
 				dto.setBook_condition(rs.getString("book_condition"));
