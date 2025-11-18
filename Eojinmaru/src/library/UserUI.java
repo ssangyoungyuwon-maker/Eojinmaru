@@ -53,9 +53,13 @@ public class UserUI {
 				case 5:
 					mypageUI.menu();
 					break;
+					
+				default : 
+					System.out.println("\n입력오류!! 1 ~ 6까지의 숫자만 입력해주세요.\n");
+					break;
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("숫자만 입력해주세요");
+				System.out.println("메뉴를 선택하지 않았습니다. 메뉴에 해당하는 숫자를 입력해주세요");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -109,8 +113,6 @@ public class UserUI {
 	            int ch3 = Integer.parseInt(br.readLine());
 	            
 	            switch (ch3) { 
-	            
-	            
 	            case 1: // 대출신청
 	                int usercode = login.loginUser().getUser_code();
 
@@ -132,7 +134,7 @@ public class UserUI {
 
 					case 2:
 						findBybook();
-						break;
+						return;
 					case 3:
 						return;
 					default : 
@@ -140,8 +142,11 @@ public class UserUI {
 						break;
 					}
 
+	} catch (NumberFormatException e) {
+		System.out.println("\n입력오류!! 1 ~ 3 숫자를 입력해주세요. 입력오류로 사용자 화면으로 돌아갑니다.");
+		return;
 	} catch (Exception e) {
-		e.printStackTrace();
+		
 	}
 		}
 	}
@@ -162,18 +167,13 @@ public class UserUI {
 	protected void insertloan() {
 		System.out.println("\n[대출 신청]");
 		
-		  int usercode = login.loginUser().getUser_code();
+		int usercode = login.loginUser().getUser_code();
 		int bookcode;
 
 		try {
 			System.out.print("도서 코드 ? ");
 			bookcode = Integer.parseInt(br.readLine());
-			List<LoanDTO> list = dao.loanlistbook(bookcode);
-
-			if (list.size() == 0) {
-				System.out.println("도서코드는 잘못되었습니다. 다시 입력하세요..");
-				return;
-			}
+			List<BookInfoDTO> list = dao.loanBook(bookcode);
 
 			// 예약 상태인 도서 체크
 			List<LoanDTO> reservationlist = dao.loanreservationbook(bookcode);
@@ -183,13 +183,18 @@ public class UserUI {
 			}
 			// 대출권수 5권 이하(5권 초과 대출 불가)
 			int countlist = dao.loancount(usercode); // 도서권수 5개
-			System.out.println("\n회원 대출 도서 권수 : " + countlist);
 			if (countlist >= 5) {
 				System.out.println("대출 가능한 권수를 초과하여 대출이 불가합니다.");
 				return;
-			}
+			} 
 
 			List<LoanDTO> loanlist = dao.loanlistbook(bookcode);
+			
+			if (list.size() == 0) {
+				System.out.println("도서코드는 잘못되었습니다. 다시 입력하세요..");
+				return;
+			}
+			
 			for (LoanDTO dto1 : loanlist) {
 				if (dto1.getBook_code() == bookcode) {
 
@@ -203,6 +208,9 @@ public class UserUI {
 				System.out.println("대출이 완료 되었습니다.");
 			}
 
+		} catch (NumberFormatException e) {
+			System.out.println("\n입력오류!! 대출신청을 원하시는 북코드를 입력해주세요.");
+			insertloan(); return;
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -236,52 +244,67 @@ public class UserUI {
 				}
 				System.out.println(LINE);
 				System.out.println();
+				
+				loanextended();
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+	}
 
-				int ch2 = 0;
+	public void loanextended() {
+		int ch2 = 0;
+		int user_code = login.loginUser().getUser_code();
+		try {
+			System.out.print("1.대출연장 2.대출예약 3.반납 4.사용자화면 =>  ");
+			ch2 = Integer.parseInt(br.readLine());
 
-				System.out.print("1.대출연장 2.대출예약 3.반납 4.사용자화면 =>  ");
-				ch2 = Integer.parseInt(br.readLine());
+			if (ch2 == 1) {
 
-				if (ch2 == 1) {
+				System.out.print("연장할 대출 번호 ? ");
+				int loan_code = Integer.parseInt(br.readLine());
+				int c = 0;
 
-					System.out.print("연장할 대출 번호 ? ");
-					int loan_code = Integer.parseInt(br.readLine());
-					boolean b = false;
-
-					for (LoanDTO dto : myextendlist) {
-						if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
-							b = true;
-							break;
-						}
-						if (b) {
-							dao.extendloan(loan_code);
-							System.out.println("신청하신 도서가 연장되었습니다.");
-						} else {
-							for (LoanDTO dto1 : myextendlist) {
-								if (dto1.getIsExtended() == 1) {
-									System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
-								}
-							}
-						}
+				List<LoanDTO> myextendlist = dao.listloaning(user_code);
+				for (LoanDTO dto : myextendlist) {
+					if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
+						c = 1;
+						break;
+					} else if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
+						c = 2;
 					}
 				}
-				switch (ch2) {
-				case 2:
-					loanreservation();
-					break;
-				case 3:
-					returnUI.start();
-					break;
-				case 4:
-					menu();
-					break;
+				
+				if (c == 1) {
+					dao.extendloan(loan_code);
+					System.out.println("신청하신 도서가 연장되었습니다.");
+				} else if(c == 2){
+					System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
+				} else {
+					System.out.println("등록된 대출번호가 아닙니다.");
 				}
+				
+				return;
 			}
+			
+			switch (ch2) {
+			case 2:
+				loanreservation();
+				break;
+			case 3:
+				returnUI.start();
+				break;
+
+			}
+		} catch (NumberFormatException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
+	
 	// 대출 예약(대출 중인 도서)
 	protected void loanreservation() {
 		String bookname;

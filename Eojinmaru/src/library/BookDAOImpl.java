@@ -76,7 +76,7 @@ public class BookDAOImpl implements BookDAO {
 
 		try {
 			sql = "SELECT b.book_code, bookName, book_condition " + " FROM book b "
-					+ " JOIN bookinfo bi ON b.isbn = bi.isbn " + " WHERE INSTR(book_code, ?) >= 1";
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn " + " WHERE INSTR(book_code, ?) >= 1 AND book_condition = '대출가능'";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -115,7 +115,7 @@ public class BookDAOImpl implements BookDAO {
 		String sql;
 
 		try {
-			sql = "SELECT b.book_code, bookName, book_condition " + " FROM book b "
+			sql = "SELECT b.book_code, bookName, book_condition FROM book b "
 					+ " JOIN bookinfo bi ON b.isbn = bi.isbn " + " WHERE book_code = ? AND book_condition = '대출가능'";
 
 			pstmt = conn.prepareStatement(sql);
@@ -190,7 +190,7 @@ public class BookDAOImpl implements BookDAO {
 	public void extendloan(int loan_code) throws SQLException {
 		PreparedStatement pstmt = null;
 		String sql;
-
+		
 		try {
 			sql = "UPDATE loan SET isExtended = 1, due_date = due_date + 7 WHERE loan_code = ?";
 			pstmt = conn.prepareStatement(sql);
@@ -206,7 +206,6 @@ public class BookDAOImpl implements BookDAO {
 	}
 
 	@Override
-
 	// 전체 대출리스트(대출예약용)
 	// 회원번호, 회원이름, 도서번호, 도서제목, 대출일짜, 반납예정일짜, 실제반납일짜, 대출연장남은회기, 연체대출불가날짜
 	public List<LoanDTO> listloan(int book_code) {
@@ -347,7 +346,7 @@ public class BookDAOImpl implements BookDAO {
 					+ " isExtended, TO_CHAR(loan_renewaldate, 'YYYY-MM-DD') loan_renewaldate " + " FROM loan l "
 					+ " JOIN userinfo u ON u.user_code = l.user_code " + " JOIN book b ON b.book_code = l.book_code "
 					+ " JOIN bookinfo bi ON bi.ISBN = b.ISBN "
-					+ " WHERE l.user_code = ? AND return_date IS null AND TO_CHAR(due_date, 'YYYY-MM-DD') < TO_CHAR(SYSDATE, 'YYYY-MM-DD')";
+					+ " WHERE l.user_code = ? AND return_date IS null AND (TO_CHAR(due_date, 'YYYY-MM-DD') < TO_CHAR(SYSDATE, 'YYYY-MM-DD'))";
 
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, user_code);
