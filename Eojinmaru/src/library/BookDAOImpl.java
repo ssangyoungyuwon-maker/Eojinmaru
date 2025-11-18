@@ -68,7 +68,7 @@ public class BookDAOImpl implements BookDAO {
 
 	@Override
 	// 대출 신청 전 책 리스트 조회
-	public List<BookInfoDTO> loanBook(int bookcode) {
+	public List<BookInfoDTO> loannotBook(int bookcode) {
 		List<BookInfoDTO> list = new ArrayList<BookInfoDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -76,7 +76,7 @@ public class BookDAOImpl implements BookDAO {
 
 		try {
 			sql = "SELECT b.book_code, bookName, book_condition " + " FROM book b "
-					+ " JOIN bookinfo bi ON b.isbn = bi.isbn " + " WHERE INSTR(book_code, ?) >= 1 AND book_condition = '대출가능'";
+					+ " JOIN bookinfo bi ON b.isbn = bi.isbn " + " WHERE INSTR(book_code, ?) >= 1 AND book_condition = '대출불가'";
 
 			pstmt = conn.prepareStatement(sql);
 
@@ -192,7 +192,7 @@ public class BookDAOImpl implements BookDAO {
 		String sql;
 		
 		try {
-			sql = "UPDATE loan SET isExtended = 1, due_date = due_date + 7 WHERE loan_code = ?";
+			sql = "UPDATE loan SET isExtended = 1, due_date = TO_CHAR(due_date + 7 , 'YYYY-MM-DD') WHERE loan_code = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, loan_code);
 			pstmt.executeUpdate();

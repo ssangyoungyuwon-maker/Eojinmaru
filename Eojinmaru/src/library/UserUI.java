@@ -173,7 +173,13 @@ public class UserUI {
 		try {
 			System.out.print("도서 코드 ? ");
 			bookcode = Integer.parseInt(br.readLine());
-			List<BookInfoDTO> list = dao.loanBook(bookcode);
+			
+			List<BookInfoDTO> loannotlist = dao.loannotBook(bookcode);
+			if(loannotlist.size() != 0) {
+				System.out.println("대출 중이거나, 도서 미반납 등의 사유로 대출 불가한 도서입니다.");
+				return;
+			}
+			
 
 			// 예약 상태인 도서 체크
 			List<LoanDTO> reservationlist = dao.loanreservationbook(bookcode);
@@ -190,11 +196,12 @@ public class UserUI {
 
 			List<LoanDTO> loanlist = dao.loanlistbook(bookcode);
 			
-			if (list.size() == 0) {
-				System.out.println("도서코드는 잘못되었습니다. 다시 입력하세요..");
+			if (loanlist.size() == 0) {
+				System.out.println("도서관에 등록되어 있지 않은 도서입니다. 확인해주세요.");
 				return;
-			}
+			} 
 			
+		
 			for (LoanDTO dto1 : loanlist) {
 				if (dto1.getBook_code() == bookcode) {
 
@@ -272,7 +279,7 @@ public class UserUI {
 					if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
 						c = 1;
 						break;
-					} else if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 0) {
+					} else if (dto.getLoan_code() == loan_code && dto.getIsExtended() == 1) {
 						c = 2;
 					}
 				}
@@ -337,7 +344,7 @@ public class UserUI {
 			int bookcode;
 
 			try {
-				System.out.println("\n도서목록 중 대출 하고 싶은 도서코드 ? ");
+				System.out.println("\n도서목록 중 대출 예약하고 싶은 도서코드 ? ");
 				bookcode = Integer.parseInt(br.readLine());
 
 				List<LoanDTO> loanlistcode = dao.loanlistcode(bookcode);

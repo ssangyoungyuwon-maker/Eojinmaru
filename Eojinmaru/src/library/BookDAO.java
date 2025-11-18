@@ -9,7 +9,7 @@ public interface BookDAO {
 	public List<BookInfoDTO> listBook(String search);
 	
 	// 대출 신청 도서코드 검색
-	public List<BookInfoDTO> loanBook(int bookcode);
+	public List<BookInfoDTO> loannotBook(int bookcode);
 	
 	// 대출 중 도서코드 검색
 	public List<LoanDTO> loanlistbook(int bookcode);
