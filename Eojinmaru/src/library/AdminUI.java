@@ -1369,10 +1369,10 @@ public class AdminUI {
 
 	public void noticeinsert() { // '등록'으로 들어와 공지사항 등록하기
 
-		System.out.println("등록할 공지 제목을 입력해주세요 \n 제목 : ");
+		System.out.print("등록할 공지 제목을 입력해주세요 \n 제목 : ");
 		String newTitle = scanner.nextLine().trim();
 
-		System.out.println("등록할 공지 내용을 입력해주세요 \n 내용 : ");
+		System.out.print("등록할 공지 내용을 입력해주세요 \n 내용 : ");
 		String newContent = scanner.nextLine().trim();
 
 		if (newTitle.isEmpty() && newContent.isEmpty()) {
