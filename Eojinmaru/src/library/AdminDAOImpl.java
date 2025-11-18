@@ -189,7 +189,7 @@ public class AdminDAOImpl implements AdminDAO {
        
 		String sql = "SELECT bi.ISBN, bi.category_id, bi.publisher_id, bi.bookname, bi.publish_date, b.book_code " +
                 "FROM bookinfo bi " +
-                "LEFT JOIN book b ON bi.ISBN = b.ISBN " +
+                "INNER JOIN book b ON bi.ISBN = b.ISBN " +
                 "ORDER BY bi.bookname ASC";
         
         PreparedStatement pstmt = null;
