@@ -69,9 +69,8 @@ public class MemberDAOImpl implements MemberDAO {
 	@Override
 	public boolean signUpUser(MemberDTO user) {
         
-        String sql = "INSERT INTO UserInfo (user_code, user_id, user_pwd, user_name, user_birth, " +
-                     "user_tel, user_email, user_address, loan_renewaldate, enabled) " +
-                     "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, SYSDATE, 1)";
+        String sql = "INSERT INTO UserInfo (user_code, user_id, user_pwd, user_name, user_birth, user_tel, user_email, user_address, enabled) " 
+                   + "VALUES (user_seq.NEXTVAL, ?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, 1)";
         
         PreparedStatement pstmt = null;
 
@@ -93,7 +92,8 @@ public class MemberDAOImpl implements MemberDAO {
             return (resultRows > 0); 
 
         } catch (SQLException e) {
-            System.err.println(">> 중복된 ID 또는 잘못된 입력 형식입니다. 다시 시도해주세요.");
+//            System.err.println(">> 중복된 ID 또는 잘못된 입력 형식입니다. 다시 시도해주세요.");
+        	e.printStackTrace();
         } catch (IllegalArgumentException e) {
             System.err.println(">> 날짜 형식이 잘못되었습니다. (YYYY-MM-DD 형식으로 입력하세요)");
         } finally {

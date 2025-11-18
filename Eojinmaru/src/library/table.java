@@ -96,7 +96,7 @@ CREATE TABLE userinfo (
     user_tel            VARCHAR2(50)    NOT NULL,
     user_email          VARCHAR2(50)    NOT NULL,
     user_address        VARCHAR2(50)    NOT NULL,
-    loan_renewaldate    DATE            NOT NULL
+    loan_renewaldate    DATE            
 );
 
 
