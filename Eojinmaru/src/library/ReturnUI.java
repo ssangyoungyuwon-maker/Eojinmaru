@@ -132,7 +132,7 @@ public class ReturnUI {
 			pstmt2.setInt(1, book_code);
 			pstmt2.executeUpdate();
 
-			sql = "UPDATE userinfo SET loan_renewaldate=sysdate+(SELECT NVL(RETURN_DATE-DUE_DATE,0) "
+			sql = "UPDATE userinfo SET loan_renewaldate=sysdate+(SELECT NVL(MAX(DECODE(SIGN(return_date - due_date), 1, return_date - due_date, 0)), 0) "
 					+ " FROM loan WHERE book_code=? AND user_code=? ) WHERE user_code = ?";
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, book_code);
