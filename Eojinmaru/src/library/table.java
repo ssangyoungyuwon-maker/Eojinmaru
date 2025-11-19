@@ -1,4 +1,5 @@
 /* 
+
 -----------------------------------------------------------------------------------------------------  
 -- 김어진 
 CREATE TABLE publisher(
@@ -150,6 +151,7 @@ DROP SEQUENCE user_seq;
 CREATE SEQUENCE loan_seq
 START WITH 5000
 INCREMENT BY 1;
+
 
 
 
