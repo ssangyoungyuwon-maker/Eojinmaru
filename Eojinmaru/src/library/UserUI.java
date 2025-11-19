@@ -26,10 +26,20 @@ public class UserUI {
 		int ch = 0;
 
 		while (true) {
-			System.out.println("\n[사용자 화면]");
-
+			System.out.println("\n\t\t\t\t\t 😊 [ 사 용 자 ] \t\t\t\t\t");
+			System.out.println(
+					"====================================================================================================");
+			System.out.println("\t\t\t\t\t 1. 도서검색 및 대출신청");
+			System.out.println("\t\t\t\t\t 2. 대출");
+			System.out.println("\t\t\t\t\t 3. 반납 신청");
+			System.out.println("\t\t\t\t\t 4. 도서 신청");
+			System.out.println("\t\t\t\t\t 5. 마이페이지");
+			System.out.println("\t\t\t\t\t 6. 로그아웃");
+			System.out.println(
+					"====================================================================================================\n");
+			System.out.print("메뉴 선택: ");
+			
 			try {
-				System.out.print("1.도서검색/대출신청 2.대출 3.반납신청 4.도서신청 5.마이페이지 6.로그아웃  =>  ");
 				ch = Integer.parseInt(br.readLine());
 
 				if (ch == 6) {
@@ -37,29 +47,35 @@ public class UserUI {
 					System.out.println("로그아웃 되었습니다.");
 					return;
 				}
+				
 				switch (ch) {
 				case 1:
+					System.out.println(" 😊 [도서검색 및 대출신청] 페이지로 이동합니다.");
 					findBybook();
 					break;
 				case 2:
+					System.out.println(" 😊 [대출] 페이지로 이동합니다.");
 					loan();
 					break;
 				case 3:
+					System.out.println(" 😊 [반납 신청] 페이지로 이동합니다.");
 					returnUI.start();
 					break;
 				case 4:
+					System.out.println(" 😊 [도서 신청] 페이지로 이동합니다.");
 					sincheong.sincheongUI();
 					break;
 				case 5:
+					System.out.println(" 😊 [마이페이지] 페이지로 이동합니다.");
 					mypageUI.menu();
 					break;
 					
 				default : 
-					System.out.println("\n입력오류!! 1 ~ 6까지의 숫자만 입력해주세요.\n");
+					System.out.println(">> 잘못된 입력입니다. 1~6 사이의 숫자를 입력해주세요.");
 					break;
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("메뉴를 선택하지 않았습니다. 메뉴에 해당하는 숫자를 입력해주세요");
+				System.out.println(">> 메뉴를 선택하지 않았습니다. 메뉴에 해당하는 숫자를 입력해주세요");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -93,7 +109,7 @@ public class UserUI {
 				System.out.println(String.format("| %-4s|\t\t%-20s\t| %-10s\t| %-6s\t| %-6s|", "번호", "책 제목", "저자",
 						"출판사", "대출가능여부"));
 				if (list.size() == 0) {
-					System.out.println("우리 도서관에 등록된 도서가 아닙니다.");
+					System.out.println(">> 도서관에 등록된 도서가 아닙니다.");
 					return;
 
 				} else {
@@ -108,8 +124,17 @@ public class UserUI {
 				}
 				System.out.println(LINE);
 
+				System.out.println("\n\t\t\t\t\t [ 도서 검색 및 대출 신청 ] \t\t\t\t\t");
+				System.out.println(
+						"====================================================================================================");
+				System.out.println("\t\t\t\t\t1. 대출 신청");
+				System.out.println("\t\t\t\t\t2. 도서 검색");
+				System.out.println("\t\t\t\t\t3. 뒤로가기");
+				System.out.println(
+						"====================================================================================================\n");
+				System.out.print("메뉴 선택: ");
 				
-				System.out.print("1.대출신청  2.도서검색  3.사용자화면 => ");
+				
 	            int ch3 = Integer.parseInt(br.readLine());
 	            
 	            switch (ch3) { 
@@ -138,12 +163,12 @@ public class UserUI {
 					case 3:
 						return;
 					default : 
-						System.out.println("\n입력오류!! 1 ~ 3까지의 숫자만 입력해주세요.\n");
+						System.out.println(">> 잘못된 입력입니다. 1~3 사이의 숫자를 입력해주세요.");
 						break;
 					}
 
 	} catch (NumberFormatException e) {
-		System.out.println("\n입력오류!! 1 ~ 3 숫자를 입력해주세요. 입력오류로 사용자 화면으로 돌아갑니다.");
+		System.out.println(">> 1~3 숫자를 입력해주세요. 입력오류로 사용자 화면으로 돌아갑니다.");
 		return;
 	} catch (Exception e) {
 		
@@ -171,12 +196,12 @@ public class UserUI {
 		int bookcode;
 
 		try {
-			System.out.print("도서 코드 ? ");
+			System.out.print(">> 대출 신청할 도서 코드를 입력하세요: ");
 			bookcode = Integer.parseInt(br.readLine());
 			
 			List<BookInfoDTO> loannotlist = dao.loannotBook(bookcode);
 			if(loannotlist.size() != 0) {
-				System.out.println("대출 중이거나, 도서 미반납 등의 사유로 대출 불가한 도서입니다.");
+				System.out.println(">> 대출 중이거나, 도서 미반납 등의 사유로 대출 불가한 도서입니다.");
 				return;
 			}
 			
@@ -184,20 +209,20 @@ public class UserUI {
 			// 예약 상태인 도서 체크
 			List<LoanDTO> reservationlist = dao.loanreservationbook(bookcode);
 			if (reservationlist.size() != 0) {
-				System.out.println("대출 예약이 된 도서라 대출이 불가합니다.");
+				System.out.println(">> 대출 예약이 된 도서라 대출이 불가합니다.");
 				return;
 			}
 			// 대출권수 5권 이하(5권 초과 대출 불가)
 			int countlist = dao.loancount(usercode); // 도서권수 5개
 			if (countlist >= 5) {
-				System.out.println("대출 가능한 권수를 초과하여 대출이 불가합니다.");
+				System.out.println(">> 대출 가능한 권수를 초과하여 대출이 불가합니다.");
 				return;
 			} 
 
 			List<LoanDTO> loanlist = dao.loanlistbook(bookcode);
 			
 			if (loanlist.size() == 0) {
-				System.out.println("도서관에 등록되어 있지 않은 도서입니다. 확인해주세요.");
+				System.out.println(">> 도서관에 등록되어 있지 않은 도서입니다.");
 				return;
 			} 
 			
@@ -212,11 +237,11 @@ public class UserUI {
 					// 대출저장 및 해당책은 대출중으로 변경
 					dao.insertloan(dto2);
 				}
-				System.out.println("대출이 완료 되었습니다.");
+				System.out.println(">> 대출이 완료 되었습니다.");
 			}
 
 		} catch (NumberFormatException e) {
-			System.out.println("\n입력오류!! 대출신청을 원하시는 북코드를 입력해주세요.");
+			System.out.println(">> 대출신청을 원하시는 북코드를 입력해주세요.");
 			insertloan(); return;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,17 +253,17 @@ public class UserUI {
 
 	// 2. 대출
 	public void loan() {
-		System.out.println("\n[대출]");
-
+		
 		int usercode = login.loginUser().getUser_code();
 
 		try {
 			List<LoanDTO> myextendlist = dao.listloaning(usercode);
 
 			if (myextendlist.size() == 0) {
-				System.out.println("회원님이 대출신청한 도서가 없습니다.");
+				System.out.println(">> 대출신청한 도서가 없습니다.");
 			} else {
-				System.out.println("\n[회원님의 대출 중인 도서 목록입니다.]");
+				
+				System.out.println("\n\t\t\t\t\t🔎 [ 대출 중인 도서 목록 ] \t\t\t\t\t");
 				String LINE = "=====================================================================================";
 				System.out.println(LINE);
 				System.out.println(String.format("| %-4s|%-4s\t|\t\t%-11s\t| %-11s\t| %-10s| %-10s|", "대출번호", "도서코드", "책 제목",
@@ -265,12 +290,23 @@ public class UserUI {
 		int ch2 = 0;
 		int user_code = login.loginUser().getUser_code();
 		try {
-			System.out.print("1.대출연장 2.대출예약 3.반납 4.사용자화면 =>  ");
+			
+			System.out.println("\n\t\t\t\t\t [ 대 출 ] \t\t\t\t\t");
+			System.out.println(
+					"====================================================================================================");
+			System.out.println("\t\t\t\t\t1. 대출 연장");
+			System.out.println("\t\t\t\t\t2. 대출 예약");
+			System.out.println("\t\t\t\t\t3. 반납");
+			System.out.println("\t\t\t\t\t4. 뒤로가기");
+			System.out.println(
+					"====================================================================================================\n");
+			System.out.print("메뉴 선택: ");
+			
 			ch2 = Integer.parseInt(br.readLine());
 
 			if (ch2 == 1) {
 
-				System.out.print("연장할 대출 번호 ? ");
+				System.out.print(">> 연장할 대출 번호를 입력하세요: ");
 				int loan_code = Integer.parseInt(br.readLine());
 				int c = 0;
 
@@ -286,11 +322,11 @@ public class UserUI {
 				
 				if (c == 1) {
 					dao.extendloan(loan_code);
-					System.out.println("신청하신 도서가 연장되었습니다.");
+					System.out.println(">> 신청하신 도서가 연장되었습니다.");
 				} else if(c == 2){
-					System.out.println("연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
+					System.out.println(">> 연장신청을 1회 사용하였기에 연장 신청이 불가합니다.");
 				} else {
-					System.out.println("등록된 대출번호가 아닙니다.");
+					System.out.println(">> 등록된 대출번호가 아닙니다.");
 				}
 				
 				return;
@@ -318,16 +354,16 @@ public class UserUI {
 
 		try {
 
-			System.out.print("예약신청하고 싶은 도서 제목 ? ");
+			System.out.print(">> 예약 신청하고 싶은 도서 제목을 입력하세요: ");
 			bookname = br.readLine();
 
 			List<LoanDTO> loanlist = dao.loanlistall(bookname);
 
 			if (loanlist.size() == 0) {
-				System.out.println("\n현재 도서관 내 대출 중인 도서가 존재하지 않습니다.");
+				System.out.println("\n >> 현재 도서관 내 대출 중인 도서가 존재하지 않습니다.");
 				return;
 			} else {
-				System.out.println("검색한 도서에 해당되는 도서가 현재 대출 중인 도서입니다. 대출은 반납예정일자부터 가능합니다.");
+				System.out.println(">> 검색한 도서에 해당되는 도서가 현재 대출 중인 도서입니다. 대출은 반납예정일자부터 가능합니다.");
 				String LINE = "=====================================================================================";
 				System.out.println(LINE);
 				System.out.println(String.format("| %-4s|%-4s\t|\t\t%-11s\t| %-11s\t| %-10s|", "대출번호", "도서코드", "책 제목",
@@ -344,7 +380,7 @@ public class UserUI {
 			int bookcode;
 
 			try {
-				System.out.println("\n도서목록 중 대출 예약하고 싶은 도서코드 ? ");
+				System.out.println("\n >> 도서목록 중 대출 예약하고 싶은 도서코드를 입력하세요: ");
 				bookcode = Integer.parseInt(br.readLine());
 
 				List<LoanDTO> loanlistcode = dao.loanlistcode(bookcode);
@@ -360,12 +396,10 @@ public class UserUI {
 						break;
 					}
 				}
-				System.out.println("\n대출 예약이 완료 되었습니다.");
+				System.out.println("\n >> 대출 예약이 완료 되었습니다.");
 				return;
 			} catch (Exception e) {
 				e.printStackTrace();
-				{
-				}
 			}
 
 		} catch (Exception e) {

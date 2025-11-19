@@ -32,7 +32,7 @@ public class AdminUI {
 			System.out.println(
 					"====================================================================================================\n");
 
-			System.out.print("회원 관리 메뉴 선택: ");
+			System.out.print("관리자 메뉴 선택: ");
 
 			String adminChoice = scanner.nextLine();
 
