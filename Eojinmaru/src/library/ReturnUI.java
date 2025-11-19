@@ -30,7 +30,7 @@ public class ReturnUI {
 		try {
 			List<LoanDTO> list = showbooksonloan(loginuser.getUser_code());
 			if (list.size() == 0) {
-				System.out.println("대출중인 도서가 없습니다.\n");
+				System.out.println(">> 대출중인 도서가 없습니다.\n");
 				return;
 			}
 			System.out.println("\n\t\t\t\t\t📚 [ 대출 리스트 ] \t\t\t\t\t");
@@ -47,7 +47,7 @@ public class ReturnUI {
 				System.out.println(dto.getIsExtended() + "회");
 			}
 			System.out.println("=================================================================================");
-			System.out.println("\n반납할 책 번호를 입력하세요");
+			System.out.println("\n>> 반납할 책 번호를 입력하세요: ");
 			int book_code = Integer.parseInt(br.readLine());
 			boolean b = false;
 
@@ -59,18 +59,18 @@ public class ReturnUI {
 			}
 			
 			if (b == false) {
-				System.out.println("대출 책이 아닙니다.");
+				System.out.println(">> 대출 책이 아닙니다.");
 				return;
 			}
 			
 
 			returnbook(loginuser.getUser_code(), book_code);
 
-			System.out.println("반납이 완료되었습니다.");
+			System.out.println(">> 반납이 완료되었습니다.");
 			chkOverdue(loginuser.getUser_code());
 
 		} catch (NumberFormatException e) {
-			System.out.println("책번호를 숫자로 정확하게 입력해주세요.");
+			System.out.println(">> 책번호를 숫자로 정확하게 입력해주세요.");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -92,7 +92,7 @@ public class UserUI {
 		
 		while (true) {
 			try {
-				System.out.print("도서 제목 또는 저자(공백 입력시 이전 메뉴) => ");
+				System.out.print("검색할 도서 제목 또는 저자를 입력해주세요(공백 입력시 이전 메뉴): ");
 				search = br.readLine();
 				System.out.println();
 
@@ -144,14 +144,14 @@ public class UserUI {
 	                // 1. 반납 안한 책 체크
 	                List<LoanDTO> overduelist = dao.overdue(usercode);
 	                if (overduelist.size() != 0) {
-	                    System.out.println("아직 반납하지 않은 도서가 있어 대출 불가합니다.");
+	                    System.out.println(">> 아직 반납하지 않은 도서가 있어 대출 불가합니다.");
 	                    return;
 	                }
 						// 연체로 인한 패널티
 						List<LoanDTO> renwallist = dao.renwaldate(usercode);
 						for (LoanDTO dto : renwallist) {
 							if (renwallist.size() != 0) {
-								System.out.println("\n전에 연체된 기록이 있어 " + dto.getLoan_renewaldate() + "까지 대출이 불가합니다.");
+								System.out.println("\n>> 전에 연체된 기록이 있어 " + dto.getLoan_renewaldate() + "까지 대출이 불가합니다.");
 								return;
 							}
 							
@@ -163,7 +163,7 @@ public class UserUI {
 					case 3:
 						return;
 					default : 
-						System.out.println(">> 잘못된 입력입니다. 1~3 사이의 숫자를 입력해주세요.");
+						System.out.println(">> 잘못된 입력입니다. 1~3 사이의 숫자를 입력하세요.");
 						break;
 					}
 
