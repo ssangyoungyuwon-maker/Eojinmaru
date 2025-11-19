@@ -62,13 +62,16 @@ public class ReturnUI {
 				System.out.println("대출 책이 아닙니다.");
 				return;
 			}
+			
 
 			returnbook(loginuser.getUser_code(), book_code);
 
 			System.out.println("반납이 완료되었습니다.");
 			chkOverdue(loginuser.getUser_code());
 
-		} catch (Exception e) {
+		} catch (NumberFormatException e) {
+			System.out.println("책번호를 숫자로 정확하게 입력해주세요.");
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
