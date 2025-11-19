@@ -138,7 +138,6 @@ public class AdminDAOImpl implements AdminDAO {
             return (resultRows > 0); 
 
         } catch (SQLException e) {
-            System.err.println(">> 회원 삭제 중 오류: " + e.getMessage());
         } finally {
             try {
                 if (pstmt != null) pstmt.close();

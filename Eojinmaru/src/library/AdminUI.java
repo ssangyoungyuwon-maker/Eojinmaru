@@ -178,7 +178,7 @@ public class AdminUI {
 					if (isDeleted) {
 						System.out.println(">> 회원 정보가 성공적으로 삭제되었습니다.");
 					} else {
-						System.out.println(">> 회원 삭제에 실패하였습니다.");
+						System.out.println(">> 대출 중인 회원이므로 회원 삭제에 실패하였습니다.");
 					}
 				} else {
 					System.out.println(">> 회원 삭제를 취소하였습니다.");
